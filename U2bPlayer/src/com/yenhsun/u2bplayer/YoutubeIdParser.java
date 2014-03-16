@@ -19,10 +19,11 @@ import android.util.Log;
 
 public class YoutubeIdParser {
     // https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters
+    // https://gdata.youtube.com/feeds/api/videos?q=五月天+入陣曲&max-results=5&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))
     private static final String TAG = "YoutubeIdParser";
 
     public interface YoutubeIdParserResultCallback {
-        public void setResult(ArrayList<String> idList);
+        public void setResult(ArrayList<String> idList, ArrayList<String> rtspList);
     }
 
     public static void showYoutubeResult(final String[] searchKey,
@@ -31,7 +32,8 @@ public class YoutubeIdParser {
 
             @Override
             public void run() {
-                final ArrayList<String> playList = new ArrayList<String>();
+                final ArrayList<String> idList = new ArrayList<String>();
+                final ArrayList<String> rtspList = new ArrayList<String>();
                 String key = "";
                 for (String k : searchKey) {
                     key += k + "+";
@@ -40,23 +42,27 @@ public class YoutubeIdParser {
                     return;
                 else
                     key = key.substring(0, key.length() - 1);
-                Log.e("QQQQ", "key: " + key);
                 JSONArray jArray = YoutubeIdParser
                         .parse("https://gdata.youtube.com/feeds/api/videos?q="
                                 + Uri.encode(key)
-                                + "&max-results=5&alt=json");
+                                + "&max-results=5&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))");
                 if (jArray != null) {
                     try {
                         for (int i = 0; i < jArray.length(); i++) {
-                            String raw = ((JSONObject) jArray.get(i)).getJSONObject("id")
+                            JSONObject jOb = ((JSONObject) jArray.get(i));
+                            String id = jOb.getJSONObject("id")
                                     .getString("$t");
-                            playList.add(raw.substring(raw.lastIndexOf("/") + 1));
-                        }
-                        if (callback != null) {
-                            callback.setResult(playList);
+                            idList.add(id.substring(id.lastIndexOf("/") + 1));
+                            String rtsp = ((JSONObject) jOb.getJSONObject("media$group")
+                                    .getJSONArray("media$content").get(2))
+                                    .getString("url");
+                            rtspList.add(rtsp);
                         }
                     } catch (JSONException e) {
                     }
+                }
+                if (callback != null) {
+                    callback.setResult(idList, rtspList);
                 }
             }
         }).start();
