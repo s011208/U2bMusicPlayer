@@ -1,13 +1,17 @@
 
-package com.yenhsun.u2bplayer;
+package com.yenhsun.u2bplayer.mainactivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
+
+import com.yenhsun.u2bplayer.PlayListLoader;
+import com.yenhsun.u2bplayer.R;
+import com.yenhsun.u2bplayer.playservice.IPlayMusicService;
+import com.yenhsun.u2bplayer.playservice.PlayMusicService;
+import com.yenhsun.u2bplayer.utilities.PlayListInfo;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.util.AttributeSet;

@@ -1,9 +1,11 @@
 
-package com.yenhsun.u2bplayer;
+package com.yenhsun.u2bplayer.playservice;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
+import com.yenhsun.u2bplayer.playservice.IPlayMusicService;
+import com.yenhsun.u2bplayer.PlayListLoader;
+import com.yenhsun.u2bplayer.utilities.PlayListInfo;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -96,25 +98,21 @@ public class PlayMusicService extends Service implements PlayListLoader.PlayList
 
         @Override
         public void next() throws RemoteException {
-            // TODO Auto-generated method stub
             playMusic(PLAY_NEXT_INDEX);
         }
 
         @Override
         public void previous() throws RemoteException {
-            // TODO Auto-generated method stub
             playMusic(PLAY_PREVIOUS_INDEX);
         }
 
         @Override
         public void pause() throws RemoteException {
-            // TODO Auto-generated method stub
         }
     };
 
     @Override
-    public IBinder onBind(Intent arg0) {
-        // TODO Auto-generated method stub
+    public IBinder onBind(Intent intent) {
         return mBinder;
     }
 

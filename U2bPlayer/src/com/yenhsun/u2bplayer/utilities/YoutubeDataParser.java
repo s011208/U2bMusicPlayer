@@ -1,27 +1,21 @@
 
-package com.yenhsun.u2bplayer;
+package com.yenhsun.u2bplayer.utilities;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.util.Log;
 
-public class YoutubeIdParser {
+public class YoutubeDataParser {
     // https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters
     // https://gdata.youtube.com/feeds/api/videos?q=五月天+入陣曲&max-results=5&alt=json&orderby=viewCount&format=6&fields=entry(id,media:group(media:content(@url,@duration)))
     private static final String TAG = "YoutubeIdParser";
@@ -42,7 +36,7 @@ public class YoutubeIdParser {
                 String source = "https://gdata.youtube.com/feeds/api/videos?q="
                         + Uri.encode(key)
                         + "&max-results=1&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
-                JSONArray jArray = YoutubeIdParser
+                JSONArray jArray = YoutubeDataParser
                         .parse(source);
                 if (jArray != null) {
                     try {
@@ -77,6 +71,7 @@ public class YoutubeIdParser {
         return convertFromStringToJson(parseOnInternet(url));
     }
 
+    @SuppressWarnings("deprecation")
     private static String parseOnInternet(String url) {
         URL u;
         InputStream is = null;

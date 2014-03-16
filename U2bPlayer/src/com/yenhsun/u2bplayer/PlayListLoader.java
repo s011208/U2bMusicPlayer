@@ -3,6 +3,9 @@ package com.yenhsun.u2bplayer;
 
 import java.util.ArrayList;
 
+import com.yenhsun.u2bplayer.utilities.PlayListInfo;
+import com.yenhsun.u2bplayer.utilities.YoutubeDataParser;
+
 import android.content.Context;
 
 public class PlayListLoader {
@@ -20,6 +23,7 @@ public class PlayListLoader {
         mContext = context;
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<PlayListInfo> getPlayList() {
         return (ArrayList<PlayListInfo>) mPlayList.clone();
     }
@@ -50,9 +54,9 @@ public class PlayListLoader {
                         "I Love You 無望", "風若吹"
                 };
                 for (String music : cdList) {
-                    YoutubeIdParser.showYoutubeResult(
+                    YoutubeDataParser.showYoutubeResult(
                             "五月天", "", music
-                            , new YoutubeIdParser.YoutubeIdParserResultCallback() {
+                            , new YoutubeDataParser.YoutubeIdParserResultCallback() {
 
                                 @Override
                                 public void setResult(ArrayList<PlayListInfo> infoList) {

@@ -1,5 +1,9 @@
 
-package com.yenhsun.u2bplayer;
+package com.yenhsun.u2bplayer.mainactivity;
+
+import com.yenhsun.u2bplayer.playservice.IPlayMusicService;
+import com.yenhsun.u2bplayer.R;
+import com.yenhsun.u2bplayer.playservice.PlayMusicService;
 
 import android.os.Bundle;
 import android.os.IBinder;
@@ -9,7 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 
-public class MainActivity extends Activity {
+public class PlayMusicMainActivity extends Activity {
 
     private PlayListView mPlayListView;
     private IPlayMusicService mService;
@@ -27,7 +31,7 @@ public class MainActivity extends Activity {
     }
 
     private void bindService() {
-        Intent intent = new Intent(MainActivity.this, PlayMusicService.class);
+        Intent intent = new Intent(PlayMusicMainActivity.this, PlayMusicService.class);
         startService(intent);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }

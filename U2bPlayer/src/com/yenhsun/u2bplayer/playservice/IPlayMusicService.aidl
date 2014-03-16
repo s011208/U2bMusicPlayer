@@ -1,4 +1,4 @@
-package  com.yenhsun.u2bplayer;
+package  com.yenhsun.u2bplayer.playservice;
 interface IPlayMusicService{
 void play(int index);
 void next();

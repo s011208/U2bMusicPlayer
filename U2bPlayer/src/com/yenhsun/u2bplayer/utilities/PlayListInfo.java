@@ -1,14 +1,14 @@
 
-package com.yenhsun.u2bplayer;
+package com.yenhsun.u2bplayer.utilities;
 
 public class PlayListInfo {
-    String mArthur;
-    String mMusicTitle;
-    String mCdTitle;
-    String mRtspHighQuility;
-    String mRtspLowQuility;
-    String mHttpUri;
-    String mVideoId;
+    public String mArthur;
+    public String mMusicTitle;
+    public String mCdTitle;
+    public String mRtspHighQuility;
+    public String mRtspLowQuility;
+    public String mHttpUri;
+    public String mVideoId;
 
     public PlayListInfo(String arthur, String cdTitle, String musicTitle, String rtspH,
             String rtspL,
