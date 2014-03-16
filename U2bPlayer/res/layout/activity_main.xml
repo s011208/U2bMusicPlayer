@@ -4,4 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <include android:id="@+id/main_playlist" layout="@layout/play_list_view" />
+
 </LinearLayout>

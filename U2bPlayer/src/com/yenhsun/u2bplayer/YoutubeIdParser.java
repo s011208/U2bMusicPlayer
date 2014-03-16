@@ -26,82 +26,48 @@ public class YoutubeIdParser {
     // https://gdata.youtube.com/feeds/api/videos?q=五月天+入陣曲&max-results=5&alt=json&orderby=viewCount&format=6&fields=entry(id,media:group(media:content(@url,@duration)))
     private static final String TAG = "YoutubeIdParser";
 
-    static {
-        // YoutubeIdParser.showYoutubeResult(new String[] {
-        // "五月天", "入陣曲"
-        // }, new YoutubeIdParser.YoutubeIdParserResultCallback() {
-        //
-        // @Override
-        // public void setResult(ArrayList<String> idList, ArrayList<String>
-        // rtspList) {
-        // final MediaPlayer mediaPlayer = new MediaPlayer();
-        // try {
-        // String source = rtspList.get(0);
-        // mediaPlayer.setDataSource(source);
-        // mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        // mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-        //
-        // @Override
-        // public void onCompletion(MediaPlayer mp) {
-        // mediaPlayer.release();
-        // }
-        // });
-        // mediaPlayer.setOnPreparedListener(new OnPreparedListener() {
-        //
-        // @Override
-        // public void onPrepared(MediaPlayer arg0) {
-        // mediaPlayer.start();
-        // }
-        // });
-        // mediaPlayer.prepareAsync();
-        // } catch (Exception e) {
-        // Log.e("QQQQ", "failed", e);
-        // }
-        // }
-        // });
-    }
-
     public interface YoutubeIdParserResultCallback {
-        public void setResult(ArrayList<String> idList, ArrayList<String> rtspList);
+        public void setResult(ArrayList<PlayListInfo> infoList);
     }
 
-    public static void showYoutubeResult(final String[] searchKey,
+    public static void showYoutubeResult(final String arthur, final String cdTitle,
+            final String musicTitle,
             final YoutubeIdParserResultCallback callback) {
         new Thread(new Runnable() {
 
             @Override
             public void run() {
-                final ArrayList<String> idList = new ArrayList<String>();
-                final ArrayList<String> rtspList = new ArrayList<String>();
-                String key = "";
-                for (String k : searchKey) {
-                    key += k + "+";
-                }
-                if ("".equals(key))
-                    return;
-                else
-                    key = key.substring(0, key.length() - 1);
+                final ArrayList<PlayListInfo> infoList = new ArrayList<PlayListInfo>();
+                String key = arthur + "+" + cdTitle + "+" + musicTitle;
+                String source = "https://gdata.youtube.com/feeds/api/videos?q="
+                        + Uri.encode(key)
+                        + "&max-results=1&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
                 JSONArray jArray = YoutubeIdParser
-                        .parse("https://gdata.youtube.com/feeds/api/videos?q="
-                                + Uri.encode(key)
-                                + "&max-results=5&alt=json&orderby=viewCount&format=6&fields=entry(id,media:group(media:content(@url,@duration)))");
+                        .parse(source);
                 if (jArray != null) {
                     try {
                         for (int i = 0; i < jArray.length(); i++) {
                             JSONObject jOb = ((JSONObject) jArray.get(i));
-                            String id = jOb.getJSONObject("id")
+                            String videoId = jOb.getJSONObject("id")
                                     .getString("$t");
-                            idList.add(id.substring(id.lastIndexOf("/") + 1));
-                            String rtsp = ((JSONObject) jOb.getJSONObject("media$group")
+                            String rtspH = ((JSONObject) jOb.getJSONObject("media$group")
                                     .getJSONArray("media$content").get(2))
                                     .getString("url");
-                            rtspList.add(rtsp);
+                            String rtspL = ((JSONObject) jOb.getJSONObject("media$group")
+                                    .getJSONArray("media$content").get(1))
+                                    .getString("url");
+                            String httpUri = ((JSONObject) jOb.getJSONObject("media$group")
+                                    .getJSONArray("media$content").get(0))
+                                    .getString("url");
+                            infoList.add(new PlayListInfo(arthur, cdTitle, musicTitle, rtspH,
+                                    rtspL,
+                                    httpUri, videoId));
                         }
                     } catch (JSONException e) {
                     }
                 }
                 if (callback != null) {
-                    callback.setResult(idList, rtspList);
+                    callback.setResult(infoList);
                 }
             }
         }).start();
