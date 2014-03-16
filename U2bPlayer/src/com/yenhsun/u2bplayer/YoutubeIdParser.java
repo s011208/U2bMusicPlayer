@@ -14,13 +14,52 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.util.Log;
 
 public class YoutubeIdParser {
     // https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters
-    // https://gdata.youtube.com/feeds/api/videos?q=五月天+入陣曲&max-results=5&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))
+    // https://gdata.youtube.com/feeds/api/videos?q=五月天+入陣曲&max-results=5&alt=json&orderby=viewCount&format=6&fields=entry(id,media:group(media:content(@url,@duration)))
     private static final String TAG = "YoutubeIdParser";
+
+    static {
+        // YoutubeIdParser.showYoutubeResult(new String[] {
+        // "五月天", "入陣曲"
+        // }, new YoutubeIdParser.YoutubeIdParserResultCallback() {
+        //
+        // @Override
+        // public void setResult(ArrayList<String> idList, ArrayList<String>
+        // rtspList) {
+        // final MediaPlayer mediaPlayer = new MediaPlayer();
+        // try {
+        // String source = rtspList.get(0);
+        // mediaPlayer.setDataSource(source);
+        // mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        // mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+        //
+        // @Override
+        // public void onCompletion(MediaPlayer mp) {
+        // mediaPlayer.release();
+        // }
+        // });
+        // mediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+        //
+        // @Override
+        // public void onPrepared(MediaPlayer arg0) {
+        // mediaPlayer.start();
+        // }
+        // });
+        // mediaPlayer.prepareAsync();
+        // } catch (Exception e) {
+        // Log.e("QQQQ", "failed", e);
+        // }
+        // }
+        // });
+    }
 
     public interface YoutubeIdParserResultCallback {
         public void setResult(ArrayList<String> idList, ArrayList<String> rtspList);
@@ -45,7 +84,7 @@ public class YoutubeIdParser {
                 JSONArray jArray = YoutubeIdParser
                         .parse("https://gdata.youtube.com/feeds/api/videos?q="
                                 + Uri.encode(key)
-                                + "&max-results=5&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))");
+                                + "&max-results=5&alt=json&orderby=viewCount&format=6&fields=entry(id,media:group(media:content(@url,@duration)))");
                 if (jArray != null) {
                     try {
                         for (int i = 0; i < jArray.length(); i++) {
@@ -68,7 +107,7 @@ public class YoutubeIdParser {
         }).start();
     }
 
-    public static JSONArray parse(String url) {
+    private static JSONArray parse(String url) {
         return convertFromStringToJson(parseOnInternet(url));
     }
 
