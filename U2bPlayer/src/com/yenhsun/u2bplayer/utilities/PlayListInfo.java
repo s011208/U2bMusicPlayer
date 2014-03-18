@@ -9,10 +9,11 @@ public class PlayListInfo {
     public String mRtspLowQuility;
     public String mHttpUri;
     public String mVideoId;
+    public int mRank;
 
     public PlayListInfo(String arthur, String cdTitle, String musicTitle, String rtspH,
             String rtspL,
-            String httpUri, String videoId) {
+            String httpUri, String videoId, int rank) {
         mArthur = arthur;
         mMusicTitle = musicTitle;
         mRtspHighQuility = rtspH;
@@ -20,5 +21,6 @@ public class PlayListInfo {
         mHttpUri = httpUri;
         mVideoId = videoId;
         mCdTitle = cdTitle;
+        mRank = rank;
     }
 }

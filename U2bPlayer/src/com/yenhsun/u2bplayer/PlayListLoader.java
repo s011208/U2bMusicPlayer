@@ -23,8 +23,51 @@ public class PlayListLoader {
         mContext = context;
     }
 
+    public String getPlayListTitle() {
+        if (mPlayList.isEmpty() == false) {
+            PlayListInfo info = mPlayList.get(0);
+            String rtn = "";
+            if ("".equals(info.mCdTitle) == false) {
+                rtn += info.mCdTitle;
+            }
+            if ("".equals(rtn) == false) {
+                rtn += "  ";
+            }
+            rtn += info.mArthur;
+            return rtn;
+        }
+        return "";
+    }
+
     @SuppressWarnings("unchecked")
     public ArrayList<PlayListInfo> getPlayList() {
+        // +++using debug
+        // mPlayList.clear();
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "瘋狂世界", "", "", "", "",
+        // 0));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "擁抱", "", "", "", "",
+        // 1));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "透露", "", "", "", "",
+        // 2));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "生活", "", "", "", "",
+        // 3));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "愛情的模樣", "", "", "",
+        // "", 4));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "嘿我要走了", "", "", "",
+        // "", 5));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "軋車", "", "", "", "",
+        // 6));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "志明與春嬌", "", "", "",
+        // "", 7));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "Hosee", "", "", "",
+        // "", 8));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "黑白講", "", "", "", "",
+        // 9));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "I Love You 無望", "",
+        // "", "", "", 10));
+        // mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "風若吹", "", "", "", "",
+        // 11));
+        // ---using debug
         return (ArrayList<PlayListInfo>) mPlayList.clone();
     }
 
@@ -44,6 +87,8 @@ public class PlayListLoader {
     }
 
     public void initPlayListContent() {
+        // if (true)
+        // return;
         new Thread(new Runnable() {
 
             @Override
@@ -55,7 +100,7 @@ public class PlayListLoader {
                 };
                 for (String music : cdList) {
                     YoutubeDataParser.showYoutubeResult(
-                            "五月天", "", music
+                            "五月天", "瘋狂世界", music
                             , new YoutubeDataParser.YoutubeIdParserResultCallback() {
 
                                 @Override

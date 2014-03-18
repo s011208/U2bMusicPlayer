@@ -2,8 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:background="#00000000"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/main_activity_padding_bottom" >
 
-    <include android:id="@+id/main_playlist" layout="@layout/play_list_view" />
+    <include
+        android:id="@+id/main_playlist"
+        layout="@layout/play_list_view" />
 
 </LinearLayout>

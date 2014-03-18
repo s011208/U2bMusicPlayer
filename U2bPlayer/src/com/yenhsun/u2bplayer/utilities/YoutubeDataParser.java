@@ -32,7 +32,8 @@ public class YoutubeDataParser {
             @Override
             public void run() {
                 final ArrayList<PlayListInfo> infoList = new ArrayList<PlayListInfo>();
-                String key = arthur + "+" + cdTitle + "+" + musicTitle;
+                // String key = arthur + "+" + cdTitle + "+" + musicTitle;
+                String key = arthur + "+" + musicTitle;
                 String source = "https://gdata.youtube.com/feeds/api/videos?q="
                         + Uri.encode(key)
                         + "&max-results=1&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
@@ -55,7 +56,7 @@ public class YoutubeDataParser {
                                     .getString("url");
                             infoList.add(new PlayListInfo(arthur, cdTitle, musicTitle, rtspH,
                                     rtspL,
-                                    httpUri, videoId));
+                                    httpUri, videoId, 0));
                         }
                     } catch (JSONException e) {
                     }

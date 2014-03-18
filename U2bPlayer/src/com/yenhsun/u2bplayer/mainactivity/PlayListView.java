@@ -10,6 +10,7 @@ import com.yenhsun.u2bplayer.playservice.PlayMusicService;
 import com.yenhsun.u2bplayer.utilities.PlayListInfo;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -28,8 +29,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class PlayListView extends RelativeLayout implements PlayListLoader.PlayListLoaderCallback {
-    private Context mContext;
 
+    private static final boolean DEBUG = true;
+    private static final String TAG = "QQQQ";
+
+    private Context mContext;
     private ListView mPlayListContent;
     private LayoutInflater mLayoutInflater;
     private PlayListContentAdapter mPlayListAdapter;
@@ -97,12 +101,19 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
         });
     }
 
+    private void setTitleIfNeeded() {
+        if (mTitle != null && mLoader != null && mTitle.getText().equals("")) {
+            mTitle.setText(mLoader.getPlayListTitle());
+        }
+    }
+
     public void onFinishInflate() {
         super.onFinishInflate();
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         mTitle = (TextView) findViewById(R.id.playlist_title);
+        setTitleIfNeeded();
         mPlay = (ImageView) findViewById(R.id.playlist_play);
         mPlayNext = (ImageView) findViewById(R.id.playlist_play_next);
 
@@ -111,15 +122,17 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
         mLayoutInflater = LayoutInflater.from(mContext);
         mPlayListAdapter = new PlayListContentAdapter();
         mPlayListContent = (ListView) findViewById(R.id.playlist_content);
+        mPlayListContent.setSelector(R.drawable.playlist_item_bg);
         mPlayListContent.setAdapter(mPlayListAdapter);
         mPlayListContent.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 try {
                     mService.play(position);
                 } catch (RemoteException e) {
-                    Log.e("QQQQ", "fail", e);
+                    if (DEBUG)
+                        Log.e(TAG, "fail", e);
                 }
             }
         });
@@ -130,6 +143,7 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
         mHandler.post(new Runnable() {
             @Override
             public void run() {
+                setTitleIfNeeded();
                 mPlayListAdapter.notifyDataSetChanged();
             }
         });

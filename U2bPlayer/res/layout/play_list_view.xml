@@ -2,47 +2,74 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp" >
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginTop="10dp" >
 
     <TextView
         android:id="@+id/playlist_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp"
+        android:ellipsize="marquee"
         android:gravity="center"
-        android:text="TITLE" />
+        android:marqueeRepeatLimit="marquee_forever"
+        android:maxLines="1"
+        android:shadowDx="3"
+        android:shadowDy="3"
+        android:textColor="#fff"
+        android:textSize="30sp" />
 
     <LinearLayout
         android:id="@+id/playlist_control_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal" >
+        android:background="@drawable/black_stroke_oval_bg_with_shawdow"
+        android:orientation="horizontal"
+        android:padding="5dp" >
 
         <ImageView
             android:id="@+id/playlist_play_previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="3dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_launcher" />
+            android:background="@drawable/general_blue_bg"
+            android:contentDescription="@string/paly_previous"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_play_previous" />
 
         <ImageView
             android:id="@+id/playlist_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="3dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_launcher" />
+            android:background="@drawable/general_blue_bg"
+            android:contentDescription="@string/play_or_pause"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_play" />
 
         <ImageView
             android:id="@+id/playlist_play_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="3dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_launcher" />
+            android:background="@drawable/general_blue_bg"
+            android:contentDescription="@string/paly_next"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_play_next" />
     </LinearLayout>
 
     <ListView
@@ -50,7 +77,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/playlist_control_panel"
-        android:layout_below="@+id/playlist_title" >
+        android:layout_below="@+id/playlist_title"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/black_stroke_oval_bg_with_shawdow"
+        android:padding="10dp"
+        android:scrollbars="none" >
     </ListView>
 
 </com.yenhsun.u2bplayer.mainactivity.PlayListView>
