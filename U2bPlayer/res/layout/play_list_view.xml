@@ -42,20 +42,38 @@
             android:background="@drawable/general_blue_bg"
             android:contentDescription="@string/paly_previous"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_play_previous" />
+            android:src="@drawable/ic_previous" />
 
-        <ImageView
-            android:id="@+id/playlist_play"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="3dp"
-            android:layout_weight="1"
-            android:background="@drawable/general_blue_bg"
-            android:contentDescription="@string/play_or_pause"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_play" />
+        <ViewSwitcher
+            android:id="@+id/playlist_play_or_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
+
+            <ImageView
+                android:id="@+id/playlist_play"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="3dp"
+                android:background="@drawable/general_blue_bg"
+                android:contentDescription="@string/play_or_pause"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_play" />
+
+            <ImageView
+                android:id="@+id/playlist_pause"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="3dp"
+                android:background="@drawable/general_blue_bg"
+                android:contentDescription="@string/play_or_pause"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_pause" />
+        </ViewSwitcher>
 
         <ImageView
             android:id="@+id/playlist_play_next"
@@ -69,7 +87,7 @@
             android:background="@drawable/general_blue_bg"
             android:contentDescription="@string/paly_next"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_play_next" />
+            android:src="@drawable/ic_next" />
     </LinearLayout>
 
     <ListView

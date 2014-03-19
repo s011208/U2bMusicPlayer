@@ -4,4 +4,6 @@ void play(int index);
 void next();
 void previous();
 void pause();
+void resume();
+boolean isPlaying();
 }

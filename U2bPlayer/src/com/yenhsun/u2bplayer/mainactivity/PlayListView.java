@@ -27,11 +27,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 public class PlayListView extends RelativeLayout implements PlayListLoader.PlayListLoaderCallback {
 
     private static final boolean DEBUG = true;
     private static final String TAG = "QQQQ";
+    private static final int VIEW_SWITCHER_PLAY = 0;
+    private static final int VIEW_SWITCHER_PAUSE = 1;
 
     private Context mContext;
     private ListView mPlayListContent;
@@ -39,7 +42,8 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
     private PlayListContentAdapter mPlayListAdapter;
     private ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
     private TextView mTitle;
-    private ImageView mPlay, mPlayNext, mPlayPrevious;
+    private ViewSwitcher mPlayOrPause;
+    private ImageView mPlay, mPlayNext, mPlayPrevious, mPause;
     private Handler mHandler = new Handler();
     private MediaPlayer mMediaPlayer;
     private IPlayMusicService mService;
@@ -56,7 +60,7 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
     public PlayListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
-        mLoader = PlayListLoader.getInstance(mContext);
+        mLoader = PlayListLoader.getInstance();
         mPlayList = mLoader.getPlayList();
     }
 
@@ -70,13 +74,30 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
         mLoader.removeCallback(this);
     }
 
+    private void switchPlayAndPause(int index) {
+        if (mPlayOrPause != null) {
+            if (mPlayOrPause.getDisplayedChild() == index) {
+                return;
+            } else {
+                mPlayOrPause.setDisplayedChild(index);
+            }
+        }
+    }
+
     public void setService(IPlayMusicService service) {
         mService = service;
         mPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    mService.play(PlayMusicService.PLAY_NEXT_INDEX);
+                    if (mPlayOrPause != null) {
+                        if (mPlayOrPause.getDisplayedChild() == VIEW_SWITCHER_PLAY) {
+                            mService.resume();
+                        } else {
+                            mService.play(PlayMusicService.PLAY_NEXT_INDEX);
+                        }
+                        switchPlayAndPause(VIEW_SWITCHER_PAUSE);
+                    }
                 } catch (RemoteException e) {
                 }
             }
@@ -86,6 +107,7 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
             public void onClick(View v) {
                 try {
                     mService.next();
+                    switchPlayAndPause(VIEW_SWITCHER_PAUSE);
                 } catch (RemoteException e) {
                 }
             }
@@ -95,6 +117,17 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
             public void onClick(View v) {
                 try {
                     mService.previous();
+                    switchPlayAndPause(VIEW_SWITCHER_PAUSE);
+                } catch (RemoteException e) {
+                }
+            }
+        });
+        mPause.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    mService.pause();
+                    switchPlayAndPause(VIEW_SWITCHER_PLAY);
                 } catch (RemoteException e) {
                 }
             }
@@ -116,8 +149,11 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
         setTitleIfNeeded();
         mPlay = (ImageView) findViewById(R.id.playlist_play);
         mPlayNext = (ImageView) findViewById(R.id.playlist_play_next);
-
         mPlayPrevious = (ImageView) findViewById(R.id.playlist_play_previous);
+        mPause = (ImageView) findViewById(R.id.playlist_pause);
+        mPlayOrPause = (ViewSwitcher) findViewById(R.id.playlist_play_or_pause);
+        mPlayOrPause.setOutAnimation(mContext, R.anim.view_switch_anim_out);
+        mPlayOrPause.setInAnimation(mContext, R.anim.view_switch_anim_in);
 
         mLayoutInflater = LayoutInflater.from(mContext);
         mPlayListAdapter = new PlayListContentAdapter();
@@ -130,6 +166,7 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 try {
                     mService.play(position);
+                    switchPlayAndPause(VIEW_SWITCHER_PAUSE);
                 } catch (RemoteException e) {
                     if (DEBUG)
                         Log.e(TAG, "fail", e);

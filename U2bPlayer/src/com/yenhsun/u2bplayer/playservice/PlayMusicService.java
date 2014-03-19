@@ -17,6 +17,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 public class PlayMusicService extends Service implements PlayListLoader.PlayListLoaderCallback {
+    private static final boolean DEBUG = true;
+    private static final String TAG = "QQQQ";
     private MediaPlayer mMediaPlayer;
     private PlayListLoader mLoader;
     private ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
@@ -28,7 +30,7 @@ public class PlayMusicService extends Service implements PlayListLoader.PlayList
         super.onCreate();
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mLoader = PlayListLoader.getInstance(getApplicationContext());
+        mLoader = PlayListLoader.getInstance();
         mLoader.initPlayListContent();
         mLoader.addCallback(this);
         mPlayList = mLoader.getPlayList();
@@ -39,8 +41,25 @@ public class PlayMusicService extends Service implements PlayListLoader.PlayList
         mLoader.removeCallback(this);
     }
 
+    private void pauseMusic() {
+        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+            mMediaPlayer.pause();
+            if (DEBUG)
+                Log.d(TAG, "pause");
+        }
+    }
+
+    private void resumeMusic() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.start();
+            if (DEBUG)
+                Log.d(TAG, "resume");
+        }
+    }
+
     private void playMusic(int index) {
-        Log.e("QQQQ", "play: " + index);
+        if (DEBUG)
+            Log.d(TAG, "play: " + index);
         if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
         }
@@ -71,7 +90,8 @@ public class PlayMusicService extends Service implements PlayListLoader.PlayList
 
                 @Override
                 public void onPrepared(MediaPlayer player) {
-                    Log.e("QQQQ", "play");
+                    if (DEBUG)
+                        Log.i(TAG, "play");
                     player.start();
                 }
             });
@@ -80,12 +100,14 @@ public class PlayMusicService extends Service implements PlayListLoader.PlayList
 
                 @Override
                 public void onCompletion(MediaPlayer player) {
-                    Log.e("QQQQ", "complete");
+                    if (DEBUG)
+                        Log.i(TAG, "complete");
                     playMusic(PLAY_NEXT_INDEX);
                 }
             });
         } catch (Exception e) {
-            Log.e("QQQQ", "play failed", e);
+            if (DEBUG)
+                Log.w(TAG, "play failed", e);
         }
     }
 
@@ -108,6 +130,17 @@ public class PlayMusicService extends Service implements PlayListLoader.PlayList
 
         @Override
         public void pause() throws RemoteException {
+            pauseMusic();
+        }
+
+        @Override
+        public void resume() throws RemoteException {
+            resumeMusic();
+        }
+
+        @Override
+        public boolean isPlaying() throws RemoteException {
+            return mMediaPlayer != null && mMediaPlayer.isPlaying();
         }
     };
 
