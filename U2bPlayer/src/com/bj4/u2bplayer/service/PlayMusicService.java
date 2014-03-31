@@ -1,11 +1,10 @@
 
-package com.yenhsun.u2bplayer.playservice;
+package com.bj4.u2bplayer.service;
 
 import java.util.ArrayList;
 
-import com.yenhsun.u2bplayer.playservice.IPlayMusicService;
-import com.yenhsun.u2bplayer.PlayListLoader;
-import com.yenhsun.u2bplayer.utilities.PlayListInfo;
+import com.bj4.u2bplayer.PlayListLoader;
+import com.bj4.u2bplayer.utilities.PlayListInfo;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;

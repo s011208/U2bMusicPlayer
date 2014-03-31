@@ -1,9 +1,9 @@
 
-package com.yenhsun.u2bplayer.mainactivity;
+package com.bj4.u2bplayer.activity;
 
-import com.yenhsun.u2bplayer.playservice.IPlayMusicService;
+import com.bj4.u2bplayer.service.IPlayMusicService;
+import com.bj4.u2bplayer.service.PlayMusicService;
 import com.yenhsun.u2bplayer.R;
-import com.yenhsun.u2bplayer.playservice.PlayMusicService;
 
 import android.os.Bundle;
 import android.os.IBinder;

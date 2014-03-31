@@ -1,5 +1,5 @@
 
-package com.yenhsun.u2bplayer.utilities;
+package com.bj4.u2bplayer.utilities;
 
 public class PlayListInfo {
     public String mArtist;

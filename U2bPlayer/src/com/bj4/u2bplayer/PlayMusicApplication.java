@@ -1,5 +1,5 @@
 
-package com.yenhsun.u2bplayer;
+package com.bj4.u2bplayer;
 
 import android.app.Application;
 

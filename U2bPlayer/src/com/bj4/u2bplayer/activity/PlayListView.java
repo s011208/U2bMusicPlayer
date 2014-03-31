@@ -1,13 +1,13 @@
 
-package com.yenhsun.u2bplayer.mainactivity;
+package com.bj4.u2bplayer.activity;
 
 import java.util.ArrayList;
 
-import com.yenhsun.u2bplayer.PlayListLoader;
+import com.bj4.u2bplayer.PlayListLoader;
+import com.bj4.u2bplayer.service.IPlayMusicService;
+import com.bj4.u2bplayer.service.PlayMusicService;
+import com.bj4.u2bplayer.utilities.PlayListInfo;
 import com.yenhsun.u2bplayer.R;
-import com.yenhsun.u2bplayer.playservice.IPlayMusicService;
-import com.yenhsun.u2bplayer.playservice.PlayMusicService;
-import com.yenhsun.u2bplayer.utilities.PlayListInfo;
 
 import android.content.Context;
 import android.graphics.Color;

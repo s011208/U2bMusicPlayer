@@ -1,5 +1,5 @@
 
-package com.yenhsun.u2bplayer.utilities;
+package com.bj4.u2bplayer.utilities;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

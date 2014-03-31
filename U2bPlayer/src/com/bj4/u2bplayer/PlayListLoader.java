@@ -1,10 +1,10 @@
 
-package com.yenhsun.u2bplayer;
+package com.bj4.u2bplayer;
 
 import java.util.ArrayList;
 
-import com.yenhsun.u2bplayer.utilities.PlayListInfo;
-import com.yenhsun.u2bplayer.utilities.YoutubeDataParser;
+import com.bj4.u2bplayer.utilities.PlayListInfo;
+import com.bj4.u2bplayer.utilities.YoutubeDataParser;
 
 import android.content.Context;
 

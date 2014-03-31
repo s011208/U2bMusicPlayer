@@ -1,4 +1,4 @@
-<com.yenhsun.u2bplayer.mainactivity.PlayListView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.bj4.u2bplayer.activity.PlayListView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -104,4 +104,4 @@
         android:scrollbars="none" >
     </ListView>
 
-</com.yenhsun.u2bplayer.mainactivity.PlayListView>
+</com.bj4.u2bplayer.activity.PlayListView>
