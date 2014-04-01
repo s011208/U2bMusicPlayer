@@ -22,7 +22,7 @@ import android.widget.RelativeLayout;
 public class U2bPlayerActivity extends Activity {
     private static final String TAG = "QQQQ";
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
     private Button mActionBarSync;
 
@@ -82,27 +82,31 @@ public class U2bPlayerActivity extends Activity {
         U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication.getDataBaseHelper();
         if (mDatabaseHelper != null) {
             // XXX example below
-            ContentValues cv = new ContentValues();
-            cv.put(U2bDatabaseHelper.COLUMN_ARTIST, "五月天");
-            cv.put(U2bDatabaseHelper.COLUMN_ALBUM, "瘋狂世界");
-            cv.put(U2bDatabaseHelper.COLUMN_MUSIC, "瘋狂世界");
-            cv.put(U2bDatabaseHelper.COLUMN_RANK, 1);
-            mDatabaseHelper.insert(cv);
-            Cursor c = mDatabaseHelper.query(null, null);
-            Log.i(TAG, "demo 1 start");
-            if (c != null) {
-                while (c.moveToNext()) {
-                    String artist = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST));
-                    String album = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
-                    String music = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC));
-                    String rank = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK));
-                    Log.e(TAG, "demo1 " + artist + ", " + album + ", " + music + ", " + rank);
+            ContentValues cv;
+            Cursor c;
+//            cv = new ContentValues();
+//            cv.put(U2bDatabaseHelper.COLUMN_ARTIST, "五月天");
+//            cv.put(U2bDatabaseHelper.COLUMN_ALBUM, "瘋狂世界");
+//            cv.put(U2bDatabaseHelper.COLUMN_MUSIC, "瘋狂世界");
+//            cv.put(U2bDatabaseHelper.COLUMN_RANK, 1);
+//            mDatabaseHelper.insert(cv, true);
+//            c = mDatabaseHelper.query(null, null);
+//            Log.i(TAG, "demo 1 start");
+//            if (c != null) {
+//                while (c.moveToNext()) {
+//                    String artist = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST));
+//                    String album = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
+//                    String music = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC));
+//                    String rank = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK));
+//                    Log.e(TAG, "demo1 " + artist + ", " + album + ", " + music + ", " + rank);
+//
+//                }
+//                c.close();
+//            }
+//            mDatabaseHelper.clearTableContent();
 
-                }
-                c.close();
-            }
             Log.i(TAG, "demo 2 start");
-            mDatabaseHelper.clearTableContent();
+
             ArrayList<ContentValues> cvs = new ArrayList<ContentValues>();
             cv = new ContentValues();
             cv.put(U2bDatabaseHelper.COLUMN_ARTIST, "五月天");
@@ -135,7 +139,7 @@ public class U2bPlayerActivity extends Activity {
             cv.put(U2bDatabaseHelper.COLUMN_RANK, 5);
             cvs.add(cv);
             // using bulk insert
-            mDatabaseHelper.insert(cvs);
+            mDatabaseHelper.insert(cvs, true);
             cvs.add(cv);
             c = mDatabaseHelper.query(null, null);
             if (c != null) {
@@ -148,7 +152,7 @@ public class U2bPlayerActivity extends Activity {
                 }
                 c.close();
             }
-            mDatabaseHelper.clearTableContent();
+            // mDatabaseHelper.clearTableContent();
         }
     }
 }

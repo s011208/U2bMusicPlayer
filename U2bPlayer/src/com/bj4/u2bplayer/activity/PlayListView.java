@@ -4,13 +4,13 @@ package com.bj4.u2bplayer.activity;
 import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayListLoader;
+import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.service.IPlayMusicService;
 import com.bj4.u2bplayer.service.PlayMusicService;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 import com.yenhsun.u2bplayer.R;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -31,7 +31,7 @@ import android.widget.ViewSwitcher;
 
 public class PlayListView extends RelativeLayout implements PlayListLoader.PlayListLoaderCallback {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
     private static final String TAG = "QQQQ";
     private static final int VIEW_SWITCHER_PLAY = 0;
     private static final int VIEW_SWITCHER_PAUSE = 1;
