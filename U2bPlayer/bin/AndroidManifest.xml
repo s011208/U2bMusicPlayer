@@ -15,14 +15,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="com.yenhsun.u2bplayer.PlayMusicApplication"
+        android:name="com.bj4.u2bplayer.PlayMusicApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.yenhsun.u2bplayer.mainactivity.PlayMusicMainActivity"
+            android:name="com.bj4.u2bplayer.activity.U2bPlayerActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,8 +30,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.bj4.u2bplayer.activity.PlayMusicMainActivity"
+            android:label="@string/app_name" >
+        </activity>
 
-        <service android:name="com.yenhsun.u2bplayer.playservice.PlayMusicService" />
+        <service android:name="com.bj4.u2bplayer.service.PlayMusicService" />
     </application>
 
 </manifest>
