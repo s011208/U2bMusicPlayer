@@ -4,22 +4,21 @@ package com.bj4.u2bplayer.activity;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import com.bj4.u2bplayer.PlayMusicApplication;
-import com.bj4.u2bplayer.database.U2bDatabaseHelper;
-import com.bj4.u2bplayer.scanner.PlayScanner;
-import com.yenhsun.u2bplayer.R;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+
+import com.bj4.u2bplayer.PlayMusicApplication;
+import com.bj4.u2bplayer.database.U2bDatabaseHelper;
+import com.bj4.u2bplayer.scanner.PlayScanner;
+import com.yenhsun.u2bplayer.R;
 
 public class U2bPlayerActivity extends Activity {
     private static final String TAG = "QQQQ";
@@ -29,9 +28,8 @@ public class U2bPlayerActivity extends Activity {
     private Button mActionBarSync;
 
     private RelativeLayout mMainLayout;
-
-    private PlayScanner PScanner;
-
+    
+    private PlayScanner mPlayScanner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +66,7 @@ public class U2bPlayerActivity extends Activity {
 
     private void initComponents() {
         mActionBarSync = (Button)findViewById(R.id.action_bar_sync);
+        mPlayScanner = new PlayScanner(); 
         mActionBarSync.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,7 +77,7 @@ public class U2bPlayerActivity extends Activity {
                 // DbDemo();
 
                 // scan list
-                new PlayScanner();
+                mPlayScanner.scan();
             }
         });
     }
