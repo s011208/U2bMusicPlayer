@@ -3,6 +3,9 @@ package com.bj4.u2bplayer.database;
 
 import java.util.ArrayList;
 
+import com.bj4.u2bplayer.PlayMusicApplication;
+import com.bj4.u2bplayer.utilities.PlayListInfo;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,7 +17,7 @@ import android.util.Log;
 
 public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
     private static final String TAG = "QQQQ";
 
@@ -36,11 +39,34 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     public static final String COLUMN_RTSP_L = "rtsp_l";
 
+    public static final String COLUMN_VIDEO_ID = "video_id";
+
     public static final String COLUMN_RANK = "rank";
 
     private Context mContext;
 
     private SQLiteDatabase mDb;
+
+    public interface DatabaseHelperCallback {
+
+        public void notifyDataSetChanged();
+    }
+
+    private ArrayList<DatabaseHelperCallback> mCallbacks = new ArrayList<DatabaseHelperCallback>();
+
+    public void addCallback(DatabaseHelperCallback cb) {
+        mCallbacks.add(cb);
+    }
+
+    public void removeCallback(DatabaseHelperCallback cb) {
+        mCallbacks.remove(cb);
+    }
+
+    private void notifyDataSetChanged() {
+        for (DatabaseHelperCallback cb : mCallbacks) {
+            cb.notifyDataSetChanged();
+        }
+    }
 
     public U2bDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -69,6 +95,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     public void insert(String rawCmd) {
         getDb().execSQL(rawCmd);
+        notifyDataSetChanged();
     }
 
     public Cursor query(String rawCmd) {
@@ -84,22 +111,53 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         return getDb().query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
     }
 
-    public long insert(ContentValues cv) {
-        return getDb().insert(TABLE_MAIN_INFO, null, cv);
+    public Cursor queryDataForU2bParser() {
+        return query("select * from " + TABLE_MAIN_INFO + " where " + COLUMN_VIDEO_PATH
+                + " is NULL or " + COLUMN_RTSP_H + " is NULL or " + COLUMN_RTSP_L + " is NULL");
+
     }
 
-    public int insert(ArrayList<ContentValues> cvs) {
+    public long insert(ContentValues cv, boolean notify) {
+        long rtn = getDb().insert(TABLE_MAIN_INFO, null, cv);
+        if (notify)
+            notifyDataSetChanged();
+        return rtn;
+    }
+
+    public int insert(ArrayList<PlayListInfo> infoList) {
+        ArrayList<ContentValues> cvs = new ArrayList<ContentValues>();
+        for (PlayListInfo info : infoList) {
+            ContentValues cv = new ContentValues();
+            cv.put(U2bDatabaseHelper.COLUMN_ARTIST, info.mArtist);
+            cv.put(U2bDatabaseHelper.COLUMN_ALBUM, info.mAlbumTitle);
+            cv.put(U2bDatabaseHelper.COLUMN_MUSIC, info.mMusicTitle);
+            cv.put(U2bDatabaseHelper.COLUMN_RANK, info.mRank);
+            cv.put(U2bDatabaseHelper.COLUMN_RTSP_H, info.mRtspHighQuility);
+            cv.put(U2bDatabaseHelper.COLUMN_RTSP_L, info.mRtspLowQuility);
+            cv.put(U2bDatabaseHelper.COLUMN_VIDEO_PATH, info.mHttpUri);
+            cv.put(U2bDatabaseHelper.COLUMN_VIDEO_ID, info.mVideoId);
+            cvs.add(cv);
+            if (DEBUG)
+                Log.i(TAG, info.toString());
+        }
+        return insert(cvs, false);
+    }
+
+    public int insert(ArrayList<ContentValues> cvs, boolean notify) {
         int records = 0;
         try {
             getDb().beginTransaction();
             for (ContentValues cv : cvs) {
-                getDb().insert(TABLE_MAIN_INFO, null, cv);
+                getDb().replaceOrThrow(TABLE_MAIN_INFO, null, cv);
                 ++records;
             }
             getDb().setTransactionSuccessful();
         } catch (SQLException e) {
         } finally {
             getDb().endTransaction();
+        }
+        if (notify) {
+            notifyDataSetChanged();
         }
         return records;
     }
@@ -109,9 +167,9 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 "CREATE TABLE IF NOT EXISTS " + TABLE_MAIN_INFO + "(" + COLUMN_ARTIST
                         + " TEXT NOT NULL," + COLUMN_ALBUM + " TEXT NOT NULL," + COLUMN_MUSIC
                         + " TEXT NOT NULL," + COLUMN_VIDEO_PATH + " TEXT," + COLUMN_RTSP_H
-                        + " TEXT," + COLUMN_RTSP_L + " TEXT," + COLUMN_RANK
-                        + " INTEGER,PRIMARY KEY(" + COLUMN_ARTIST + ", " + COLUMN_ALBUM + ", "
-                        + COLUMN_MUSIC + "))");
+                        + " TEXT," + COLUMN_RTSP_L + " TEXT," + COLUMN_VIDEO_ID + " TEXT, "
+                        + COLUMN_RANK + " INTEGER,PRIMARY KEY(" + COLUMN_ARTIST + ", "
+                        + COLUMN_ALBUM + ", " + COLUMN_MUSIC + "))");
         if (DEBUG) {
             Log.d(TAG, "table created!");
         }

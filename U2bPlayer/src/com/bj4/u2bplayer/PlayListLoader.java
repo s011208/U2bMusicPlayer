@@ -10,7 +10,8 @@ import android.content.Context;
 
 public class PlayListLoader {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
+
     private static final boolean DEBUG_PRELOAD_LIST = true;
 
     public interface PlayListLoaderCallback {
@@ -18,7 +19,9 @@ public class PlayListLoader {
     }
 
     private final ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
+
     private final ArrayList<PlayListLoaderCallback> mCallbacks = new ArrayList<PlayListLoaderCallback>();
+
     private static PlayListLoader mSingleton;
 
     private PlayListLoader() {
@@ -42,35 +45,23 @@ public class PlayListLoader {
 
     private void initDebugData() {
         mPlayList.clear();
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "瘋狂世界", "", "", "", "",
-                0));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "擁抱", "", "", "", "",
-                1));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "透露", "", "", "", "",
-                2));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "生活", "", "", "", "",
-                3));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "愛情的模樣", "", "", "",
-                "", 4));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "嘿我要走了", "", "", "",
-                "", 5));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "軋車", "", "", "", "",
-                6));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "志明與春嬌", "", "", "",
-                "", 7));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "Hosee", "", "", "",
-                "", 8));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "黑白講", "", "", "", "",
-                9));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "I Love You 無望", "",
-                "", "", "", 10));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "風若吹", "", "", "", "",
-                11));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "瘋狂世界", "", "", "", "", 0));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "擁抱", "", "", "", "", 1));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "透露", "", "", "", "", 2));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "生活", "", "", "", "", 3));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "愛情的模樣", "", "", "", "", 4));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "嘿我要走了", "", "", "", "", 5));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "軋車", "", "", "", "", 6));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "志明與春嬌", "", "", "", "", 7));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "Hosee", "", "", "", "", 8));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "黑白講", "", "", "", "", 9));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "I Love You 無望", "", "", "", "", 10));
+        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "風若吹", "", "", "", "", 11));
     }
 
     @SuppressWarnings("unchecked")
     public ArrayList<PlayListInfo> getPlayList() {
-        return (ArrayList<PlayListInfo>) mPlayList.clone();
+        return (ArrayList<PlayListInfo>)mPlayList.clone();
     }
 
     public static synchronized PlayListLoader getInstance() {
