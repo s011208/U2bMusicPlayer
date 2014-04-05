@@ -36,15 +36,9 @@ public class U2bPlayerActivity extends Activity {
 
     private PlayScanner mPlayScanner;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.u2b_main_activity);
-        mPlayScanner = new PlayScanner();
-        initMainLayout();
-        initComponents();
-    }
-
+    /**
+     * do not edit this method
+     */
     private void initMainLayout() {
         boolean hasNavigationBar = true;
         try {
@@ -69,6 +63,14 @@ public class U2bPlayerActivity extends Activity {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // TODO do something about transparent navigation bar
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.u2b_main_activity);
+        initMainLayout();
+        initComponents();
     }
 
     private void initComponents() {
@@ -96,19 +98,32 @@ public class U2bPlayerActivity extends Activity {
                             public void onSelected(int option) {
                                 switch (option) {
                                     case MainActivityOptionDialog.ITEM_DOWNLOAD_DATA:
-                                        // TODO start to parse?
                                         if (DEBUG) {
                                             Log.d(TAG, "action bar -- sync pressed");
                                         }
-                                        // DbDemo();
-
-                                        // scan list
-                                        mPlayScanner.scan();
+                                        startToScan();
                                         break;
                                 }
                             }
                         }, location).show(getFragmentManager(), "");
             }
         });
+    }
+
+    private void startToScan() {
+        // scan list
+        getPlayScanner().scan();
+    }
+
+    /**
+     * lazy init
+     * 
+     * @return play scanner
+     */
+    private PlayScanner getPlayScanner() {
+        if (mPlayScanner == null) {
+            mPlayScanner = new PlayScanner();
+        }
+        return mPlayScanner;
     }
 }

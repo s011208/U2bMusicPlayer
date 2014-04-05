@@ -11,7 +11,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -179,4 +178,61 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
+    private void convertFromCursorToPlayList(Cursor c, ArrayList<PlayListInfo> playList) {
+        if (c != null && playList != null) {
+            int iArtist = c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST);
+            int iAlbum = c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM);
+            int iMusic = c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC);
+            int iRank = c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK);
+            int iRh = c.getColumnIndex(U2bDatabaseHelper.COLUMN_RTSP_H);
+            int iRl = c.getColumnIndex(U2bDatabaseHelper.COLUMN_RTSP_L);
+            int iVp = c.getColumnIndex(U2bDatabaseHelper.COLUMN_VIDEO_PATH);
+            int iVi = c.getColumnIndex(U2bDatabaseHelper.COLUMN_VIDEO_ID);
+            while (c.moveToNext()) {
+                String artist = c.getString(iArtist);
+                String album = c.getString(iAlbum);
+                String music = c.getString(iMusic);
+                int rank = c.getInt(iRank);
+                String rh = c.getString(iRh);
+                String rl = c.getString(iRl);
+                String vp = c.getString(iVp);
+                String vi = c.getString(iVi);
+                playList.add(new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank));
+            }
+            c.close();
+        }
+        if (DEBUG) {
+            Log.i(TAG, "convertFromCursorToPlayList");
+            for (PlayListInfo info : playList) {
+                Log.e(TAG, info.toString());
+            }
+        }
+    }
+
+    public ArrayList<PlayListInfo> getPlayListByMusic(final String music) {
+        ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
+        Cursor data = getDb().rawQuery(
+                "select * from " + TABLE_MAIN_INFO + " where " + COLUMN_MUSIC + "='" + music
+                        + "' order by " + COLUMN_RANK, null);
+        convertFromCursorToPlayList(data, playList);
+        return playList;
+    }
+
+    public ArrayList<PlayListInfo> getPlayListByArtist(final String artist) {
+        ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
+        Cursor data = getDb().rawQuery(
+                "select * from " + TABLE_MAIN_INFO + " where " + COLUMN_ARTIST + "='" + artist
+                        + "' order by " + COLUMN_RANK, null);
+        convertFromCursorToPlayList(data, playList);
+        return playList;
+    }
+
+    public ArrayList<PlayListInfo> getPlayListByAlbum(final String album) {
+        ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
+        Cursor data = getDb().rawQuery(
+                "select * from " + TABLE_MAIN_INFO + " where " + COLUMN_ALBUM + "='" + album
+                        + "' order by " + COLUMN_RANK, null);
+        convertFromCursorToPlayList(data, playList);
+        return playList;
+    }
 }

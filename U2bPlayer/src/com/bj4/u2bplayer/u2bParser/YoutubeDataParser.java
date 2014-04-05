@@ -80,6 +80,12 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                 }
                 if (callback != null) {
                     callback.setResult(infoList);
+                    final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication
+                            .getDataBaseHelper();
+                    if (DEBUG) {
+                        mDatabaseHelper.getPlayListByArtist("韋禮安");
+                        mDatabaseHelper.getPlayListByMusic("為愛而活");
+                    }
                 }
             }
         });
