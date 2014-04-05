@@ -3,7 +3,7 @@ package com.bj4.u2bplayer.activity;
 
 import com.bj4.u2bplayer.service.IPlayMusicService;
 import com.bj4.u2bplayer.service.PlayMusicService;
-import com.yenhsun.u2bplayer.R;
+import com.bj4.u2bplayer.R;
 
 import android.os.Bundle;
 import android.os.IBinder;

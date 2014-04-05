@@ -3,8 +3,8 @@ package com.bj4.u2bplayer;
 
 import java.util.ArrayList;
 
+import com.bj4.u2bplayer.u2bParser.YoutubeDataParser;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
-import com.bj4.u2bplayer.utilities.YoutubeDataParser;
 
 import android.content.Context;
 

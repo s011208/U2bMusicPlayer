@@ -7,33 +7,40 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
+import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
 import com.bj4.u2bplayer.scanner.PlayScanner;
-import com.yenhsun.u2bplayer.R;
+import com.bj4.u2bplayer.R;
 
 public class U2bPlayerActivity extends Activity {
     private static final String TAG = "QQQQ";
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
-    private Button mActionBarSync;
+    private ImageButton mOptionBtn;
 
     private RelativeLayout mMainLayout;
-    
+
     private PlayScanner mPlayScanner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.u2b_main_activity);
+        mPlayScanner = new PlayScanner();
         initMainLayout();
         initComponents();
     }
@@ -65,19 +72,42 @@ public class U2bPlayerActivity extends Activity {
     }
 
     private void initComponents() {
-        mActionBarSync = (Button)findViewById(R.id.action_bar_sync);
-        mPlayScanner = new PlayScanner(); 
-        mActionBarSync.setOnClickListener(new OnClickListener() {
+        mOptionBtn = (ImageButton)findViewById(R.id.menu);
+        mOptionBtn.setOnClickListener(new OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                // TODO start to parse?
-                if (DEBUG) {
-                    Log.d(TAG, "action bar -- sync pressed");
-                }
-                // DbDemo();
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                int[] location1 = {
+                        0, 0
+                };
+                Rect r = new Rect();
+                v.getLocationInWindow(location1);
+                v.getLocalVisibleRect(r);
+                display.getSize(size);
+                int[] location = {
+                        size.x - location1[0] - r.width(), 2 * location1[1]
+                };
+                new MainActivityOptionDialog(U2bPlayerActivity.this,
+                        new MainActivityOptionDialog.MainActivityOptionDialogCallback() {
 
-                // scan list
-                mPlayScanner.scan();
+                            @Override
+                            public void onSelected(int option) {
+                                switch (option) {
+                                    case MainActivityOptionDialog.ITEM_DOWNLOAD_DATA:
+                                        // TODO start to parse?
+                                        if (DEBUG) {
+                                            Log.d(TAG, "action bar -- sync pressed");
+                                        }
+                                        // DbDemo();
+
+                                        // scan list
+                                        mPlayScanner.scan();
+                                        break;
+                                }
+                            }
+                        }, location).show(getFragmentManager(), "");
             }
         });
     }
@@ -89,26 +119,31 @@ public class U2bPlayerActivity extends Activity {
             // XXX example below
             ContentValues cv;
             Cursor c;
-//            cv = new ContentValues();
-//            cv.put(U2bDatabaseHelper.COLUMN_ARTIST, "五月天");
-//            cv.put(U2bDatabaseHelper.COLUMN_ALBUM, "瘋狂世界");
-//            cv.put(U2bDatabaseHelper.COLUMN_MUSIC, "瘋狂世界");
-//            cv.put(U2bDatabaseHelper.COLUMN_RANK, 1);
-//            mDatabaseHelper.insert(cv, true);
-//            c = mDatabaseHelper.query(null, null);
-//            Log.i(TAG, "demo 1 start");
-//            if (c != null) {
-//                while (c.moveToNext()) {
-//                    String artist = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST));
-//                    String album = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
-//                    String music = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC));
-//                    String rank = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK));
-//                    Log.e(TAG, "demo1 " + artist + ", " + album + ", " + music + ", " + rank);
-//
-//                }
-//                c.close();
-//            }
-//            mDatabaseHelper.clearTableContent();
+            // cv = new ContentValues();
+            // cv.put(U2bDatabaseHelper.COLUMN_ARTIST, "五月天");
+            // cv.put(U2bDatabaseHelper.COLUMN_ALBUM, "瘋狂世界");
+            // cv.put(U2bDatabaseHelper.COLUMN_MUSIC, "瘋狂世界");
+            // cv.put(U2bDatabaseHelper.COLUMN_RANK, 1);
+            // mDatabaseHelper.insert(cv, true);
+            // c = mDatabaseHelper.query(null, null);
+            // Log.i(TAG, "demo 1 start");
+            // if (c != null) {
+            // while (c.moveToNext()) {
+            // String artist =
+            // c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST));
+            // String album =
+            // c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
+            // String music =
+            // c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC));
+            // String rank =
+            // c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK));
+            // Log.e(TAG, "demo1 " + artist + ", " + album + ", " + music + ", "
+            // + rank);
+            //
+            // }
+            // c.close();
+            // }
+            // mDatabaseHelper.clearTableContent();
 
             Log.i(TAG, "demo 2 start");
 

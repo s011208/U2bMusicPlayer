@@ -2,7 +2,7 @@
 package com.bj4.u2bplayer;
 
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
-import com.bj4.u2bplayer.utilities.YoutubeDataParser;
+import com.bj4.u2bplayer.u2bParser.YoutubeDataParser;
 
 import android.app.Application;
 public class PlayMusicApplication extends Application {

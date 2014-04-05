@@ -10,5 +10,5 @@
     <string name="paly">Play</string>
     <string name="pause">Pause</string>
     <string name="play_or_pause">Play or pause</string>
-
+	<string name="option_download_data">Download data</string>
 </resources>

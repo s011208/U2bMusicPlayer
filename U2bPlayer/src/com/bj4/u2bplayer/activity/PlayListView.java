@@ -8,7 +8,7 @@ import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.service.IPlayMusicService;
 import com.bj4.u2bplayer.service.PlayMusicService;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
-import com.yenhsun.u2bplayer.R;
+import com.bj4.u2bplayer.R;
 
 import android.content.Context;
 import android.media.AudioManager;
