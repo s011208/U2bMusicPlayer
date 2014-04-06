@@ -67,12 +67,19 @@ public class PlayScanner {
     private void insertU2bDB(ArrayList<ContentValues> listSource) {
         U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
         if (databaseHelper != null) {
-            Cursor c = databaseHelper.query(null, null);
+            
             databaseHelper.clearTableContent();
 
             // using bulk insert
             databaseHelper.insert(listSource, true);
+            dumpDbData();
+        }
+    }
 
+    private void dumpDbData() {
+        if (DEBUG) {
+            U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
+            Cursor c = databaseHelper.query(null, null);
             // print
             c = databaseHelper.query(null, null);
             if (c != null) {
@@ -81,7 +88,7 @@ public class PlayScanner {
                     String album = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
                     String music = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC));
                     String rank = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK));
-                    Log.e(TAG, "PRINT " + artist + ", " + album + ", " + music + ", " + rank);
+                    Log.d(TAG, "PRINT " + artist + ", " + album + ", " + music + ", " + rank);
                 }
                 c.close();
             }
