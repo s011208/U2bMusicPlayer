@@ -67,21 +67,48 @@ public class PlayScanner {
     private void insertU2bDB(ArrayList<ContentValues> listSource) {
         U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
         if (databaseHelper != null) {
-            
-            databaseHelper.clearTableContent();
-
-            // using bulk insert
-            databaseHelper.insert(listSource, true);
-            dumpDbData();
+            if(!isDataExsit(listSource)){
+             // using bulk insert
+                databaseHelper.insert(listSource, true);
+                dumpDbData();
+            }
         }
     }
-
+    
+    /**
+     * 資料是否已存在
+     * @param listSource
+     */
+    private boolean isDataExsit(ArrayList<ContentValues> listSource){
+        try {
+            U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
+            ContentValues contentSouce = listSource.get(0);
+            String COLUMN_ALBUM = contentSouce.getAsString(U2bDatabaseHelper.COLUMN_ALBUM);
+            String querySQL = "select *"
+                             + " from " + U2bDatabaseHelper.TABLE_MAIN_INFO 
+                            + " where " + U2bDatabaseHelper.COLUMN_ALBUM + " = '" + COLUMN_ALBUM + "'";
+            Cursor c = databaseHelper.query(querySQL);
+           
+            if(DEBUG){
+                Log.e(TAG, "querySQL:" + querySQL);
+                Log.e(TAG, "data count:"+String.valueOf(c.getCount()));
+            }
+            
+            if(c.getCount()>0) 
+                return true;
+            
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        
+        return false;
+    }
+    
     private void dumpDbData() {
         if (DEBUG) {
             U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
             Cursor c = databaseHelper.query(null, null);
             // print
-            c = databaseHelper.query(null, null);
             if (c != null) {
                 while (c.moveToNext()) {
                     String artist = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST));
