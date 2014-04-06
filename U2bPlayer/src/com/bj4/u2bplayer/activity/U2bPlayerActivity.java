@@ -25,16 +25,12 @@ import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
 import com.bj4.u2bplayer.scanner.PlayScanner;
 import com.bj4.u2bplayer.R;
 
-public class U2bPlayerActivity extends Activity {
+public class U2bPlayerActivity extends U2bPlayerBaseActivity {
     private static final String TAG = "QQQQ";
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
-    private ImageButton mOptionBtn;
-
     private RelativeLayout mMainLayout;
-
-    private PlayScanner mPlayScanner;
 
     /**
      * do not edit this method
@@ -73,57 +69,11 @@ public class U2bPlayerActivity extends Activity {
         initComponents();
     }
 
+    public void onResume() {
+        super.onResume();
+    }
+
     private void initComponents() {
-        mOptionBtn = (ImageButton)findViewById(R.id.menu);
-        mOptionBtn.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Display display = getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                int[] location1 = {
-                        0, 0
-                };
-                Rect r = new Rect();
-                v.getLocationInWindow(location1);
-                v.getLocalVisibleRect(r);
-                display.getSize(size);
-                int[] location = {
-                        size.x - location1[0] - r.width(), 2 * location1[1]
-                };
-                new MainActivityOptionDialog(U2bPlayerActivity.this,
-                        new MainActivityOptionDialog.MainActivityOptionDialogCallback() {
-
-                            @Override
-                            public void onSelected(int option) {
-                                switch (option) {
-                                    case MainActivityOptionDialog.ITEM_DOWNLOAD_DATA:
-                                        if (DEBUG) {
-                                            Log.d(TAG, "action bar -- sync pressed");
-                                        }
-                                        startToScan();
-                                        break;
-                                }
-                            }
-                        }, location).show(getFragmentManager(), "");
-            }
-        });
     }
 
-    private void startToScan() {
-        // scan list
-        getPlayScanner().scan();
-    }
-
-    /**
-     * lazy init
-     * 
-     * @return play scanner
-     */
-    private PlayScanner getPlayScanner() {
-        if (mPlayScanner == null) {
-            mPlayScanner = new PlayScanner();
-        }
-        return mPlayScanner;
-    }
 }
