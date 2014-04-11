@@ -11,7 +11,9 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -19,14 +21,24 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.bj4.u2bplayer.activity.fragments.*;
+
 public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private static final String TAG = "QQQQ";
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
+    public static final int FRAGMENT_TYPE_MAIN = 0;
+
+    public static final int FRAGMENT_TYPE_PLAYLIST = 1;
+
+    public static final int FRAGMENT_TYPE_MUSIC_DETAIL = 2;
+
     private RelativeLayout mMainLayout;
 
     private ImageButton mOptionBtn;
+
+    private Fragment mU2bPlayListFragment, mU2bMainFragment;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +46,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         initMainLayout();
         initComponents();
         initActionBarComponents();
+        switchFragment(FRAGMENT_TYPE_MAIN);
     }
 
     /**
@@ -67,6 +80,20 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     private void initComponents() {
+    }
+
+    private synchronized Fragment getMainFragment() {
+        if (mU2bMainFragment == null) {
+            mU2bMainFragment = new U2bMainFragment();
+        }
+        return mU2bMainFragment;
+    }
+
+    private synchronized Fragment getPlayListFragment() {
+        if (mU2bPlayListFragment == null) {
+            mU2bPlayListFragment = new U2bPlayListFragment();
+        }
+        return mU2bPlayListFragment;
     }
 
     public void initActionBarComponents() {
@@ -118,5 +145,29 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void startToScan() {
         // scan list
         PlayMusicApplication.getPlayScanner().scan();
+    }
+
+    public void switchFragment(final int type) {
+        Fragment target = null;
+
+        switch (type) {
+            case FRAGMENT_TYPE_MAIN:
+                target = getMainFragment();
+                break;
+            case FRAGMENT_TYPE_PLAYLIST:
+                target = getPlayListFragment();
+                break;
+            case FRAGMENT_TYPE_MUSIC_DETAIL:
+                break;
+        }
+        if (target != null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_fragment_container, target);
+            transaction.commitAllowingStateLoss();
+        } else {
+            if (DEBUG) {
+                Log.w(TAG, "wrong fragment type: " + type);
+            }
+        }
     }
 }
