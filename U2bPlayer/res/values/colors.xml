@@ -6,5 +6,9 @@
     <drawable name="play_list_selected">#000000</drawable>
 
     <color name="transparent">#00000000</color>
+    <color name="theme_blue_activity_bg">#ff99ccff</color>
+    <color name="theme_blue_action_bar_bg">#55666666</color>
+    <color name="theme_blue_play_list_light_bg">#ff33ccff</color>
+    <color name="theme_blue_play_list_dark_bg">#ff3300ff</color>
 
 </resources>

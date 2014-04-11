@@ -92,7 +92,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         window.setGravity(Gravity.TOP | Gravity.RIGHT);
         WindowManager.LayoutParams lp = window.getAttributes();
 
-        lp.windowAnimations = android.R.style.Animation_Translucent;
+        lp.windowAnimations = android.R.style.Animation_Toast;
         lp.x = mLocation[0];
         lp.y = mLocation[1];
         window.setAttributes(lp);
