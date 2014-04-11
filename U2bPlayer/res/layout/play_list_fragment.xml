@@ -1,0 +1,64 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/play_list_controll_panel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/play_list_fragment_control_panel_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <ViewSwitcher
+            android:id="@+id/play_list_play_or_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" >
+
+            <ImageView
+                android:id="@+id/play_list_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_play" />
+            <ImageView
+                android:id="@+id/play_list_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_pause" />
+        </ViewSwitcher>
+
+        <ImageView
+            android:id="@+id/play_list_play_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toRightOf="@+id/play_list_play_or_pause"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_next" />
+
+        <ImageView
+            android:id="@+id/play_list_play_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/play_list_play_or_pause"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_previous" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/play_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_below="@+id/play_list_controll_panel"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp" >
+    </ListView>
+
+</RelativeLayout>

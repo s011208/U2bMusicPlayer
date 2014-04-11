@@ -59,10 +59,15 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         initComponents();
         themeSwitcher();
         switchFragment(FRAGMENT_TYPE_MAIN);
+        // switchFragment(FRAGMENT_TYPE_PLAYLIST);
+    }
+
+    public int getApplicationTheme() {
+        return mPref.getInt(SHARE_PREF_KEY_THEME, THEME_BLUE);
     }
 
     private void themeSwitcher() {
-        final int theme = mPref.getInt(SHARE_PREF_KEY_THEME, THEME_BLUE);
+        final int theme = getApplicationTheme();
         if (DEBUG) {
             Log.d(TAG, "THEME: " + theme);
         }
