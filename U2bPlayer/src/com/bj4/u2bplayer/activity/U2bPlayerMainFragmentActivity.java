@@ -6,13 +6,19 @@ import java.lang.reflect.Method;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
+import com.bj4.u2bplayer.service.IPlayMusicService;
+import com.bj4.u2bplayer.service.PlayMusicService;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -52,6 +58,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private TextView mActionBarTitle;
 
     private SharedPreferences mPref;
+
+    private IPlayMusicService mService;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,4 +211,24 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             mActionBarTitle.setText(text);
         }
     }
+
+    public void onResume() {
+        super.onResume();
+        bindService(new Intent(this, PlayMusicService.class), mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void onPause() {
+        super.onPause();
+        unbindService(mConnection);
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = IPlayMusicService.Stub.asInterface(service);
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            mService = null;
+        }
+    };
 }

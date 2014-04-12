@@ -11,7 +11,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
         android:layout_marginRight="@dimen/action_bar_item_margin_right"
-        android:background="@drawable/general_blue_bg"
+        android:background="@drawable/action_bar_item_bg"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_menu" />
 
