@@ -8,6 +8,7 @@ import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
 import com.bj4.u2bplayer.service.IPlayMusicService;
+import com.bj4.u2bplayer.service.IPlayMusicServiceCallback;
 import com.bj4.u2bplayer.service.ISpiderService;
 import com.bj4.u2bplayer.service.PlayMusicService;
 import com.bj4.u2bplayer.service.SpiderService;
@@ -33,6 +34,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bj4.u2bplayer.activity.fragments.*;
 
@@ -63,7 +65,20 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private SharedPreferences mPref;
 
+    private int mCurrentFragment = 0;
+
     private IPlayMusicService mPlayMusicService;
+
+    private IPlayMusicServiceCallback mPlayMusicServiceCallback = new IPlayMusicServiceCallback.Stub() {
+
+        @Override
+        public void notiftPlayIndexChanged(int currentIndex) throws RemoteException {
+            if (DEBUG) {
+                Log.d(TAG, "index: " + currentIndex);
+            }
+            getPlayListFragment().changePlayIndex(currentIndex);
+        }
+    };
 
     private ISpiderService mSpiderService;
 
@@ -135,7 +150,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private void initComponents() {
         mPref = this.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
-        mPlayList = PlayList.getInstance();
+        mPlayList = PlayList.getInstance(this);
         mPlayList.retrieveAllPlayList();
         mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
         mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
@@ -145,18 +160,18 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         initActionBarComponents();
     }
 
-    private synchronized Fragment getMainFragment() {
+    private synchronized U2bMainFragment getMainFragment() {
         if (mU2bMainFragment == null) {
             mU2bMainFragment = new U2bMainFragment();
         }
-        return mU2bMainFragment;
+        return (U2bMainFragment)mU2bMainFragment;
     }
 
-    private synchronized Fragment getPlayListFragment() {
+    private synchronized U2bPlayListFragment getPlayListFragment() {
         if (mU2bPlayListFragment == null) {
             mU2bPlayListFragment = new U2bPlayListFragment();
         }
-        return mU2bPlayListFragment;
+        return (U2bPlayListFragment)mU2bPlayListFragment;
     }
 
     public void initActionBarComponents() {
@@ -223,6 +238,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 break;
         }
         if (target != null) {
+            mCurrentFragment = type;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.main_fragment_container, target);
             transaction.commitAllowingStateLoss();
@@ -268,10 +284,18 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private ServiceConnection mMusicPlayServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mPlayMusicService = IPlayMusicService.Stub.asInterface(service);
+            try {
+                mPlayMusicService.registerCallback(mPlayMusicServiceCallback);
+            } catch (RemoteException e) {
+            }
         }
 
         public void onServiceDisconnected(ComponentName className) {
             mPlayMusicService = null;
+            try {
+                mPlayMusicService.unRegisterCallback(mPlayMusicServiceCallback);
+            } catch (RemoteException e) {
+            }
         }
     };
 

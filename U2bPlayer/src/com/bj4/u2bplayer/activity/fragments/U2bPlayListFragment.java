@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 public class U2bPlayListFragment extends Fragment {
     public static final String TAG = "QQQQ";
@@ -39,6 +40,12 @@ public class U2bPlayListFragment extends Fragment {
 
     private U2bPlayerMainFragmentActivity mActivity;
 
+    private int mCurrentPlayIndex = -1;
+
+    private ImageView mPlay, mPause, mPlayNext, mPlayPrevious;
+
+    private ViewSwitcher mPlayOrPause;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +54,7 @@ public class U2bPlayListFragment extends Fragment {
     private void initComponents() {
         if (mContentView != null) {
             mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-            mPlayList = PlayList.getInstance();
+            mPlayList = PlayList.getInstance(mActivity);
             mLayoutInflater = LayoutInflater.from(mActivity);
             if (DEBUG) {
                 Log.d(TAG, "" + mPlayList.getPlayList().size());
@@ -66,6 +73,46 @@ public class U2bPlayListFragment extends Fragment {
                     mActivity.play(position);
                 }
             });
+            mPlay = (ImageView)mContentView.findViewById(R.id.play_list_play);
+            mPlay.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    if (mCurrentPlayIndex == -1) {
+                        mActivity.playNext();
+                    } else {
+                        mActivity.resumePlay();
+                        mPlayOrPause.setDisplayedChild(1);
+                    }
+
+                }
+            });
+            mPlayNext = (ImageView)mContentView.findViewById(R.id.play_list_play_next);
+            mPlayNext.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    mActivity.playNext();
+                }
+            });
+            mPlayPrevious = (ImageView)mContentView.findViewById(R.id.play_list_play_previous);
+            mPlayPrevious.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    mActivity.playPrevious();
+                }
+            });
+            mPause = (ImageView)mContentView.findViewById(R.id.play_list_pause);
+            mPause.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    mActivity.pause();
+                    mPlayOrPause.setDisplayedChild(0);
+                }
+            });
+            mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_list_play_or_pause);
             initTheme();
         }
     }
@@ -82,6 +129,11 @@ public class U2bPlayListFragment extends Fragment {
         mContentView = inflater.inflate(R.layout.play_list_fragment, container, false);
         initComponents();
         return mContentView;
+    }
+
+    public void changePlayIndex(int index) {
+        mCurrentPlayIndex = index;
+        mPlayListAdapter.notifyDataSetChanged();
     }
 
     private class PlayListAdapter extends BaseAdapter {
@@ -123,9 +175,14 @@ public class U2bPlayListFragment extends Fragment {
         private void initTheme(final View contentView, final int position) {
             int theme = mActivity.getApplicationTheme();
             if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
-                contentView
-                        .setBackgroundResource(position % 2 == 0 ? R.drawable.theme_blue_list_dark_oval_bg
-                                : R.drawable.theme_blue_list_light_oval_bg);
+                if (position == mCurrentPlayIndex) {
+                    contentView
+                            .setBackgroundResource(R.drawable.theme_blue_list_selected_item_oval_bg);
+                } else {
+                    contentView
+                            .setBackgroundResource(position % 2 == 0 ? R.drawable.theme_blue_list_dark_oval_bg
+                                    : R.drawable.theme_blue_list_light_oval_bg);
+                }
             }
         }
 

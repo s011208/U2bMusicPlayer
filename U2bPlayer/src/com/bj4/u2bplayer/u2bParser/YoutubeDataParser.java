@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -32,6 +33,12 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
     private static final String SOURCE_PREVIOUS = "https://gdata.youtube.com/feeds/api/videos?q=";
 
     private static final String SOURCE_LAST = "&max-results=1&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
+
+    private Context mContext;
+
+    public YoutubeDataParser(Context context) {
+        mContext = context.getApplicationContext();
+    }
 
     public interface YoutubeIdParserResultCallback {
         public void setResult(ArrayList<PlayListInfo> infoList);
@@ -147,7 +154,7 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                         @Override
                         public void setResult(ArrayList<PlayListInfo> infoList) {
                             databaseHelper.insert(infoList);
-                            PlayList.getInstance().notifyScanDone();
+                            PlayList.getInstance(mContext).notifyScanDone();
                         }
                     });
         }

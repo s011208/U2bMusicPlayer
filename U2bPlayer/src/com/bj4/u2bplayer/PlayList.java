@@ -9,10 +9,14 @@ import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Looper;
+import android.widget.Toast;
 
 public class PlayList {
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
+
+    private Context mContext;
 
     private final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication.getDataBaseHelper();
 
@@ -32,7 +36,8 @@ public class PlayList {
 
     private static PlayList mSingleton;
 
-    private PlayList() {
+    private PlayList(Context context) {
+        mContext = context.getApplicationContext();
         retrieveAllPlayList();
     }
 
@@ -40,6 +45,9 @@ public class PlayList {
         for (PlayListLoaderCallback c : mCallbacks) {
             c.loadDone();
         }
+        Looper.prepare();
+        Toast.makeText(mContext, "parse finish", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     public String getPlayListTitle() {
@@ -63,9 +71,9 @@ public class PlayList {
         return (ArrayList<PlayListInfo>)mPlayList.clone();
     }
 
-    public static synchronized PlayList getInstance() {
+    public static synchronized PlayList getInstance(Context context) {
         if (mSingleton == null) {
-            mSingleton = new PlayList();
+            mSingleton = new PlayList(context);
         }
         return mSingleton;
     }

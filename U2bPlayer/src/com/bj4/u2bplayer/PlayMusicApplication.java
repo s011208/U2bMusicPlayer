@@ -22,7 +22,7 @@ public class PlayMusicApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sDatabase = new U2bDatabaseHelper(this);
-        sU2bParser = new YoutubeDataParser();
+        sU2bParser = new YoutubeDataParser(this);
         sDatabase.addCallback(sU2bParser);
     }
 

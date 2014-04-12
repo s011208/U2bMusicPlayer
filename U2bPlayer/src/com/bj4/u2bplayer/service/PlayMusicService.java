@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
+
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -12,24 +13,32 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.IBinder;
+import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
 public class PlayMusicService extends Service implements PlayList.PlayListLoaderCallback {
     private static final boolean DEBUG = true;
+
     private static final String TAG = "QQQQ";
+
     private MediaPlayer mMediaPlayer;
+
     private PlayList mLoader;
+
     private ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
+
     private int mPlayPointer = 0;
+
     public static final int PLAY_NEXT_INDEX = -1;
+
     public static final int PLAY_PREVIOUS_INDEX = -2;
 
     public void onCreate() {
         super.onCreate();
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mLoader = PlayList.getInstance();
+        mLoader = PlayList.getInstance(this);
         mLoader.addCallback(this);
         mPlayList = mLoader.getPlayList();
     }
@@ -103,6 +112,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     playMusic(PLAY_NEXT_INDEX);
                 }
             });
+            notifyIndexChanged();
         } catch (Exception e) {
             if (DEBUG)
                 Log.w(TAG, "play failed", e);
@@ -140,7 +150,30 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         public boolean isPlaying() throws RemoteException {
             return mMediaPlayer != null && mMediaPlayer.isPlaying();
         }
+
+        @Override
+        public void registerCallback(IPlayMusicServiceCallback cb) throws RemoteException {
+            mCallbacks.register(cb);
+        }
+
+        @Override
+        public void unRegisterCallback(IPlayMusicServiceCallback cb) throws RemoteException {
+            mCallbacks.unregister(cb);
+        }
     };
+
+    final RemoteCallbackList<IPlayMusicServiceCallback> mCallbacks = new RemoteCallbackList<IPlayMusicServiceCallback>();
+
+    private void notifyIndexChanged() {
+        final int N = mCallbacks.beginBroadcast();
+        for (int i = 0; i < N; i++) {
+            try {
+                mCallbacks.getBroadcastItem(i).notiftPlayIndexChanged(mPlayPointer);
+            } catch (RemoteException e) {
+            }
+        }
+        mCallbacks.finishBroadcast();
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
