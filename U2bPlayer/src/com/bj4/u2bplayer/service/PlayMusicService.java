@@ -3,7 +3,7 @@ package com.bj4.u2bplayer.service;
 
 import java.util.ArrayList;
 
-import com.bj4.u2bplayer.PlayListLoader;
+import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 import android.app.Service;
 import android.content.Intent;
@@ -15,11 +15,11 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class PlayMusicService extends Service implements PlayListLoader.PlayListLoaderCallback {
+public class PlayMusicService extends Service implements PlayList.PlayListLoaderCallback {
     private static final boolean DEBUG = true;
     private static final String TAG = "QQQQ";
     private MediaPlayer mMediaPlayer;
-    private PlayListLoader mLoader;
+    private PlayList mLoader;
     private ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
     private int mPlayPointer = 0;
     public static final int PLAY_NEXT_INDEX = -1;
@@ -29,8 +29,7 @@ public class PlayMusicService extends Service implements PlayListLoader.PlayList
         super.onCreate();
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mLoader = PlayListLoader.getInstance();
-        mLoader.initPlayListContent();
+        mLoader = PlayList.getInstance();
         mLoader.addCallback(this);
         mPlayList = mLoader.getPlayList();
     }

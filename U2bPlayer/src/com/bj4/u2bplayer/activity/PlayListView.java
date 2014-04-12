@@ -3,7 +3,7 @@ package com.bj4.u2bplayer.activity;
 
 import java.util.ArrayList;
 
-import com.bj4.u2bplayer.PlayListLoader;
+import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.service.IPlayMusicService;
 import com.bj4.u2bplayer.service.PlayMusicService;
@@ -29,7 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-public class PlayListView extends RelativeLayout implements PlayListLoader.PlayListLoaderCallback {
+public class PlayListView extends RelativeLayout implements PlayList.PlayListLoaderCallback {
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
     private static final String TAG = "QQQQ";
@@ -47,7 +47,7 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
     private Handler mHandler = new Handler();
     private MediaPlayer mMediaPlayer;
     private IPlayMusicService mService;
-    private PlayListLoader mLoader;
+    private PlayList mLoader;
 
     public PlayListView(Context context) {
         this(context, null);
@@ -60,7 +60,7 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
     public PlayListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
-        mLoader = PlayListLoader.getInstance();
+        mLoader = PlayList.getInstance();
         mPlayList = mLoader.getPlayList();
     }
 
@@ -209,13 +209,13 @@ public class PlayListView extends RelativeLayout implements PlayListLoader.PlayL
             if (contentView == null) {
                 contentView = mLayoutInflater.inflate(R.layout.play_list_content, parent, false);
                 holder = new ViewHolder();
-                holder.mPlayTitle = (TextView) contentView
-                        .findViewById(R.id.playlist_content_playtitle);
+//                holder.mPlayTitle = (TextView) contentView
+//                        .findViewById(R.id.playlist_content_playtitle);
                 contentView.setTag(holder);
             } else {
                 holder = (ViewHolder) contentView.getTag();
             }
-            holder.mPlayTitle.setText(mPlayList.get(position).mMusicTitle);
+//            holder.mPlayTitle.setText(mPlayList.get(position).mMusicTitle);
             return contentView;
         }
 

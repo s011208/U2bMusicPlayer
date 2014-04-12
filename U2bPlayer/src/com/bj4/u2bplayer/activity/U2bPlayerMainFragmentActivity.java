@@ -58,8 +58,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         setContentView(R.layout.u2b_main_activity);
         initComponents();
         themeSwitcher();
-        switchFragment(FRAGMENT_TYPE_MAIN);
-        // switchFragment(FRAGMENT_TYPE_PLAYLIST);
+        // switchFragment(FRAGMENT_TYPE_MAIN);
+        switchFragment(FRAGMENT_TYPE_PLAYLIST);
     }
 
     public int getApplicationTheme() {

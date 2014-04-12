@@ -8,7 +8,9 @@
     <color name="transparent">#00000000</color>
     <color name="theme_blue_activity_bg">#ff99ccff</color>
     <color name="theme_blue_action_bar_bg">#55666666</color>
-    <color name="theme_blue_play_list_light_bg">#ff33ccff</color>
-    <color name="theme_blue_play_list_dark_bg">#ff3300ff</color>
+    <color name="theme_blue_play_list_light_bg_unpress">#ff33ccff</color>
+    <color name="theme_blue_play_list_dark_bg_unpress">#ff3300ff</color>
+    <color name="theme_blue_play_list_light_bg_press">#ff55ffff</color>
+    <color name="theme_blue_play_list_dark_bg_press">#ff5522ff</color>
 
 </resources>

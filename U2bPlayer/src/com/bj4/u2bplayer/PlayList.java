@@ -8,7 +8,7 @@ import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.content.Context;
 
-public class PlayListLoader {
+public class PlayList {
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
@@ -22,9 +22,10 @@ public class PlayListLoader {
 
     private final ArrayList<PlayListLoaderCallback> mCallbacks = new ArrayList<PlayListLoaderCallback>();
 
-    private static PlayListLoader mSingleton;
+    private static PlayList mSingleton;
 
-    private PlayListLoader() {
+    private PlayList() {
+        initDebugData();
     }
 
     public String getPlayListTitle() {
@@ -64,9 +65,9 @@ public class PlayListLoader {
         return (ArrayList<PlayListInfo>)mPlayList.clone();
     }
 
-    public static synchronized PlayListLoader getInstance() {
+    public static synchronized PlayList getInstance() {
         if (mSingleton == null) {
-            mSingleton = new PlayListLoader();
+            mSingleton = new PlayList();
         }
         return mSingleton;
     }
@@ -77,22 +78,5 @@ public class PlayListLoader {
 
     public void removeCallback(PlayListLoaderCallback c) {
         mCallbacks.remove(c);
-    }
-
-    public void initPlayListContent() {
-        if (DEBUG_PRELOAD_LIST)
-            initDebugData();
-        YoutubeDataParser.parseYoutubeData(mPlayList,
-                new YoutubeDataParser.YoutubeIdParserResultCallback() {
-
-                    @Override
-                    public void setResult(ArrayList<PlayListInfo> infoList) {
-                        if (mCallbacks.isEmpty() == false) {
-                            for (PlayListLoaderCallback c : mCallbacks) {
-                                c.loadDone();
-                            }
-                        }
-                    }
-                });
     }
 }
