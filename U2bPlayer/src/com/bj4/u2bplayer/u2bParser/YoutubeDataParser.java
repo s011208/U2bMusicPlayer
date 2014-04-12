@@ -1,6 +1,7 @@
 
 package com.bj4.u2bplayer.u2bParser;
 
+import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.database.*;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
@@ -146,6 +147,7 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                         @Override
                         public void setResult(ArrayList<PlayListInfo> infoList) {
                             databaseHelper.insert(infoList);
+                            PlayList.getInstance().notifyScanDone();
                         }
                     });
         }

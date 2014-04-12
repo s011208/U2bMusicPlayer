@@ -3,11 +3,14 @@ package com.bj4.u2bplayer.activity;
 
 import java.lang.reflect.Method;
 
+import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
 import com.bj4.u2bplayer.service.IPlayMusicService;
+import com.bj4.u2bplayer.service.ISpiderService;
 import com.bj4.u2bplayer.service.PlayMusicService;
+import com.bj4.u2bplayer.service.SpiderService;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -60,7 +63,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private SharedPreferences mPref;
 
-    private IPlayMusicService mService;
+    private IPlayMusicService mPlayMusicService;
+
+    private ISpiderService mSpiderService;
+
+    private PlayList mPlayList;
+
+    private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
+
+        @Override
+        public void loadDone() {
+            if (DEBUG) {
+                Log.i(TAG, "load done");
+            }
+        }
+    };
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,13 +127,16 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             int statusBarHeight = (int)getResources().getDimension(R.dimen.status_bar_height);
             int navigationBarHeight = hasNavigationBar ? (int)getResources().getDimension(
                     R.dimen.navigation_bar_height) : 0;
-            mMainLayout.setPadding(mMainLayout.getPaddingLeft(), statusBarHeight,
-                    mMainLayout.getPaddingRight(), navigationBarHeight);
+            // mMainLayout.setPadding(mMainLayout.getPaddingLeft(),
+            // statusBarHeight,
+            // mMainLayout.getPaddingRight(), navigationBarHeight);
         }
     }
 
     private void initComponents() {
         mPref = this.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
+        mPlayList = PlayList.getInstance();
+        mPlayList.retrieveAllPlayList();
         mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
         mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
         mOptionBtn = (ImageButton)findViewById(R.id.menu);
@@ -180,7 +200,13 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private void startToScan() {
         // scan list
-        PlayMusicApplication.getPlayScanner().scan();
+        try {
+            mSpiderService.startToParse();
+        } catch (RemoteException e) {
+            if (DEBUG) {
+                Log.w(TAG, "scan failed", e);
+            }
+        }
     }
 
     public void switchFragment(final int type) {
@@ -215,28 +241,44 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public void onResume() {
         super.onResume();
-        bindService(new Intent(this, PlayMusicService.class), mConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, PlayMusicService.class), mMusicPlayServiceConnection,
+                Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, SpiderService.class), mSpiderServiceConnection,
+                Context.BIND_AUTO_CREATE);
+        mPlayList.addCallback(mPlayListCallback);
     }
 
     public void onPause() {
         super.onPause();
-        unbindService(mConnection);
+        unbindService(mMusicPlayServiceConnection);
+        unbindService(mSpiderServiceConnection);
+        mPlayList.removeCallback(mPlayListCallback);
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private ServiceConnection mSpiderServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = IPlayMusicService.Stub.asInterface(service);
+            mSpiderService = ISpiderService.Stub.asInterface(service);
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            mService = null;
+            mSpiderService = null;
+        }
+    };
+
+    private ServiceConnection mMusicPlayServiceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mPlayMusicService = IPlayMusicService.Stub.asInterface(service);
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            mPlayMusicService = null;
         }
     };
 
     public void resumePlay() {
-        if (mService != null) {
+        if (mPlayMusicService != null) {
             try {
-                mService.resume();
+                mPlayMusicService.resume();
             } catch (RemoteException e) {
                 if (DEBUG) {
                     Log.w(TAG, "failed to play", e);
@@ -246,9 +288,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void playNext() {
-        if (mService != null) {
+        if (mPlayMusicService != null) {
             try {
-                mService.next();
+                mPlayMusicService.next();
             } catch (RemoteException e) {
                 if (DEBUG) {
                     Log.w(TAG, "failed to play", e);
@@ -258,9 +300,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void pause() {
-        if (mService != null) {
+        if (mPlayMusicService != null) {
             try {
-                mService.pause();
+                mPlayMusicService.pause();
             } catch (RemoteException e) {
                 if (DEBUG) {
                     Log.w(TAG, "failed to play", e);
@@ -270,9 +312,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void playPrevious() {
-        if (mService != null) {
+        if (mPlayMusicService != null) {
             try {
-                mService.previous();
+                mPlayMusicService.previous();
             } catch (RemoteException e) {
                 if (DEBUG) {
                     Log.w(TAG, "failed to play", e);
@@ -282,9 +324,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void play(int index) {
-        if (mService != null) {
+        if (mPlayMusicService != null) {
             try {
-                mService.play(index);
+                mPlayMusicService.play(index);
             } catch (RemoteException e) {
                 if (DEBUG) {
                     Log.w(TAG, "failed to play", e);

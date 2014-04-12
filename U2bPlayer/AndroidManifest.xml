@@ -36,6 +36,7 @@
         </activity>
 
         <service android:name="com.bj4.u2bplayer.service.PlayMusicService" />
+        <service android:name="com.bj4.u2bplayer.service.SpiderService" />
     </application>
 
 </manifest>

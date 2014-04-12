@@ -36,6 +36,12 @@ public class PlayList {
         retrieveAllPlayList();
     }
 
+    public void notifyScanDone() {
+        for (PlayListLoaderCallback c : mCallbacks) {
+            c.loadDone();
+        }
+    }
+
     public String getPlayListTitle() {
         if (mPlayList.isEmpty() == false) {
             PlayListInfo info = mPlayList.get(0);
