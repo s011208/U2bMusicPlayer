@@ -3,19 +3,27 @@ package com.bj4.u2bplayer;
 
 import java.util.ArrayList;
 
+import com.bj4.u2bplayer.database.U2bDatabaseHelper;
 import com.bj4.u2bplayer.u2bParser.YoutubeDataParser;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.content.Context;
+import android.database.Cursor;
 
 public class PlayList {
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
-    private static final boolean DEBUG_PRELOAD_LIST = true;
+    private final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication.getDataBaseHelper();
 
     public interface PlayListLoaderCallback {
         public void loadDone();
+    }
+
+    public void retrieveAllPlayList() {
+        mPlayList.clear();
+        Cursor data = mDatabaseHelper.query(null, null);
+        U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
     }
 
     private final ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
@@ -25,7 +33,7 @@ public class PlayList {
     private static PlayList mSingleton;
 
     private PlayList() {
-        initDebugData();
+        retrieveAllPlayList();
     }
 
     public String getPlayListTitle() {
@@ -42,22 +50,6 @@ public class PlayList {
             return rtn;
         }
         return "";
-    }
-
-    private void initDebugData() {
-        mPlayList.clear();
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "瘋狂世界", "", "", "", "", 0));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "擁抱", "", "", "", "", 1));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "透露", "", "", "", "", 2));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "生活", "", "", "", "", 3));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "愛情的模樣", "", "", "", "", 4));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "嘿我要走了", "", "", "", "", 5));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "軋車", "", "", "", "", 6));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "志明與春嬌", "", "", "", "", 7));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "Hosee", "", "", "", "", 8));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "黑白講", "", "", "", "", 9));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "I Love You 無望", "", "", "", "", 10));
-        mPlayList.add(new PlayListInfo("五月天", "瘋狂世界", "風若吹", "", "", "", "", 11));
     }
 
     @SuppressWarnings("unchecked")

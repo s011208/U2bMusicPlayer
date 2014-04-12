@@ -120,9 +120,9 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
 
     @Override
     public void notifyDataSetChanged() {
-        final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication.getDataBaseHelper();
+        final U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
         ArrayList<PlayListInfo> infoList = new ArrayList<PlayListInfo>();
-        Cursor data = mDatabaseHelper.queryDataForU2bParser();
+        Cursor data = databaseHelper.queryDataForU2bParser();
         if (DEBUG)
             Log.d(TAG, "data == null: " + (data == null));
         if (data != null) {
@@ -145,7 +145,7 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
 
                         @Override
                         public void setResult(ArrayList<PlayListInfo> infoList) {
-                            mDatabaseHelper.insert(infoList);
+                            databaseHelper.insert(infoList);
                         }
                     });
         }

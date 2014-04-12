@@ -10,7 +10,10 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -34,6 +37,8 @@ public class U2bPlayListFragment extends Fragment {
 
     private LayoutInflater mLayoutInflater;
 
+    private U2bPlayerMainFragmentActivity mActivity;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +46,9 @@ public class U2bPlayListFragment extends Fragment {
 
     private void initComponents() {
         if (mContentView != null) {
+            mActivity = (U2bPlayerMainFragmentActivity)getActivity();
             mPlayList = PlayList.getInstance();
-            mLayoutInflater = LayoutInflater.from(getActivity());
+            mLayoutInflater = LayoutInflater.from(mActivity);
             if (DEBUG) {
                 Log.d(TAG, "" + mPlayList.getPlayList().size());
             }
@@ -52,13 +58,20 @@ public class U2bPlayListFragment extends Fragment {
             mPlayListAdapter = new PlayListAdapter();
             mPlayListView.setSelector(R.color.transparent);
             mPlayListView.setAdapter(mPlayListAdapter);
+            mPlayListView.setOnItemClickListener(new OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+                    v.setHapticFeedbackEnabled(true);
+                    mActivity.play(position);
+                }
+            });
             initTheme();
         }
     }
 
     private void initTheme() {
-        U2bPlayerMainFragmentActivity activity = (U2bPlayerMainFragmentActivity)getActivity();
-        int theme = activity.getApplicationTheme();
+        int theme = mActivity.getApplicationTheme();
         if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
             mControllPanel.setBackgroundResource(R.color.theme_blue_action_bar_bg);
         }
@@ -108,8 +121,7 @@ public class U2bPlayListFragment extends Fragment {
         }
 
         private void initTheme(final View contentView, final int position) {
-            U2bPlayerMainFragmentActivity activity = (U2bPlayerMainFragmentActivity)getActivity();
-            int theme = activity.getApplicationTheme();
+            int theme = mActivity.getApplicationTheme();
             if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
                 contentView
                         .setBackgroundResource(position % 2 == 0 ? R.drawable.theme_blue_list_dark_oval_bg

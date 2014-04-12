@@ -19,6 +19,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -231,4 +232,64 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             mService = null;
         }
     };
+
+    public void resumePlay() {
+        if (mService != null) {
+            try {
+                mService.resume();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+    }
+
+    public void playNext() {
+        if (mService != null) {
+            try {
+                mService.next();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+    }
+
+    public void pause() {
+        if (mService != null) {
+            try {
+                mService.pause();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+    }
+
+    public void playPrevious() {
+        if (mService != null) {
+            try {
+                mService.previous();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+    }
+
+    public void play(int index) {
+        if (mService != null) {
+            try {
+                mService.play(index);
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+    }
 }

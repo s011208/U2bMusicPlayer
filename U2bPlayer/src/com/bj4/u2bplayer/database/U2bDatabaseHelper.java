@@ -178,7 +178,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    private void convertFromCursorToPlayList(Cursor c, ArrayList<PlayListInfo> playList) {
+    public static void convertFromCursorToPlayList(Cursor c, ArrayList<PlayListInfo> playList) {
         if (c != null && playList != null) {
             int iArtist = c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST);
             int iAlbum = c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM);
