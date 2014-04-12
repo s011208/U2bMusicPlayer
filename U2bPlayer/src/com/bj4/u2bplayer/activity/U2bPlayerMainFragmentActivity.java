@@ -299,6 +299,19 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     };
 
+    public int playFromLastTime() {
+        if (mPlayMusicService != null) {
+            try {
+                return mPlayMusicService.playFromLastTime();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+        return -1;
+    }
+
     public void resumePlay() {
         if (mPlayMusicService != null) {
             try {

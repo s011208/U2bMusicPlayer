@@ -2,6 +2,7 @@ package com.bj4.u2bplayer.service;
 import com.bj4.u2bplayer.service.IPlayMusicServiceCallback;
 interface IPlayMusicService{
 void play(int index);
+int playFromLastTime();
 void next();
 void previous();
 void pause();

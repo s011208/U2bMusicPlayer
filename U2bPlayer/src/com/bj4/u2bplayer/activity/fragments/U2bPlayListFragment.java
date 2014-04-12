@@ -79,12 +79,14 @@ public class U2bPlayListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (mCurrentPlayIndex == -1) {
-                        mActivity.playNext();
+                        int index = mActivity.playFromLastTime();
+                        if (index != -1) {
+                            mPlayListView.smoothScrollToPosition(index);
+                        }
                     } else {
                         mActivity.resumePlay();
-                        mPlayOrPause.setDisplayedChild(1);
                     }
-
+                    mPlayOrPause.setDisplayedChild(1);
                 }
             });
             mPlayNext = (ImageView)mContentView.findViewById(R.id.play_list_play_next);

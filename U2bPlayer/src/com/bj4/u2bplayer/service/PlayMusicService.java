@@ -7,7 +7,9 @@ import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -22,6 +24,10 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     private static final String TAG = "PlayMusicService";
 
+    public static final int PLAY_NEXT_INDEX = -1;
+
+    public static final int PLAY_PREVIOUS_INDEX = -2;
+
     private MediaPlayer mMediaPlayer;
 
     private PlayList mLoader;
@@ -30,12 +36,15 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     private int mPlayPointer = 0;
 
-    public static final int PLAY_NEXT_INDEX = -1;
+    private SharedPreferences mPref;
 
-    public static final int PLAY_PREVIOUS_INDEX = -2;
+    private static final String SHARE_PREF_KEY = "play_music_service_config";
+
+    private static final String SHARE_PREF_KEY_LAST_TIME_INDEX = "last_time_index";
 
     public void onCreate() {
         super.onCreate();
+        mPref = this.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mLoader = PlayList.getInstance(this);
@@ -113,6 +122,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                 }
             });
             notifyIndexChanged();
+            mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, mPlayPointer).apply();
         } catch (Exception e) {
             if (DEBUG)
                 Log.w(TAG, "play failed", e);
@@ -159,6 +169,13 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         @Override
         public void unRegisterCallback(IPlayMusicServiceCallback cb) throws RemoteException {
             mCallbacks.unregister(cb);
+        }
+
+        @Override
+        public int playFromLastTime() throws RemoteException {
+            int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
+            playMusic(index);
+            return index;
         }
     };
 
