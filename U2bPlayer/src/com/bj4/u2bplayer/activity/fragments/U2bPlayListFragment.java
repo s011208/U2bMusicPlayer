@@ -22,7 +22,7 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 public class U2bPlayListFragment extends Fragment {
-    public static final String TAG = "QQQQ";
+    public static final String TAG = "U2bPlayListFragment";
 
     public static final boolean DEBUG = true;
 

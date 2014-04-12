@@ -15,11 +15,11 @@ import android.widget.Toast;
 
 public class SpiderService extends Service {
 
-    private static final String TAG = "QQQQ";
+    private static final String TAG = "SpiderService";
 
     private static final boolean DEBUG = true;
 
-    private static final HandlerThread sWorkerThread = new HandlerThread("PageGallery-loader");
+    private static final HandlerThread sWorkerThread = new HandlerThread("SpiderService-scanner");
     static {
         sWorkerThread.start();
     }

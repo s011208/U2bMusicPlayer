@@ -39,7 +39,7 @@ import android.widget.Toast;
 import com.bj4.u2bplayer.activity.fragments.*;
 
 public class U2bPlayerMainFragmentActivity extends FragmentActivity {
-    private static final String TAG = "QQQQ";
+    private static final String TAG = "U2bPlayerMainFragmentActivity";
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 

@@ -20,7 +20,7 @@ import android.util.Log;
 public class PlayMusicService extends Service implements PlayList.PlayListLoaderCallback {
     private static final boolean DEBUG = true;
 
-    private static final String TAG = "QQQQ";
+    private static final String TAG = "PlayMusicService";
 
     private MediaPlayer mMediaPlayer;
 

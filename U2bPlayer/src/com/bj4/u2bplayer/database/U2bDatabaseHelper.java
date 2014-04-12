@@ -18,7 +18,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
-    private static final String TAG = "QQQQ";
+    private static final String TAG = "U2bDatabaseHelper";
 
     private static final String DATABASE_NAME = "u2b_data.db";
 

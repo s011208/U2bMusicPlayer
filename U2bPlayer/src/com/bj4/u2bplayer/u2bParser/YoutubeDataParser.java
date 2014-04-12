@@ -26,7 +26,7 @@ import android.util.Log;
 public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallback {
     // https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters
     // https://gdata.youtube.com/feeds/api/videos?q=五月天+入陣曲&max-results=5&alt=json&orderby=viewCount&format=6&fields=entry(id,media:group(media:content(@url,@duration)))
-    private static final String TAG = "QQQQ";
+    private static final String TAG = "YoutubeDataParser";
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
