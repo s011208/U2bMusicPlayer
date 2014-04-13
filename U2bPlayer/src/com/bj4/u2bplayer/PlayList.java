@@ -8,6 +8,7 @@ import com.bj4.u2bplayer.u2bParser.YoutubeDataParser;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Looper;
 import android.widget.Toast;
@@ -19,6 +20,17 @@ public class PlayList {
     private Context mContext;
 
     private final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication.getDataBaseHelper();
+
+    private int mPointer = 0;
+
+    public int getPointer() {
+        return mPointer;
+    }
+
+    public void setPointer(final int pointer) {
+        mPointer = pointer;
+        mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, pointer).apply();
+    }
 
     public interface PlayListLoaderCallback {
         public void loadDone();
@@ -36,8 +48,16 @@ public class PlayList {
 
     private static PlayList mSingleton;
 
+    private SharedPreferences mPref;
+
+    private static final String SHARE_PREF_KEY = "play_list_config";
+
+    private static final String SHARE_PREF_KEY_LAST_TIME_INDEX = "last_time_index";
+
     private PlayList(Context context) {
         mContext = context.getApplicationContext();
+        mPref = mContext.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
+        mPointer = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
         retrieveAllPlayList();
     }
 

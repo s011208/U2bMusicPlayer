@@ -72,11 +72,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private IPlayMusicServiceCallback mPlayMusicServiceCallback = new IPlayMusicServiceCallback.Stub() {
 
         @Override
-        public void notiftPlayIndexChanged(int currentIndex) throws RemoteException {
-            if (DEBUG) {
-                Log.d(TAG, "index: " + currentIndex);
-            }
-            getPlayListFragment().changePlayIndex(currentIndex);
+        public void notiftPlayIndexChanged() throws RemoteException {
+            getPlayListFragment().changePlayIndex();
         }
     };
 

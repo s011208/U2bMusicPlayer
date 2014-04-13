@@ -30,31 +30,22 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     private MediaPlayer mMediaPlayer;
 
-    private PlayList mLoader;
+    private PlayList mPlayList;
 
-    private ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
-
-    private int mPlayPointer = 0;
-
-    private SharedPreferences mPref;
-
-    private static final String SHARE_PREF_KEY = "play_music_service_config";
-
-    private static final String SHARE_PREF_KEY_LAST_TIME_INDEX = "last_time_index";
+    private ArrayList<PlayListInfo> mPlayListContent = new ArrayList<PlayListInfo>();
 
     public void onCreate() {
         super.onCreate();
-        mPref = this.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mLoader = PlayList.getInstance(this);
-        mLoader.addCallback(this);
-        mPlayList = mLoader.getPlayList();
+        mPlayList = PlayList.getInstance(this);
+        mPlayList.addCallback(this);
+        mPlayListContent = mPlayList.getPlayList();
     }
 
     public void onDestroy() {
         super.onDestroy();
-        mLoader.removeCallback(this);
+        mPlayList.removeCallback(this);
     }
 
     private void pauseMusic() {
@@ -74,34 +65,35 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void playMusic(int index) {
+        int pointer = mPlayList.getPointer();
         if (DEBUG)
             Log.d(TAG, "play: " + index);
         if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
         }
         mMediaPlayer.reset();
-        if (mPlayList.isEmpty())
+        if (mPlayListContent.isEmpty())
             return;
         if (index == PLAY_NEXT_INDEX) {
-            if (mPlayPointer >= mPlayList.size()) {
-                mPlayPointer = 0;
+            if (pointer >= mPlayListContent.size()) {
+                pointer = 0;
             } else {
-                ++mPlayPointer;
+                ++pointer;
             }
         } else if (index == PLAY_PREVIOUS_INDEX) {
-            if (mPlayPointer < 0) {
-                mPlayPointer = mPlayList.size() - 1;
+            if (pointer < 0) {
+                pointer = mPlayListContent.size() - 1;
             } else {
-                --mPlayPointer;
+                --pointer;
             }
         } else {
-            mPlayPointer = index;
-            if (mPlayPointer >= mPlayList.size()) {
-                mPlayPointer = 0;
+            pointer = index;
+            if (pointer >= mPlayListContent.size()) {
+                pointer = 0;
             }
         }
         try {
-            mMediaPlayer.setDataSource(mPlayList.get(mPlayPointer).mRtspHighQuility);
+            mMediaPlayer.setDataSource(mPlayListContent.get(pointer).mRtspHighQuility);
             mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
 
                 @Override
@@ -122,7 +114,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                 }
             });
             notifyIndexChanged();
-            mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, mPlayPointer).apply();
+            mPlayList.setPointer(pointer);
         } catch (Exception e) {
             if (DEBUG)
                 Log.w(TAG, "play failed", e);
@@ -173,9 +165,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public int playFromLastTime() throws RemoteException {
-            int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
-            playMusic(index);
-            return index;
+            playMusic(mPlayList.getPointer());
+            return mPlayList.getPointer();
         }
     };
 
@@ -185,7 +176,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         final int N = mCallbacks.beginBroadcast();
         for (int i = 0; i < N; i++) {
             try {
-                mCallbacks.getBroadcastItem(i).notiftPlayIndexChanged(mPlayPointer);
+                mCallbacks.getBroadcastItem(i).notiftPlayIndexChanged();
             } catch (RemoteException e) {
             }
         }
@@ -199,7 +190,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     @Override
     public void loadDone() {
-        mPlayList = mLoader.getPlayList();
+        mPlayListContent = mPlayList.getPlayList();
     }
 
 }

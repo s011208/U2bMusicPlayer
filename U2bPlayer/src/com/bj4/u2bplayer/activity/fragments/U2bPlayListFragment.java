@@ -40,8 +40,6 @@ public class U2bPlayListFragment extends Fragment {
 
     private U2bPlayerMainFragmentActivity mActivity;
 
-    private int mCurrentPlayIndex = -1;
-
     private ImageView mPlay, mPause, mPlayNext, mPlayPrevious;
 
     private ViewSwitcher mPlayOrPause;
@@ -78,7 +76,7 @@ public class U2bPlayListFragment extends Fragment {
 
                 @Override
                 public void onClick(View v) {
-                    if (mCurrentPlayIndex == -1) {
+                    if (mPlayList.getPointer() == -1) {
                         int index = mActivity.playFromLastTime();
                         if (index != -1) {
                             mPlayListView.smoothScrollToPosition(index);
@@ -133,8 +131,7 @@ public class U2bPlayListFragment extends Fragment {
         return mContentView;
     }
 
-    public void changePlayIndex(int index) {
-        mCurrentPlayIndex = index;
+    public void changePlayIndex() {
         mPlayListAdapter.notifyDataSetChanged();
     }
 
@@ -177,7 +174,7 @@ public class U2bPlayListFragment extends Fragment {
         private void initTheme(final View contentView, final int position) {
             int theme = mActivity.getApplicationTheme();
             if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
-                if (position == mCurrentPlayIndex) {
+                if (position == mPlayList.getPointer()) {
                     contentView
                             .setBackgroundResource(R.drawable.theme_blue_list_selected_item_oval_bg);
                 } else {
