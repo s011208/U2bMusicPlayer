@@ -16,7 +16,7 @@ import android.util.Log;
 
 public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
+    private static final boolean DEBUG = false && PlayMusicApplication.OVERALL_DEBUG;
 
     private static final String TAG = "U2bDatabaseHelper";
 

@@ -40,7 +40,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     public void onCreate() {
         super.onCreate();
-        Log.e(TAG, "service oncreate");
+        if (DEBUG)
+            Log.d(TAG, "service oncreate");
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mPlayList = PlayList.getInstance(this);
@@ -58,20 +59,21 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                 U2bPlayerMainFragmentActivity.class), 0);
 
         // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, "playing music", "playing music",
-                contentIntent);
+        notification.setLatestEventInfo(this, "playing music", "playing music", contentIntent);
         return notification;
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        Log.e(TAG, "onStartCommand");
+        if (DEBUG)
+            Log.d(TAG, "onStartCommand");
         return Service.START_STICKY;
     }
 
     public void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "onDestroy");
+        if (DEBUG)
+            Log.d(TAG, "onDestroy");
         mPlayList.removeCallback(this);
         mMediaPlayer.release();
     }
