@@ -59,7 +59,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private ImageButton mOptionBtn;
 
-    private Fragment mU2bPlayListFragment, mU2bMainFragment;
+    private Fragment mU2bPlayListFragment, mU2bMainFragment, mU2bPlayInfoFragment;
 
     private TextView mActionBarTitle;
 
@@ -177,6 +177,13 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         return (U2bPlayListFragment)mU2bPlayListFragment;
     }
 
+    private synchronized U2bPlayInfoFragment getPlayInfoFragment() {
+        if (mU2bPlayInfoFragment == null) {
+            mU2bPlayInfoFragment = new U2bPlayInfoFragment();
+        }
+        return (U2bPlayInfoFragment)mU2bPlayInfoFragment;
+    }
+
     public void initActionBarComponents() {
 
         mOptionBtn.setOnClickListener(new OnClickListener() {
@@ -238,6 +245,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 target = getPlayListFragment();
                 break;
             case FRAGMENT_TYPE_MUSIC_DETAIL:
+                target = getPlayInfoFragment();
                 break;
         }
         if (target != null) {
