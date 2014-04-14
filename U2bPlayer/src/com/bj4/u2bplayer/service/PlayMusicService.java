@@ -4,8 +4,12 @@ package com.bj4.u2bplayer.service;
 import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayList;
+import com.bj4.u2bplayer.R;
+import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -36,16 +40,40 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     public void onCreate() {
         super.onCreate();
+        Log.e(TAG, "service oncreate");
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(this);
         mPlayListContent = mPlayList.getPlayList();
+        startForeground(PlayMusicService.class.hashCode(), getNotification());
+    }
+
+    private Notification getNotification() {
+        Notification notification = new Notification();
+        notification.icon = R.drawable.ic_launcher;
+        notification.tickerText = "playing music";
+        notification.defaults = Notification.DEFAULT_ALL;
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
+                U2bPlayerMainFragmentActivity.class), 0);
+
+        // Set the info for the views that show in the notification panel.
+        notification.setLatestEventInfo(this, "playing music", "playing music",
+                contentIntent);
+        return notification;
+    }
+
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        Log.e(TAG, "onStartCommand");
+        return Service.START_STICKY;
     }
 
     public void onDestroy() {
         super.onDestroy();
+        Log.e(TAG, "onDestroy");
         mPlayList.removeCallback(this);
+        mMediaPlayer.release();
     }
 
     private void pauseMusic() {

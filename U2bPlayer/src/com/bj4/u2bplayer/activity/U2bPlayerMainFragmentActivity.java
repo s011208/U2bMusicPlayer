@@ -98,6 +98,11 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         themeSwitcher();
         // switchFragment(FRAGMENT_TYPE_MAIN);
         switchFragment(FRAGMENT_TYPE_PLAYLIST);
+        startService(new Intent(this, PlayMusicService.class));
+        bindService(new Intent(this, PlayMusicService.class), mMusicPlayServiceConnection,
+                Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, SpiderService.class), mSpiderServiceConnection,
+                Context.BIND_AUTO_CREATE);
     }
 
     public int getApplicationTheme() {
@@ -149,6 +154,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         mPref = this.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mPlayList = PlayList.getInstance(this);
         mPlayList.retrieveAllPlayList();
+        mPlayList.addCallback(mPlayListCallback);
         mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
         mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
         mOptionBtn = (ImageButton)findViewById(R.id.menu);
@@ -254,15 +260,14 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public void onResume() {
         super.onResume();
-        bindService(new Intent(this, PlayMusicService.class), mMusicPlayServiceConnection,
-                Context.BIND_AUTO_CREATE);
-        bindService(new Intent(this, SpiderService.class), mSpiderServiceConnection,
-                Context.BIND_AUTO_CREATE);
-        mPlayList.addCallback(mPlayListCallback);
     }
 
     public void onPause() {
         super.onPause();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
         unbindService(mMusicPlayServiceConnection);
         unbindService(mSpiderServiceConnection);
         mPlayList.removeCallback(mPlayListCallback);
@@ -283,6 +288,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             mPlayMusicService = IPlayMusicService.Stub.asInterface(service);
             try {
                 mPlayMusicService.registerCallback(mPlayMusicServiceCallback);
+                getPlayListFragment().setPlayOrPause(mPlayMusicService.isPlaying());
             } catch (RemoteException e) {
             }
         }
@@ -295,6 +301,19 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             }
         }
     };
+
+    public boolean isPlaying() {
+        if (mPlayMusicService != null) {
+            try {
+                return mPlayMusicService.isPlaying();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+        return false;
+    }
 
     public int playFromLastTime() {
         if (mPlayMusicService != null) {

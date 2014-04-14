@@ -117,6 +117,12 @@ public class U2bPlayListFragment extends Fragment {
         }
     }
 
+    public void setPlayOrPause(boolean isPlaying) {
+        if (mPlayOrPause != null) {
+            mPlayOrPause.setDisplayedChild(isPlaying ? 1 : 0);
+        }
+    }
+
     private void initTheme() {
         int theme = mActivity.getApplicationTheme();
         if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
