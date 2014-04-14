@@ -387,4 +387,20 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             }
         }
     }
+
+    public void onBackPressed() {
+        switch (mCurrentFragment) {
+            case FRAGMENT_TYPE_MAIN:
+                super.onBackPressed();
+                break;
+            case FRAGMENT_TYPE_PLAYLIST:
+                switchFragment(FRAGMENT_TYPE_MAIN);
+                break;
+            case FRAGMENT_TYPE_MUSIC_DETAIL:
+                switchFragment(FRAGMENT_TYPE_PLAYLIST);
+                break;
+            default:
+                super.onBackPressed();
+        }
+    }
 }
