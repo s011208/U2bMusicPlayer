@@ -70,7 +70,8 @@ public class U2bPlayListFragment extends Fragment {
                 public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
                     v.setHapticFeedbackEnabled(true);
                     mActivity.play(position);
-                    mActivity.switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_DETAIL);
+                    mActivity
+                            .switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_DETAIL);
                 }
             });
             mPlay = (ImageView)mContentView.findViewById(R.id.play_list_play);
@@ -115,8 +116,12 @@ public class U2bPlayListFragment extends Fragment {
                 }
             });
             mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_list_play_or_pause);
-            initTheme();
         }
+    }
+
+    public void onStart() {
+        super.onStart();
+        initTheme();
     }
 
     public void setPlayOrPause(boolean isPlaying) {

@@ -8,6 +8,7 @@ import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +32,20 @@ public class U2bPlayInfoFragment extends Fragment {
     private PlayList mPlayList;
 
     private U2bPlayerMainFragmentActivity mActivity;
-    
+
     private ViewSwitcher mMainContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    public void onStart() {
+        super.onStart();
+        PlayListInfo info = mPlayList.getPlayList().get(mPlayList.getPointer());
+        mPlayInfo.setText("info artist: " + info.mArtist + "\nalbum: " + info.mAlbumTitle
+                + "\nmusic: " + info.mMusicTitle);
+        initTheme();
     }
 
     private void initComponents() {
@@ -46,10 +55,6 @@ public class U2bPlayInfoFragment extends Fragment {
         mBottomPanel = (RelativeLayout)mContentView.findViewById(R.id.play_info_bottom_panel);
         mPlayInfo = (TextView)mContentView.findViewById(R.id.play_info_playing_info);
         mMainContainer = (ViewSwitcher)mContentView.findViewById(R.id.play_info_main_container);
-        PlayListInfo info = mPlayList.getPlayList().get(mPlayList.getPointer());
-        mPlayInfo.setText("info artist: " + info.mArtist + "\nalbum: " + info.mAlbumTitle
-                + "\nmusic: " + info.mMusicTitle);
-        initTheme();
     }
 
     private void initTheme() {

@@ -14,5 +14,6 @@
     <color name="theme_blue_play_list_dark_bg_press">#ff00b5e9</color>
     <color name="theme_blue_play_list_selected_item">#fff34e9a</color>
     <color name="theme_blue_play_info_main_container_bg">#99ffffff</color>
+    <color name="theme_blue_play_info_bottom_controller_bg">@color/theme_blue_action_bar_bg</color>
 
 </resources>
