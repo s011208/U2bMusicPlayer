@@ -65,7 +65,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private SharedPreferences mPref;
 
-    private int mCurrentFragment = 0;
+    private static int sCurrentFragment = -1;
 
     private IPlayMusicService mPlayMusicService;
 
@@ -96,8 +96,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         setContentView(R.layout.u2b_main_activity);
         initComponents();
         themeSwitcher();
-        // switchFragment(FRAGMENT_TYPE_MAIN);
-        switchFragment(FRAGMENT_TYPE_PLAYLIST);
+        switchFragment(sCurrentFragment);
         startService(new Intent(this, PlayMusicService.class));
         bindService(new Intent(this, PlayMusicService.class), mMusicPlayServiceConnection,
                 Context.BIND_AUTO_CREATE);
@@ -247,9 +246,12 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             case FRAGMENT_TYPE_MUSIC_DETAIL:
                 target = getPlayInfoFragment();
                 break;
+            default:
+                target = getPlayListFragment();
+                break;
         }
         if (target != null) {
-            mCurrentFragment = type;
+            sCurrentFragment = type;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.main_fragment_container, target);
             transaction.commitAllowingStateLoss();
@@ -397,8 +399,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void onBackPressed() {
-        switch (mCurrentFragment) {
+        switch (sCurrentFragment) {
             case FRAGMENT_TYPE_MAIN:
+                sCurrentFragment = -1;
                 super.onBackPressed();
                 break;
             case FRAGMENT_TYPE_PLAYLIST:
@@ -408,6 +411,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 switchFragment(FRAGMENT_TYPE_PLAYLIST);
                 break;
             default:
+                sCurrentFragment = -1;
                 super.onBackPressed();
         }
     }

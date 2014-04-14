@@ -63,12 +63,14 @@ public class U2bPlayListFragment extends Fragment {
             mPlayListAdapter = new PlayListAdapter();
             mPlayListView.setSelector(R.color.transparent);
             mPlayListView.setAdapter(mPlayListAdapter);
+            mPlayListView.setSelection(mPlayList.getPointer());
             mPlayListView.setOnItemClickListener(new OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
                     v.setHapticFeedbackEnabled(true);
                     mActivity.play(position);
+                    mActivity.switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_DETAIL);
                 }
             });
             mPlay = (ImageView)mContentView.findViewById(R.id.play_list_play);
