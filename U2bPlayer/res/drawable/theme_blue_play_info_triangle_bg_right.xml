@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item>
+        <rotate
+            android:fromDegrees="45"
+            android:pivotX="0%"
+            android:pivotY="100%"
+            android:toDegrees="45" >
+            <shape android:shape="rectangle" >
+                <solid android:color="@color/theme_blue_play_info_bottom_controller_bg" />
+            </shape>
+        </rotate>
+    </item>
+
+</layer-list>

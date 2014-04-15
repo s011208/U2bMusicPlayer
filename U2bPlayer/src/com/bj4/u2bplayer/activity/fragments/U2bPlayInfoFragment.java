@@ -35,6 +35,8 @@ public class U2bPlayInfoFragment extends Fragment {
 
     private ViewSwitcher mMainContainer;
 
+    private RotatedControlPanel mControlPanel;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +45,10 @@ public class U2bPlayInfoFragment extends Fragment {
     public void onStart() {
         super.onStart();
         PlayListInfo info = mPlayList.getPlayList().get(mPlayList.getPointer());
-        mPlayInfo.setText("info artist: " + info.mArtist + "\nalbum: " + info.mAlbumTitle
-                + "\nmusic: " + info.mMusicTitle);
+        if (info != null) {
+            mPlayInfo.setText("info artist: " + info.mArtist + "\nalbum: " + info.mAlbumTitle
+                    + "\nmusic: " + info.mMusicTitle);
+        }
         initTheme();
     }
 
@@ -55,6 +59,8 @@ public class U2bPlayInfoFragment extends Fragment {
         mBottomPanel = (RelativeLayout)mContentView.findViewById(R.id.play_info_bottom_panel);
         mPlayInfo = (TextView)mContentView.findViewById(R.id.play_info_playing_info);
         mMainContainer = (ViewSwitcher)mContentView.findViewById(R.id.play_info_main_container);
+        mControlPanel = (RotatedControlPanel)mContentView
+                .findViewById(R.id.play_info_control_panel);
     }
 
     private void initTheme() {
@@ -62,6 +68,7 @@ public class U2bPlayInfoFragment extends Fragment {
         if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
             mMainContainer.setBackgroundResource(R.color.theme_blue_play_info_main_container_bg);
         }
+        mControlPanel.setTheme(theme);
     }
 
     @Override

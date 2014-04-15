@@ -32,4 +32,67 @@
         </LinearLayout>
     </ViewSwitcher>
 
+    <com.bj4.u2bplayer.activity.fragments.RotatedControlPanel
+        android:id="@+id/play_info_control_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <SeekBar
+            android:layout_width="@dimen/play_info_fragment_control_panel_seekbar_width"
+            android:layout_height="@dimen/play_info_fragment_control_panel_seekbar_height"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/play_info_fragment_control_panel_seekbar_margin_bottom"
+            android:layout_marginRight="@dimen/play_info_fragment_control_panel_seekbar_margin_left"
+            android:rotation="315"/>
+
+        <ImageView
+            android:id="@+id/play_info_play_previous"
+            android:layout_width="@dimen/play_list_fragment_control_panel_second_btn_size"
+            android:layout_height="@dimen/play_list_fragment_control_panel_second_btn_size"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/play_list_fragment_control_panel_item_margin_vertical"
+            android:layout_marginRight="@dimen/play_info_fragment_control_panel_play_previous_margin_horizontal"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_previous" />
+
+        <ViewSwitcher
+            android:id="@+id/play_info_play_or_pause"
+            android:layout_width="@dimen/play_list_fragment_control_panel_main_btn_size"
+            android:layout_height="@dimen/play_list_fragment_control_panel_main_btn_size"
+            android:layout_above="@+id/play_info_play_previous"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/play_list_fragment_control_panel_item_margin_vertical"
+            android:layout_marginRight="@dimen/play_info_fragment_control_panel_play_margin_horizontal" >
+
+            <ImageView
+                android:id="@+id/play_info_play"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_play" />
+
+            <ImageView
+                android:id="@+id/play_info_pause"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_pause" />
+        </ViewSwitcher>
+
+        <ImageView
+            android:id="@+id/play_info_play_next"
+            android:layout_width="@dimen/play_list_fragment_control_panel_second_btn_size"
+            android:layout_height="@dimen/play_list_fragment_control_panel_second_btn_size"
+            android:layout_above="@+id/play_info_play_or_pause"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/play_list_fragment_control_panel_item_margin_vertical"
+            android:layout_marginRight="@dimen/play_info_fragment_control_panel_play_next_margin_horizontal"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_next" />
+    </com.bj4.u2bplayer.activity.fragments.RotatedControlPanel>
+
 </RelativeLayout>

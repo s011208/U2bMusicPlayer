@@ -2,9 +2,11 @@
 package com.bj4.u2bplayer.activity.fragments;
 
 import com.bj4.u2bplayer.R;
+import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
 public class RotatedControlPanel extends RelativeLayout {
@@ -18,7 +20,20 @@ public class RotatedControlPanel extends RelativeLayout {
 
     public RotatedControlPanel(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setBackgroundResource(R.color.theme_blue_play_info_bottom_controller_bg);
+
     }
 
+    public void setTheme(final int theme) {
+        if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
+            setBackgroundResource(R.drawable.theme_blue_play_info_triangle_bg_right);
+        }
+    }
+
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    public boolean onTouchEvent(MotionEvent ev) {
+        return super.onTouchEvent(ev);
+    }
 }
