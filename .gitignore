@@ -28,3 +28,5 @@ U2bPlayer/bin/U2bPlayer.apk
 U2bPlayer/bin/classes.dex
 
 U2bPlayer/bin/*
+*.ap_
+*/U2bPlayer/bin/*
