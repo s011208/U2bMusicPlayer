@@ -6,10 +6,14 @@ import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 public class RotatedControlPanel extends RelativeLayout {
+    private U2bPlayInfoFragment mParent;
+
     public RotatedControlPanel(Context context) {
         this(context, null);
     }
@@ -29,7 +33,12 @@ public class RotatedControlPanel extends RelativeLayout {
         }
     }
 
+    public void setParent(U2bPlayInfoFragment p) {
+        mParent = p;
+    }
+
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        final int action = ev.getAction();
         return super.onInterceptTouchEvent(ev);
     }
 
