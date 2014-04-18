@@ -206,10 +206,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         @Override
         public void onCompletion(MediaPlayer mp) {
             if (mNextPlayer != null) {
-                // as it turns out, starting a new MediaPlayer on the completion
-                // of a previous player ends up slightly overlapping the two
-                // playbacks, so slightly delaying the start of the next player
-                // gives a better user experience
                 SystemClock.sleep(50);
                 mNextPlayer.start();
             }
@@ -253,10 +249,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                 player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 player.prepare();
             } catch (IOException ex) {
-                // TODO: notify the user why the file couldn't be opened
                 return false;
             } catch (IllegalArgumentException ex) {
-                // TODO: notify the user why the file couldn't be opened
                 return false;
             }
             player.setOnCompletionListener(listener);
@@ -279,8 +273,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             if (setDataSourceImpl(mNextMediaPlayer, path)) {
                 mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
             } else {
-                // failed to open next, we'll transition the old fashioned way,
-                // which will skip over the faulty file
                 mNextMediaPlayer.release();
                 mNextMediaPlayer = null;
             }
@@ -335,19 +327,12 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
                         mIsInitialized = false;
                         mCurrentMediaPlayer.release();
-                        // Creating a new MediaPlayer and settings its wakemode
-                        // does not
-                        // require the media service, so it's OK to do this now,
-                        // while the
-                        // service is still being restarted
                         mCurrentMediaPlayer = new CompatMediaPlayer();
                         mCurrentMediaPlayer.setWakeMode(PlayMusicService.this,
                                 PowerManager.PARTIAL_WAKE_LOCK);
-                        // mHandler.sendMessageDelayed(mHandler.obtainMessage(SERVER_DIED),
-                        // 2000);
                         return true;
                     default:
-                        Log.d("MultiPlayer", "Error: " + what + "," + extra);
+                        Log.d(TAG, "Error: " + what + "," + extra);
                         break;
                 }
                 return false;
