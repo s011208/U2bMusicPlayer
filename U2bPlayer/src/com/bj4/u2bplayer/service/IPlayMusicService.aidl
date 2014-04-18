@@ -10,4 +10,5 @@ void resume();
 boolean isPlaying();
 void registerCallback(IPlayMusicServiceCallback cb);
 void unRegisterCallback(IPlayMusicServiceCallback cb);
+boolean isInitialized();
 }

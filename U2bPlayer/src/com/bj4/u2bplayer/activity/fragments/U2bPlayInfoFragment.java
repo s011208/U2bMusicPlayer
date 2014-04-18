@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
@@ -47,6 +48,10 @@ public class U2bPlayInfoFragment extends Fragment {
     private RotatedControlPanel mControlPanel;
 
     private Handler mHandler = new Handler();
+
+    private ImageView mPlay, mPause, mPlayNext, mPlayPrevious;
+
+    private ViewSwitcher mPlayOrPause;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -124,6 +129,49 @@ public class U2bPlayInfoFragment extends Fragment {
         mControlPanel = (RotatedControlPanel)mContentView
                 .findViewById(R.id.play_info_control_panel);
         mControlPanel.setParent(this);
+        mPlay = (ImageView)mContentView.findViewById(R.id.play_info_play);
+        mPlay.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                v.setHapticFeedbackEnabled(true);
+                if (mActivity.isInitialized() == false) {
+                    mActivity.play(mActivity.getCurrentViewIndex());
+                } else {
+                    mActivity.resumePlay();
+                }
+                mPlayOrPause.setDisplayedChild(1);
+            }
+        });
+        mPlayNext = (ImageView)mContentView.findViewById(R.id.play_info_play_next);
+        mPlayNext.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                v.setHapticFeedbackEnabled(true);
+                mActivity.playNext();
+            }
+        });
+        mPlayPrevious = (ImageView)mContentView.findViewById(R.id.play_info_play_previous);
+        mPlayPrevious.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                v.setHapticFeedbackEnabled(true);
+                mActivity.playPrevious();
+            }
+        });
+        mPause = (ImageView)mContentView.findViewById(R.id.play_info_pause);
+        mPause.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                v.setHapticFeedbackEnabled(true);
+                mActivity.pause();
+                mPlayOrPause.setDisplayedChild(0);
+            }
+        });
+        mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_info_play_or_pause);
     }
 
     private void initTheme() {

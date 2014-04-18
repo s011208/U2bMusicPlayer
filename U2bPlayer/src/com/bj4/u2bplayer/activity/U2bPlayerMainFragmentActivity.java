@@ -41,7 +41,7 @@ import com.bj4.u2bplayer.activity.fragments.*;
 public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private static final String TAG = "U2bPlayerMainFragmentActivity";
 
-    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
+    private static final boolean DEBUG = false && PlayMusicApplication.OVERALL_DEBUG;
 
     public static final int FRAGMENT_TYPE_MAIN = 0;
 
@@ -64,6 +64,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private TextView mActionBarTitle;
 
     private SharedPreferences mPref;
+
+    private int mCurrentViewIndex = 0;
 
     private static int sCurrentFragment = -1;
 
@@ -403,6 +405,19 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     }
 
+    public boolean isInitialized() {
+        if (mPlayMusicService != null) {
+            try {
+                return mPlayMusicService.isInitialized();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+        return false;
+    }
+
     public void onBackPressed() {
         switch (sCurrentFragment) {
             case FRAGMENT_TYPE_MAIN:
@@ -419,5 +434,13 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 sCurrentFragment = -1;
                 super.onBackPressed();
         }
+    }
+
+    public void setCurrentViewIndex(int index) {
+        mCurrentViewIndex = index;
+    }
+
+    public int getCurrentViewIndex() {
+        return mCurrentViewIndex;
     }
 }

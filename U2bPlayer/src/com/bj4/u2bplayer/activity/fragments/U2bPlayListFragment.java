@@ -69,7 +69,7 @@ public class U2bPlayListFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
                     v.setHapticFeedbackEnabled(true);
-                    mActivity.play(position);
+                    mActivity.setCurrentViewIndex(position);
                     mActivity
                             .switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_DETAIL);
                 }
@@ -79,6 +79,7 @@ public class U2bPlayListFragment extends Fragment {
 
                 @Override
                 public void onClick(View v) {
+                    v.setHapticFeedbackEnabled(true);
                     if (mPlayList.getPointer() == -1) {
                         int index = mActivity.playFromLastTime();
                         if (index != -1) {
@@ -95,6 +96,7 @@ public class U2bPlayListFragment extends Fragment {
 
                 @Override
                 public void onClick(View v) {
+                    v.setHapticFeedbackEnabled(true);
                     mActivity.playNext();
                 }
             });
@@ -103,6 +105,7 @@ public class U2bPlayListFragment extends Fragment {
 
                 @Override
                 public void onClick(View v) {
+                    v.setHapticFeedbackEnabled(true);
                     mActivity.playPrevious();
                 }
             });
@@ -111,6 +114,7 @@ public class U2bPlayListFragment extends Fragment {
 
                 @Override
                 public void onClick(View v) {
+                    v.setHapticFeedbackEnabled(true);
                     mActivity.pause();
                     mPlayOrPause.setDisplayedChild(0);
                 }

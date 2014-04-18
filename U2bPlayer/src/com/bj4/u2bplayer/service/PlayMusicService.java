@@ -278,7 +278,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             }
         }
 
-        public boolean sInitialized() {
+        public boolean isInitialized() {
             return mIsInitialized;
         }
 
@@ -411,6 +411,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         public int playFromLastTime() throws RemoteException {
             playMusic(mPlayList.getPointer());
             return mPlayList.getPointer();
+        }
+
+        @Override
+        public boolean isInitialized() throws RemoteException {
+            return mPlayer.isInitialized();
         }
     };
 
