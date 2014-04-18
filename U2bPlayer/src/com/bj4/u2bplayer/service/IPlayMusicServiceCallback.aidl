@@ -1,4 +1,5 @@
 package  com.bj4.u2bplayer.service;
 interface IPlayMusicServiceCallback{
-void notiftPlayIndexChanged();
+void notifyPlayIndexChanged();
+void notifyPlayStateChanged(boolean isPlaying);
 }
