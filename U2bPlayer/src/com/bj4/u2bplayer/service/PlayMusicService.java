@@ -417,12 +417,31 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         public boolean isInitialized() throws RemoteException {
             return mPlayer.isInitialized();
         }
+
+        @Override
+        public PlayListInfo getCurrentPlayInfo() throws RemoteException {
+            return mPlayList.getPlayList().get(mPlayList.getPointer());
+        }
     };
 
     final RemoteCallbackList<IPlayMusicServiceCallback> mCallbacks = new RemoteCallbackList<IPlayMusicServiceCallback>();
 
     private void notifyChanged() {
         notifyIndexChanged();
+        notifyPlayStateChanged(mPlayer.isPlaying());
+        notifyPlayInfoChanged();
+    }
+
+    private void notifyPlayInfoChanged() {
+        final int N = mCallbacks.beginBroadcast();
+        for (int i = 0; i < N; i++) {
+            try {
+                mCallbacks.getBroadcastItem(i).notifyPlayInfoChanged(
+                        mPlayList.getPlayList().get(mPlayList.getPointer()));
+            } catch (RemoteException e) {
+            }
+        }
+        mCallbacks.finishBroadcast();
     }
 
     private void notifyPlayStateChanged(boolean isPlaying) {

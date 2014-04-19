@@ -63,20 +63,29 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
 
     public void setContentInfo(PlayListInfo info) {
         mInfo = info;
-        if (info != null && mPlayInfo != null) {
-            mPlayInfo.setText("info\nartist: " + mInfo.mArtist + "\nmusic: " + mInfo.mMusicTitle);
+    }
+
+    private void setContentView() {
+        if (mInfo != null) {
+            if (mPlayInfo != null) {
+                mPlayInfo.setText("info\nartist: " + mInfo.mArtist + "\nmusic: "
+                        + mInfo.mMusicTitle);
+            }
+        } else {
+            mInfo = mPlayList.getPlayList().get(mPlayList.getPointer());
+            if (mInfo != null) {
+                if (mPlayInfo != null) {
+                    mPlayInfo.setText("info\nartist: " + mInfo.mArtist + "\nmusic: "
+                            + mInfo.mMusicTitle);
+                }
+            }
         }
     }
 
     public void onStart() {
         super.onStart();
         mActivity.addCallback(this);
-        if (mInfo != null) {
-            if (mPlayInfo != null) {
-                mPlayInfo.setText("info\nartist: " + mInfo.mArtist + "\nmusic: "
-                        + mInfo.mMusicTitle);
-            }
-        }
+        setContentView();
         initTheme();
     }
 
@@ -191,7 +200,16 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
             }
         });
         mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_info_play_or_pause);
-        mPlayOrPause.setDisplayedChild(mActivity.isPlaying() ? 1 : 0);
+        if (mActivity.isPlaying()) {
+            int index = mPlayList.getPlayList().indexOf(mInfo);
+            if (mPlayList.getPointer() != index) {
+                mPlayOrPause.setDisplayedChild(0);
+            } else {
+                mPlayOrPause.setDisplayedChild(1);
+            }
+        } else {
+            mPlayOrPause.setDisplayedChild(0);
+        }
     }
 
     private void initTheme() {
@@ -210,6 +228,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
     }
 
     public void changePlayIndex() {
+
     }
 
     public void setPlayOrPause(boolean isPlaying) {

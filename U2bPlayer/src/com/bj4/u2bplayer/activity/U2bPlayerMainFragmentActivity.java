@@ -102,6 +102,11 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 cb.setPlayOrPause(isPlaying);
             }
         }
+
+        @Override
+        public void notifyPlayInfoChanged(PlayListInfo info) throws RemoteException {
+            setActionMusicInfo(info);
+        }
     };
 
     private ISpiderService mSpiderService;
@@ -177,7 +182,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     private void initComponents() {
-        mPref = this.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
+        mPref = getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mPlayList = PlayList.getInstance(this);
         mPlayList.retrieveAllPlayList();
         mPlayList.addCallback(mPlayListCallback);
@@ -294,6 +299,12 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         getPlayInfoFragment().setContentInfo(info);
     }
 
+    public void setActionMusicInfo(PlayListInfo info) {
+        if (mActionBarTitle != null) {
+            mActionBarTitle.setText(info.mMusicTitle + "  " + info.mArtist);
+        }
+    }
+
     public void setActionMusicInfo(String text) {
         if (mActionBarTitle != null) {
             mActionBarTitle.setText(text);
@@ -330,7 +341,16 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             mPlayMusicService = IPlayMusicService.Stub.asInterface(service);
             try {
                 mPlayMusicService.registerCallback(mPlayMusicServiceCallback);
-                getPlayListFragment().setPlayOrPause(mPlayMusicService.isPlaying());
+                for (MainFragmentCallback cb : mFragmentCallbacks) {
+                    cb.setPlayOrPause(mPlayMusicService.isPlaying());
+                }
+                try {
+                    PlayListInfo info = mPlayMusicService.getCurrentPlayInfo();
+                    if (info != null) {
+                        setActionMusicInfo(info);
+                    }
+                } catch (Exception e) {
+                }
             } catch (RemoteException e) {
             }
         }
