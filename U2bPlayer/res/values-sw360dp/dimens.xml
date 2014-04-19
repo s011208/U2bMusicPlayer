@@ -1,0 +1,6 @@
+<resources>
+
+    <!-- playList fragment -->
+    <dimen name="play_list_view_artist_textsize">22sp</dimen>
+    <dimen name="play_list_view_music_textsize">14sp</dimen>
+</resources>

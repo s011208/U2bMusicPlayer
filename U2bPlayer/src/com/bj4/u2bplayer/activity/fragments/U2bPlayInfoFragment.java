@@ -54,7 +54,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
 
     private ViewSwitcher mPlayOrPause;
 
-    private PlayListInfo mInfo;
+    private static PlayListInfo sInfo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,21 +62,21 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
     }
 
     public void setContentInfo(PlayListInfo info) {
-        mInfo = info;
+        sInfo = info;
     }
 
     private void setContentView() {
-        if (mInfo != null) {
+        if (sInfo != null) {
             if (mPlayInfo != null) {
-                mPlayInfo.setText("info\nartist: " + mInfo.mArtist + "\nmusic: "
-                        + mInfo.mMusicTitle);
+                mPlayInfo.setText("info\nartist: " + sInfo.mArtist + "\nmusic: "
+                        + sInfo.mMusicTitle);
             }
         } else {
-            mInfo = mPlayList.getPlayList().get(mPlayList.getPointer());
-            if (mInfo != null) {
+            sInfo = mPlayList.getPlayList().get(mPlayList.getPointer());
+            if (sInfo != null) {
                 if (mPlayInfo != null) {
-                    mPlayInfo.setText("info\nartist: " + mInfo.mArtist + "\nmusic: "
-                            + mInfo.mMusicTitle);
+                    mPlayInfo.setText("info\nartist: " + sInfo.mArtist + "\nmusic: "
+                            + sInfo.mMusicTitle);
                 }
             }
         }
@@ -162,7 +162,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
             @Override
             public void onClick(View v) {
                 v.setHapticFeedbackEnabled(true);
-                int index = mPlayList.getPlayList().indexOf(mInfo);
+                int index = mPlayList.getPlayList().indexOf(sInfo);
                 if (mActivity.isInitialized() == false || mPlayList.getPointer() != index) {
                     mActivity.play(index);
                 } else {
@@ -201,7 +201,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
         });
         mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_info_play_or_pause);
         if (mActivity.isPlaying()) {
-            int index = mPlayList.getPlayList().indexOf(mInfo);
+            int index = mPlayList.getPlayList().indexOf(sInfo);
             if (mPlayList.getPointer() != index) {
                 mPlayOrPause.setDisplayedChild(0);
             } else {
@@ -235,5 +235,10 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
         if (mPlayOrPause != null) {
             mPlayOrPause.setDisplayedChild(isPlaying ? 1 : 0);
         }
+    }
+
+    public void resetInfo() {
+        sInfo = null;
+        setContentView();
     }
 }

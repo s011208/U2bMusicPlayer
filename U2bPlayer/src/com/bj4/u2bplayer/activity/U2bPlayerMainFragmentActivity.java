@@ -184,12 +184,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void initComponents() {
         mPref = getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mPlayList = PlayList.getInstance(this);
-        mPlayList.retrieveAllPlayList();
+        if (mPlayList.getPlayList().isEmpty())
+            mPlayList.retrieveAllPlayList();
         mPlayList.addCallback(mPlayListCallback);
         mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
         mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
         mOptionBtn = (ImageButton)findViewById(R.id.menu);
         mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
+        mActionBarTitle.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                getPlayInfoFragment().resetInfo();
+                switchFragment(FRAGMENT_TYPE_MUSIC_DETAIL);
+            }
+        });
         initMainLayout();
         initActionBarComponents();
     }
