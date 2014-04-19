@@ -26,7 +26,7 @@ public class NotificationBuilder {
     public static Notification createSimpleNotification(final Context context,
             final PlayListInfo info) {
         Intent notifyIntent = new Intent(context, U2bPlayerMainFragmentActivity.class);
-        PendingIntent appIntent = PendingIntent.getService(context, 0, notifyIntent,
+        PendingIntent appIntent = PendingIntent.getActivity(context, 0, notifyIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         String title = info == null ? "U2B notification" : info.mMusicTitle;
         String content = info == null ? "no music information" : info.mAlbumTitle + "  "
