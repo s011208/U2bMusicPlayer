@@ -2,6 +2,7 @@
 package com.bj4.u2bplayer.activity;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
@@ -12,6 +13,7 @@ import com.bj4.u2bplayer.service.IPlayMusicServiceCallback;
 import com.bj4.u2bplayer.service.ISpiderService;
 import com.bj4.u2bplayer.service.PlayMusicService;
 import com.bj4.u2bplayer.service.SpiderService;
+import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -65,22 +67,40 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private SharedPreferences mPref;
 
-    private int mCurrentViewIndex = 0;
-
     private static int sCurrentFragment = -1;
 
     private IPlayMusicService mPlayMusicService;
+
+    private ArrayList<MainFragmentCallback> mFragmentCallbacks = new ArrayList<MainFragmentCallback>();
+
+    public void addCallback(MainFragmentCallback cb) {
+        mFragmentCallbacks.add(cb);
+    }
+
+    public void removeCallback(MainFragmentCallback cb) {
+        mFragmentCallbacks.remove(cb);
+    }
+
+    public interface MainFragmentCallback {
+        public void changePlayIndex();
+
+        public void setPlayOrPause(boolean isPlaying);
+    }
 
     private IPlayMusicServiceCallback mPlayMusicServiceCallback = new IPlayMusicServiceCallback.Stub() {
 
         @Override
         public void notifyPlayIndexChanged() throws RemoteException {
-            getPlayListFragment().changePlayIndex();
+            for (MainFragmentCallback cb : mFragmentCallbacks) {
+                cb.changePlayIndex();
+            }
         }
 
         @Override
         public void notifyPlayStateChanged(boolean isPlaying) throws RemoteException {
-            getPlayListFragment().setPlayOrPause(mPlayMusicService.isPlaying());
+            for (MainFragmentCallback cb : mFragmentCallbacks) {
+                cb.setPlayOrPause(isPlaying);
+            }
         }
     };
 
@@ -269,6 +289,11 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     }
 
+    public void viewPlayInfo(PlayListInfo info) {
+        switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_DETAIL);
+        getPlayInfoFragment().setContentInfo(info);
+    }
+
     public void setActionMusicInfo(String text) {
         if (mActionBarTitle != null) {
             mActionBarTitle.setText(text);
@@ -434,13 +459,5 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 sCurrentFragment = -1;
                 super.onBackPressed();
         }
-    }
-
-    public void setCurrentViewIndex(int index) {
-        mCurrentViewIndex = index;
-    }
-
-    public int getCurrentViewIndex() {
-        return mCurrentViewIndex;
     }
 }

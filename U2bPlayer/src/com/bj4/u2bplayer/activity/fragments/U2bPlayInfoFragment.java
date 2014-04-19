@@ -4,6 +4,7 @@ package com.bj4.u2bplayer.activity.fragments;
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
+import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.MainFragmentCallback;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.animation.Animator;
@@ -24,7 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-public class U2bPlayInfoFragment extends Fragment {
+public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallback {
     public static final String TAG = "U2bPlayInfoFragment";
 
     public static final boolean DEBUG = true;
@@ -53,18 +54,35 @@ public class U2bPlayInfoFragment extends Fragment {
 
     private ViewSwitcher mPlayOrPause;
 
+    private PlayListInfo mInfo;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    public void setContentInfo(PlayListInfo info) {
+        mInfo = info;
+        if (info != null && mPlayInfo != null) {
+            mPlayInfo.setText("info\nartist: " + mInfo.mArtist + "\nmusic: " + mInfo.mMusicTitle);
+        }
+    }
+
     public void onStart() {
         super.onStart();
-        PlayListInfo info = mPlayList.getPlayList().get(mPlayList.getPointer());
-        if (info != null) {
-            mPlayInfo.setText("info\nartist: " + info.mArtist + "\nmusic: " + info.mMusicTitle);
+        mActivity.addCallback(this);
+        if (mInfo != null) {
+            if (mPlayInfo != null) {
+                mPlayInfo.setText("info\nartist: " + mInfo.mArtist + "\nmusic: "
+                        + mInfo.mMusicTitle);
+            }
         }
         initTheme();
+    }
+
+    public void onStop() {
+        super.onStop();
+        mActivity.removeCallback(this);
     }
 
     private Runnable mHideControlPanelRunnable = new Runnable() {
@@ -135,8 +153,9 @@ public class U2bPlayInfoFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 v.setHapticFeedbackEnabled(true);
-                if (mActivity.isInitialized() == false) {
-                    mActivity.play(mActivity.getCurrentViewIndex());
+                int index = mPlayList.getPlayList().indexOf(mInfo);
+                if (mActivity.isInitialized() == false || mPlayList.getPointer() != index) {
+                    mActivity.play(index);
                 } else {
                     mActivity.resumePlay();
                 }
@@ -172,6 +191,7 @@ public class U2bPlayInfoFragment extends Fragment {
             }
         });
         mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_info_play_or_pause);
+        mPlayOrPause.setDisplayedChild(mActivity.isPlaying() ? 1 : 0);
     }
 
     private void initTheme() {
@@ -187,5 +207,14 @@ public class U2bPlayInfoFragment extends Fragment {
         mContentView = inflater.inflate(R.layout.play_info_fragment, container, false);
         initComponents();
         return mContentView;
+    }
+
+    public void changePlayIndex() {
+    }
+
+    public void setPlayOrPause(boolean isPlaying) {
+        if (mPlayOrPause != null) {
+            mPlayOrPause.setDisplayedChild(isPlaying ? 1 : 0);
+        }
     }
 }

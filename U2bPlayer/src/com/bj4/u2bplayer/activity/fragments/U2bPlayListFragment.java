@@ -4,6 +4,7 @@ package com.bj4.u2bplayer.activity.fragments;
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
+import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.MainFragmentCallback;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,7 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-public class U2bPlayListFragment extends Fragment {
+public class U2bPlayListFragment extends Fragment implements MainFragmentCallback {
     public static final String TAG = "U2bPlayListFragment";
 
     public static final boolean DEBUG = true;
@@ -69,9 +70,7 @@ public class U2bPlayListFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
                     v.setHapticFeedbackEnabled(true);
-                    mActivity.setCurrentViewIndex(position);
-                    mActivity
-                            .switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_DETAIL);
+                    mActivity.viewPlayInfo(mPlayList.getPlayList().get(position));
                 }
             });
             mPlay = (ImageView)mContentView.findViewById(R.id.play_list_play);
@@ -120,12 +119,19 @@ public class U2bPlayListFragment extends Fragment {
                 }
             });
             mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_list_play_or_pause);
+            mPlayOrPause.setDisplayedChild(mActivity.isPlaying() ? 1 : 0);
         }
     }
 
     public void onStart() {
         super.onStart();
+        mActivity.addCallback(this);
         initTheme();
+    }
+
+    public void onStop() {
+        super.onStop();
+        mActivity.removeCallback(this);
     }
 
     public void setPlayOrPause(boolean isPlaying) {
