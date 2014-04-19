@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
+import com.bj4.u2bplayer.utilities.NotificationBuilder;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.app.Notification;
@@ -70,20 +71,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(this);
         mPlayListContent = mPlayList.getPlayList();
-        startForeground(PlayMusicService.class.hashCode(), getNotification());
-    }
-
-    private Notification getNotification() {
-        Notification notification = new Notification();
-        notification.icon = R.drawable.ic_launcher;
-        notification.tickerText = "playing music";
-        notification.defaults = Notification.DEFAULT_ALL;
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
-                U2bPlayerMainFragmentActivity.class), 0);
-
-        // Set the info for the views that show in the notification panel.
-        notification.setLatestEventInfo(this, "playing music", "playing music", contentIntent);
-        return notification;
+        startForeground(NotificationBuilder.NOTIFICATION_ID,
+                NotificationBuilder.createSimpleNotification(getApplicationContext(), null));
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -420,7 +409,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public PlayListInfo getCurrentPlayInfo() throws RemoteException {
-            return mPlayList.getPlayList().get(mPlayList.getPointer());
+            return getCurrentPlayingInfo();
         }
     };
 
@@ -430,14 +419,19 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         notifyIndexChanged();
         notifyPlayStateChanged(mPlayer.isPlaying());
         notifyPlayInfoChanged();
+        notifyNotificationChanged();
+    }
+
+    private void notifyNotificationChanged() {
+        NotificationBuilder.handleSimpleNotification(getApplicationContext(),
+                getCurrentPlayingInfo());
     }
 
     private void notifyPlayInfoChanged() {
         final int N = mCallbacks.beginBroadcast();
         for (int i = 0; i < N; i++) {
             try {
-                mCallbacks.getBroadcastItem(i).notifyPlayInfoChanged(
-                        mPlayList.getPlayList().get(mPlayList.getPointer()));
+                mCallbacks.getBroadcastItem(i).notifyPlayInfoChanged(getCurrentPlayingInfo());
             } catch (RemoteException e) {
             }
         }
@@ -474,6 +468,10 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     @Override
     public void loadDone() {
         mPlayListContent = mPlayList.getPlayList();
+    }
+
+    private PlayListInfo getCurrentPlayingInfo() {
+        return mPlayList.getPlayList().get(mPlayList.getPointer());
     }
 
 }
