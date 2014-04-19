@@ -80,7 +80,7 @@ public class U2bPlayListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     v.setHapticFeedbackEnabled(true);
-                    if (mPlayList.getPointer() == -1) {
+                    if (mActivity.isInitialized() == false) {
                         int index = mActivity.playFromLastTime();
                         if (index != -1) {
                             mPlayListView.smoothScrollToPosition(index);
