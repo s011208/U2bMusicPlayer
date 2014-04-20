@@ -12,6 +12,7 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +34,8 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
 
     private static final int CONTROL_PANEL_AUTO_HIDE_TIME = 2000;
 
+    private static final int DURATION_BAR_UPDATE_TIME = 100;
+
     private View mContentView;
 
     private RelativeLayout mBottomPanel;
@@ -50,6 +53,14 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
     private RotatedControlPanel mControlPanel;
 
     private Handler mHandler = new Handler();
+
+    private static final HandlerThread sWorkerThread = new HandlerThread(
+            "U2bPlayInfoFragment-updater");
+    static {
+        sWorkerThread.start();
+    }
+
+    private static final Handler sWorker = new Handler(sWorkerThread.getLooper());
 
     private ImageView mPlay, mPause, mPlayNext, mPlayPrevious;
 
@@ -70,7 +81,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
         sInfo = info;
     }
 
-    private void setContentView() {
+    private void resetContentView() {
         if (sInfo != null) {
             if (mPlayInfo != null) {
                 mPlayInfo.setText("info\nartist: " + sInfo.mArtist + "\nmusic: "
@@ -91,12 +102,13 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
         super.onStart();
         mIsFragmentStart = true;
         mActivity.addCallback(this);
-        setContentView();
+        resetContentView();
         initTheme();
     }
 
     public void onStop() {
         super.onStop();
+        mDurationSeekBar.setProgress(0);
         mIsFragmentStart = false;
         mActivity.removeCallback(this);
     }
@@ -223,38 +235,40 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
         startTrackSeekBar();
     }
 
-    private void startTrackSeekBar() {
-        new Thread(new Runnable() {
+    private Runnable mTrackSeekBarRunnable = new Runnable() {
 
-            @Override
-            public void run() {
-                while (mIsFragmentStart) {
-                    if (mHandler != null) {
-                        mHandler.post(new Runnable() {
+        @Override
+        public void run() {
+            while (mIsFragmentStart) {
+                if (mHandler != null) {
+                    mHandler.post(new Runnable() {
 
-                            @Override
-                            public void run() {
-                                if (mDurationSeekBar != null) {
-                                    if (mActivity != null && mPlayList != null) {
-                                        int index = mPlayList.getPlayList().indexOf(sInfo);
-                                        if (mPlayList.getPointer() == index) {
-                                            mDurationSeekBar.setProgress(mActivity
-                                                    .getCurrentPosition());
-                                        } else {
-                                            mDurationSeekBar.setProgress(0);
-                                        }
+                        @Override
+                        public void run() {
+                            if (mDurationSeekBar != null) {
+                                if (mActivity != null && mPlayList != null) {
+                                    int index = mPlayList.getPlayList().indexOf(sInfo);
+                                    if (mPlayList.getPointer() == index) {
+                                        mDurationSeekBar.setProgress(mActivity.getCurrentPosition());
+                                    } else {
+                                        mDurationSeekBar.setProgress(0);
                                     }
                                 }
                             }
-                        });
-                    }
-                    try {
-                        Thread.sleep(800);
-                    } catch (InterruptedException e) {
-                    }
+                        }
+                    });
+                }
+                try {
+                    Thread.sleep(DURATION_BAR_UPDATE_TIME);
+                } catch (InterruptedException e) {
                 }
             }
-        }).start();
+        }
+    };
+
+    private void startTrackSeekBar() {
+        sWorker.removeCallbacks(mTrackSeekBarRunnable);
+        sWorker.post(mTrackSeekBarRunnable);
     }
 
     public void setDuration(int time) {
@@ -292,6 +306,6 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
 
     public void resetInfo() {
         sInfo = null;
-        setContentView();
+        resetContentView();
     }
 }

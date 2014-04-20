@@ -289,13 +289,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             return true;
         }
 
-        public int getCurrentPosition() {
-            if (mCurrentMediaPlayer != null)
-                return mCurrentMediaPlayer.getCurrentPosition();
-            else
-                return 0;
-        }
-
         public void setNextDataSource(String path, PlayListInfo info) {
             mCurrentMediaPlayer.setNextMediaPlayer(null);
             if (mNextMediaPlayer != null) {
@@ -463,7 +456,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public int getCurrentPosition() throws RemoteException {
-            return mPlayer.getCurrentPosition();
+            return (int)mPlayer.position();
         }
 
         @Override
