@@ -229,10 +229,6 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
             @Override
             public void run() {
                 while (mIsFragmentStart) {
-                    try {
-                        Thread.sleep(800);
-                    } catch (InterruptedException e) {
-                    }
                     if (mHandler != null) {
                         mHandler.post(new Runnable() {
 
@@ -251,6 +247,10 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
                                 }
                             }
                         });
+                    }
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException e) {
                     }
                 }
             }
