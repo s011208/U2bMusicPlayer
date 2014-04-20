@@ -148,7 +148,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             if (nextInfo != null) {
                 mPlayer.setNextDataSource(nextInfo.mRtspHighQuility);
             }
-            mPlayer.start();
             mPlayList.setPointer(pointer);
             notifyChanged();
         } catch (Exception e) {
@@ -220,23 +219,35 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         }
 
         public void setDataSource(String path) {
-            mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, path);
+            mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, path, true);
             if (mIsInitialized) {
                 setNextDataSource(null);
             }
         }
 
-        private boolean setDataSourceImpl(MediaPlayer player, String path) {
+        private boolean setDataSourceImpl(MediaPlayer player, String path, boolean playAfterSync) {
             try {
                 player.reset();
-                player.setOnPreparedListener(null);
                 if (path.startsWith("content://")) {
                     player.setDataSource(PlayMusicService.this, Uri.parse(path));
                 } else {
                     player.setDataSource(path);
                 }
                 player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                player.prepare();
+                if (playAfterSync) {
+                    player.setOnPreparedListener(new OnPreparedListener() {
+
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mp.start();
+                            notifyChanged();
+                        }
+                    });
+                    player.prepareAsync();
+                } else {
+                    player.setOnPreparedListener(null);
+                    player.prepare();
+                }
             } catch (IOException ex) {
                 return false;
             } catch (IllegalArgumentException ex) {
@@ -259,7 +270,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             mNextMediaPlayer = new CompatMediaPlayer();
             mNextMediaPlayer.setWakeMode(PlayMusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
             mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
-            if (setDataSourceImpl(mNextMediaPlayer, path)) {
+            if (setDataSourceImpl(mNextMediaPlayer, path, false)) {
                 mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
             } else {
                 mNextMediaPlayer.release();

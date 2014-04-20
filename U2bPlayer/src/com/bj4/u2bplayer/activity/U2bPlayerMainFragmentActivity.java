@@ -49,7 +49,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public static final int FRAGMENT_TYPE_PLAYLIST = 1;
 
-    public static final int FRAGMENT_TYPE_MUSIC_DETAIL = 2;
+    public static final int FRAGMENT_TYPE_MUSIC_INFO = 2;
 
     public static final int THEME_BLUE = 0; // default
 
@@ -196,7 +196,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 getPlayInfoFragment().resetInfo();
-                switchFragment(FRAGMENT_TYPE_MUSIC_DETAIL);
+                switchFragment(FRAGMENT_TYPE_MUSIC_INFO);
             }
         });
         initMainLayout();
@@ -284,7 +284,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             case FRAGMENT_TYPE_PLAYLIST:
                 target = getPlayListFragment();
                 break;
-            case FRAGMENT_TYPE_MUSIC_DETAIL:
+            case FRAGMENT_TYPE_MUSIC_INFO:
                 target = getPlayInfoFragment();
                 break;
             default:
@@ -304,7 +304,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void viewPlayInfo(PlayListInfo info) {
-        switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_DETAIL);
+        switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_INFO);
         getPlayInfoFragment().setContentInfo(info);
     }
 
@@ -322,6 +322,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public void onResume() {
         super.onResume();
+        if (sCurrentFragment == FRAGMENT_TYPE_PLAYLIST) {
+            getPlayListFragment().changePlayIndex();
+        }
     }
 
     public void onPause() {
@@ -481,7 +484,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             case FRAGMENT_TYPE_PLAYLIST:
                 switchFragment(FRAGMENT_TYPE_MAIN);
                 break;
-            case FRAGMENT_TYPE_MUSIC_DETAIL:
+            case FRAGMENT_TYPE_MUSIC_INFO:
                 switchFragment(FRAGMENT_TYPE_PLAYLIST);
                 break;
             default:

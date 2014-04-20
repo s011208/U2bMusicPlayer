@@ -38,7 +38,7 @@ public class PlayList {
 
     public void retrieveAllPlayList() {
         mPlayList.clear();
-        Cursor data = mDatabaseHelper.query(null, null);
+        Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
         U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
     }
 
