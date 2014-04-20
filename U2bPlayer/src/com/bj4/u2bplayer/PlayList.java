@@ -23,25 +23,6 @@ public class PlayList {
 
     private int mPointer = 0;
 
-    public int getPointer() {
-        return mPointer;
-    }
-
-    public void setPointer(final int pointer) {
-        mPointer = pointer;
-        mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, pointer).apply();
-    }
-
-    public interface PlayListLoaderCallback {
-        public void loadDone();
-    }
-
-    public void retrieveAllPlayList() {
-        mPlayList.clear();
-        Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
-        U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
-    }
-
     private final ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
 
     private final ArrayList<PlayListLoaderCallback> mCallbacks = new ArrayList<PlayListLoaderCallback>();
@@ -59,6 +40,44 @@ public class PlayList {
         mPref = mContext.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mPointer = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
         retrieveAllPlayList();
+    }
+
+    public int getPointer() {
+        return mPointer;
+    }
+
+    public int getNextPointer() {
+        if (mPointer + 1 >= mPlayList.size()) {
+            return 0;
+        }
+        return mPointer + 1;
+    }
+
+    public PlayListInfo getCurrentPlayListInfo() {
+        return mPlayList.get(mPointer);
+    }
+
+    public PlayListInfo getNextPlayListInfo() {
+        PlayListInfo rtn = mPlayList.get(mPointer + 1);
+        if (rtn == null) {
+            rtn = mPlayList.get(0);
+        }
+        return rtn;
+    }
+
+    public void setPointer(final int pointer) {
+        mPointer = pointer;
+        mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, pointer).apply();
+    }
+
+    public interface PlayListLoaderCallback {
+        public void loadDone();
+    }
+
+    public void retrieveAllPlayList() {
+        mPlayList.clear();
+        Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
+        U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
     }
 
     public void notifyScanDone() {

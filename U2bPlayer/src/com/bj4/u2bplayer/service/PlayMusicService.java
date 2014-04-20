@@ -91,23 +91,14 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void trackNext() {
-        PlayListInfo nextInfo = mPlayListContent.get(getNextPointer());
-        if (nextInfo == null) {
-            nextInfo = mPlayListContent.get(0);
-        }
+        PlayListInfo nextInfo = mPlayList.getNextPlayListInfo();
         if (nextInfo != null) {
             mPlayer.setNextDataSource(nextInfo.mRtspHighQuility);
         }
     }
 
     private int getNextPointer() {
-        int pointer = mPlayList.getPointer();
-        if (pointer >= mPlayListContent.size()) {
-            pointer = 0;
-        } else {
-            ++pointer;
-        }
-        return pointer;
+        return mPlayList.getNextPointer();
     }
 
     private void pauseMusic() {
@@ -420,7 +411,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public PlayListInfo getCurrentPlayInfo() throws RemoteException {
-            return getCurrentPlayingInfo();
+            return mPlayList.getCurrentPlayListInfo();
         }
     };
 
@@ -435,14 +426,15 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     private void notifyNotificationChanged() {
         NotificationBuilder.handleSimpleNotification(getApplicationContext(),
-                getCurrentPlayingInfo());
+                mPlayList.getCurrentPlayListInfo());
     }
 
     private void notifyPlayInfoChanged() {
         final int N = mCallbacks.beginBroadcast();
         for (int i = 0; i < N; i++) {
             try {
-                mCallbacks.getBroadcastItem(i).notifyPlayInfoChanged(getCurrentPlayingInfo());
+                mCallbacks.getBroadcastItem(i).notifyPlayInfoChanged(
+                        mPlayList.getCurrentPlayListInfo());
             } catch (RemoteException e) {
             }
         }
@@ -480,9 +472,4 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     public void loadDone() {
         mPlayListContent = mPlayList.getPlayList();
     }
-
-    private PlayListInfo getCurrentPlayingInfo() {
-        return mPlayList.getPlayList().get(mPlayList.getPointer());
-    }
-
 }
