@@ -88,11 +88,13 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
                         + sInfo.mMusicTitle);
             }
         } else {
-            sInfo = mPlayList.getPlayList().get(mPlayList.getPointer());
-            if (sInfo != null) {
-                if (mPlayInfo != null) {
-                    mPlayInfo.setText("info\nartist: " + sInfo.mArtist + "\nmusic: "
-                            + sInfo.mMusicTitle);
+            if (mPlayList != null) {
+                sInfo = mPlayList.getPlayList().get(mPlayList.getPointer());
+                if (sInfo != null) {
+                    if (mPlayInfo != null) {
+                        mPlayInfo.setText("info\nartist: " + sInfo.mArtist + "\nmusic: "
+                                + sInfo.mMusicTitle);
+                    }
                 }
             }
         }
