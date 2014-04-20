@@ -22,6 +22,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -54,7 +55,11 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
 
     private ViewSwitcher mPlayOrPause;
 
+    private SeekBar mDurationSeekBar;
+
     private static PlayListInfo sInfo;
+
+    private boolean mIsFragmentStart = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +89,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
 
     public void onStart() {
         super.onStart();
+        mIsFragmentStart = true;
         mActivity.addCallback(this);
         setContentView();
         initTheme();
@@ -91,6 +97,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
 
     public void onStop() {
         super.onStop();
+        mIsFragmentStart = false;
         mActivity.removeCallback(this);
     }
 
@@ -134,6 +141,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
     }
 
     private void initComponents() {
+        mIsFragmentStart = true;
         mActivity = (U2bPlayerMainFragmentActivity)getActivity();
         mPlayList = PlayList.getInstance(mActivity);
         mLayoutInflater = LayoutInflater.from(mActivity);
@@ -156,6 +164,8 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
         mControlPanel = (RotatedControlPanel)mContentView
                 .findViewById(R.id.play_info_control_panel);
         mControlPanel.setParent(this);
+        mDurationSeekBar = (SeekBar)mContentView.findViewById(R.id.play_info_duration_seek_bar);
+        mDurationSeekBar.setMax((int)mActivity.getDuration());
         mPlay = (ImageView)mContentView.findViewById(R.id.play_info_play);
         mPlay.setOnClickListener(new OnClickListener() {
 
@@ -210,6 +220,48 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
         } else {
             mPlayOrPause.setDisplayedChild(0);
         }
+        startTrackSeekBar();
+    }
+
+    private void startTrackSeekBar() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (mIsFragmentStart) {
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException e) {
+                    }
+                    if (mHandler != null) {
+                        mHandler.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                if (mDurationSeekBar != null) {
+                                    if (mActivity != null && mPlayList != null) {
+                                        int index = mPlayList.getPlayList().indexOf(sInfo);
+                                        if (mPlayList.getPointer() == index) {
+                                            mDurationSeekBar.setProgress(mActivity
+                                                    .getCurrentPosition());
+                                        } else {
+                                            mDurationSeekBar.setProgress(0);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void setDuration(int time) {
+        int index = mPlayList.getPlayList().indexOf(sInfo);
+        if (mPlayList.getPointer() == index) {
+            mDurationSeekBar.setMax(time);
+        }
     }
 
     private void initTheme() {
@@ -228,7 +280,6 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
     }
 
     public void changePlayIndex() {
-
     }
 
     public void setPlayOrPause(boolean isPlaying) {

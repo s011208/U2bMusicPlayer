@@ -36,7 +36,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bj4.u2bplayer.activity.fragments.*;
 
@@ -106,6 +105,20 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         @Override
         public void notifyPlayInfoChanged(PlayListInfo info) throws RemoteException {
             setActionMusicInfo(info);
+        }
+
+        @Override
+        public void updateBufferingPercentage(PlayListInfo info, int percentage)
+                throws RemoteException {
+            setActionMusicInfo(info, percentage);
+        }
+
+        @Override
+        public void updatePlayingTime(int time) throws RemoteException {
+            U2bPlayInfoFragment fragment = getPlayInfoFragment();
+            if (fragment != null) {
+                fragment.setDuration(time);
+            }
         }
     };
 
@@ -314,6 +327,13 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     }
 
+    public void setActionMusicInfo(PlayListInfo info, int percentage) {
+        if (mActionBarTitle != null) {
+            mActionBarTitle.setText("buffering: " + percentage + "  " + info.mMusicTitle + "  "
+                    + info.mArtist);
+        }
+    }
+
     public void setActionMusicInfo(String text) {
         if (mActionBarTitle != null) {
             mActionBarTitle.setText(text);
@@ -473,6 +493,32 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             }
         }
         return false;
+    }
+
+    public int getCurrentPosition() {
+        if (mPlayMusicService != null) {
+            try {
+                return mPlayMusicService.getCurrentPosition();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+        return 0;
+    }
+
+    public long getDuration() {
+        if (mPlayMusicService != null) {
+            try {
+                return mPlayMusicService.getDuration();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+        return 0;
     }
 
     public void onBackPressed() {

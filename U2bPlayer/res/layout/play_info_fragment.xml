@@ -40,6 +40,7 @@
         android:layout_alignParentLeft="true" >
 
         <SeekBar
+            android:id="@+id/play_info_duration_seek_bar"
             android:layout_width="@dimen/play_info_fragment_control_panel_seekbar_width"
             android:layout_height="@dimen/play_info_fragment_control_panel_seekbar_height"
             android:layout_alignParentBottom="true"

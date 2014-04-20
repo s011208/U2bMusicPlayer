@@ -13,4 +13,6 @@ void registerCallback(IPlayMusicServiceCallback cb);
 void unRegisterCallback(IPlayMusicServiceCallback cb);
 boolean isInitialized();
 PlayListInfo getCurrentPlayInfo();
+int getCurrentPosition();
+long getDuration();
 }

@@ -5,22 +5,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayList;
-import com.bj4.u2bplayer.R;
-import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.utilities.NotificationBuilder;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
@@ -93,7 +87,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     private void trackNext() {
         PlayListInfo nextInfo = mPlayList.getNextPlayListInfo();
         if (nextInfo != null) {
-            mPlayer.setNextDataSource(nextInfo.mRtspHighQuility);
+            mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
         }
     }
 
@@ -134,10 +128,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             }
         }
         try {
-            mPlayer.setDataSource(mPlayListContent.get(pointer).mRtspHighQuility);
+            PlayListInfo currentInfo = mPlayListContent.get(pointer);
+            mPlayer.setDataSource(currentInfo.mRtspHighQuility, currentInfo);
             PlayListInfo nextInfo = mPlayListContent.get(pointer + 1);
             if (nextInfo != null) {
-                mPlayer.setNextDataSource(nextInfo.mRtspHighQuility);
+                mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
             }
             mPlayList.setPointer(pointer);
             notifyChanged();
@@ -155,6 +150,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         private OnCompletionListener mCompletion;
 
+        private PlayListInfo mPlayListInfo;
+
         public CompatMediaPlayer() {
             try {
                 MediaPlayer.class.getMethod("setNextMediaPlayer", MediaPlayer.class);
@@ -163,6 +160,18 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                 mCompatMode = true;
                 super.setOnCompletionListener(this);
             }
+        }
+
+        public void setPlayListInfo(PlayListInfo info) {
+            mPlayListInfo = info;
+        }
+
+        public PlayListInfo getPlayListInfo() {
+            return mPlayListInfo;
+        }
+
+        public void start() {
+            super.start();
         }
 
         public void setNextMediaPlayer(MediaPlayer next) {
@@ -209,27 +218,58 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             return mCurrentMediaPlayer.isPlaying();
         }
 
-        public void setDataSource(String path) {
-            mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, path, true);
+        public void setDataSource(String path, PlayListInfo info) {
+            mIsInitialized = setDataSourceImpl(info, mCurrentMediaPlayer, path, true);
             if (mIsInitialized) {
-                setNextDataSource(null);
+                setNextDataSource(null, null);
             }
         }
 
-        private boolean setDataSourceImpl(MediaPlayer player, String path, boolean playAfterSync) {
+        private boolean setDataSourceImpl(PlayListInfo info, MediaPlayer player, String path,
+                boolean playAfterSync) {
             try {
                 player.reset();
+                if (info != null && player instanceof CompatMediaPlayer) {
+                    ((CompatMediaPlayer)player).setPlayListInfo(info);
+                }
                 if (path.startsWith("content://")) {
                     player.setDataSource(PlayMusicService.this, Uri.parse(path));
                 } else {
                     player.setDataSource(path);
                 }
+                player.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+
+                    @Override
+                    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                        if (DEBUG) {
+                            String debug = "";
+                            if (mp instanceof CompatMediaPlayer) {
+                                PlayListInfo info = ((CompatMediaPlayer)mp).getPlayListInfo();
+                                if (info != null) {
+                                    debug += "title: " + info.mMusicTitle + ", ";
+                                }
+                                if (percent == 100) {
+                                    notifyPlayInfoChanged();
+                                    notifyPlayTimeUpdated(mp.getDuration());
+                                } else {
+                                    notifyBufferingStatus(info, percent);
+                                }
+                            }
+                            Log.d(TAG,
+                                    debug + "percent: " + percent + ", duration: "
+                                            + PlayList.getTimeString(mp.getDuration()));
+                        }
+                    }
+                });
                 player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 if (playAfterSync) {
                     player.setOnPreparedListener(new OnPreparedListener() {
 
                         @Override
                         public void onPrepared(MediaPlayer mp) {
+                            if (DEBUG) {
+                                Log.i(TAG, "onPrepared");
+                            }
                             mp.start();
                             notifyChanged();
                         }
@@ -237,7 +277,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     player.prepareAsync();
                 } else {
                     player.setOnPreparedListener(null);
-                    player.prepare();
+                    player.prepareAsync();
                 }
             } catch (IOException ex) {
                 return false;
@@ -249,7 +289,14 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             return true;
         }
 
-        public void setNextDataSource(String path) {
+        public int getCurrentPosition() {
+            if (mCurrentMediaPlayer != null)
+                return mCurrentMediaPlayer.getCurrentPosition();
+            else
+                return 0;
+        }
+
+        public void setNextDataSource(String path, PlayListInfo info) {
             mCurrentMediaPlayer.setNextMediaPlayer(null);
             if (mNextMediaPlayer != null) {
                 mNextMediaPlayer.release();
@@ -261,7 +308,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             mNextMediaPlayer = new CompatMediaPlayer();
             mNextMediaPlayer.setWakeMode(PlayMusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
             mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
-            if (setDataSourceImpl(mNextMediaPlayer, path, false)) {
+            if (setDataSourceImpl(info, mNextMediaPlayer, path, false)) {
                 mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
             } else {
                 mNextMediaPlayer.release();
@@ -413,6 +460,17 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         public PlayListInfo getCurrentPlayInfo() throws RemoteException {
             return mPlayList.getCurrentPlayListInfo();
         }
+
+        @Override
+        public int getCurrentPosition() throws RemoteException {
+            return mPlayer.getCurrentPosition();
+        }
+
+        @Override
+        public long getDuration() throws RemoteException {
+            return mPlayer.duration();
+        }
+
     };
 
     final RemoteCallbackList<IPlayMusicServiceCallback> mCallbacks = new RemoteCallbackList<IPlayMusicServiceCallback>();
@@ -457,6 +515,28 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         for (int i = 0; i < N; i++) {
             try {
                 mCallbacks.getBroadcastItem(i).notifyPlayIndexChanged();
+            } catch (RemoteException e) {
+            }
+        }
+        mCallbacks.finishBroadcast();
+    }
+
+    private void notifyBufferingStatus(PlayListInfo info, int percentage) {
+        final int N = mCallbacks.beginBroadcast();
+        for (int i = 0; i < N; i++) {
+            try {
+                mCallbacks.getBroadcastItem(i).updateBufferingPercentage(info, percentage);
+            } catch (RemoteException e) {
+            }
+        }
+        mCallbacks.finishBroadcast();
+    }
+
+    private void notifyPlayTimeUpdated(int time) {
+        final int N = mCallbacks.beginBroadcast();
+        for (int i = 0; i < N; i++) {
+            try {
+                mCallbacks.getBroadcastItem(i).updatePlayingTime(time);
             } catch (RemoteException e) {
             }
         }
