@@ -258,9 +258,11 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
     }
 
     public void setDuration(int time) {
-        int index = mPlayList.getPlayList().indexOf(sInfo);
-        if (mPlayList.getPointer() == index) {
-            mDurationSeekBar.setMax(time);
+        if (mPlayList != null) {
+            int index = mPlayList.getPlayList().indexOf(sInfo);
+            if (mPlayList.getPointer() == index) {
+                mDurationSeekBar.setMax(time);
+            }
         }
     }
 
