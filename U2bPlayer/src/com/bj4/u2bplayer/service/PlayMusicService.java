@@ -9,7 +9,10 @@ import com.bj4.u2bplayer.utilities.NotificationBuilder;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
@@ -54,6 +57,38 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         }
     };
 
+    private boolean headsetConnected = false;
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Intent.ACTION_HEADSET_PLUG.equals(action) && mPlayer != null) {
+                if (intent.hasExtra("state")) {
+                    if (headsetConnected && intent.getIntExtra("state", 0) == 0) {
+                        headsetConnected = false;
+                        if (mPlayer.isPlaying()) {
+                            pauseMusic();
+                        }
+                    } else if (!headsetConnected && intent.getIntExtra("state", 0) == 1) {
+                        headsetConnected = true;
+                    }
+                }
+            }
+        }
+    };
+
+    private void registerBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(mReceiver, filter);
+    }
+
+    private void unRegisterBroadcastReceiver() {
+        unregisterReceiver(mReceiver);
+    }
+
     public void onCreate() {
         super.onCreate();
         if (DEBUG)
@@ -64,6 +99,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         mPlayList.addCallback(this);
         startForeground(NotificationBuilder.NOTIFICATION_ID,
                 NotificationBuilder.createSimpleNotification(getApplicationContext(), null));
+        registerBroadcastReceiver();
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -79,6 +115,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             Log.d(TAG, "onDestroy");
         mPlayList.removeCallback(this);
         mPlayer.release();
+        unRegisterBroadcastReceiver();
     }
 
     private void trackNext() {
