@@ -101,7 +101,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void playMusic(int index) {
-        ArrayList<PlayListInfo> playList= mPlayList.getPlayList();
+        ArrayList<PlayListInfo> playList = mPlayList.getPlayList();
         int pointer = mPlayList.getPointer();
         if (DEBUG)
             Log.d(TAG, "play: " + index);
