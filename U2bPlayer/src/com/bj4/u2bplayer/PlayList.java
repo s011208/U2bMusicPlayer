@@ -20,8 +20,6 @@ public class PlayList {
 
     private final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication.getDataBaseHelper();
 
-    private int mPointer = 0;
-
     private final ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
 
     private final ArrayList<PlayListLoaderCallback> mCallbacks = new ArrayList<PlayListLoaderCallback>();
@@ -37,27 +35,26 @@ public class PlayList {
     private PlayList(Context context) {
         mContext = context.getApplicationContext();
         mPref = mContext.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
-        mPointer = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
         retrieveAllPlayList();
     }
 
     public int getPointer() {
-        return mPointer;
+        return mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
     }
 
     public int getNextPointer() {
-        if (mPointer + 1 >= mPlayList.size()) {
+        if (mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1 >= mPlayList.size()) {
             return 0;
         }
-        return mPointer + 1;
+        return mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1;
     }
 
     public PlayListInfo getCurrentPlayListInfo() {
-        return mPlayList.get(mPointer);
+        return mPlayList.get(mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0));
     }
 
     public PlayListInfo getNextPlayListInfo() {
-        PlayListInfo rtn = mPlayList.get(mPointer + 1);
+        PlayListInfo rtn = mPlayList.get(mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1);
         if (rtn == null) {
             rtn = mPlayList.get(0);
         }
@@ -65,7 +62,6 @@ public class PlayList {
     }
 
     public void setPointer(final int pointer) {
-        mPointer = pointer;
         mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, pointer).apply();
     }
 

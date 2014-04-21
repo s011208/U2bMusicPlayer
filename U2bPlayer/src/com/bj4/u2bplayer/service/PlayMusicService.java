@@ -134,11 +134,12 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             if (nextInfo != null) {
                 mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
             }
-            mPlayList.setPointer(pointer);
-            notifyChanged();
         } catch (Exception e) {
             if (DEBUG)
                 Log.w(TAG, "play failed", e);
+        } finally {
+            mPlayList.setPointer(pointer);
+            notifyChanged();
         }
     }
 
@@ -230,7 +231,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             try {
                 player.reset();
                 if (info != null && player instanceof CompatMediaPlayer) {
-                    ((CompatMediaPlayer)player).setPlayListInfo(info);
+                    ((CompatMediaPlayer) player).setPlayListInfo(info);
                 }
                 if (path.startsWith("content://")) {
                     player.setDataSource(PlayMusicService.this, Uri.parse(path));
@@ -244,7 +245,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                         if (DEBUG) {
                             String debug = "";
                             if (mp instanceof CompatMediaPlayer) {
-                                PlayListInfo info = ((CompatMediaPlayer)mp).getPlayListInfo();
+                                PlayListInfo info = ((CompatMediaPlayer) mp).getPlayListInfo();
                                 if (info != null) {
                                     debug += "title: " + info.mMusicTitle + ", ";
                                 }
@@ -278,6 +279,16 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                 } else {
                     player.setOnPreparedListener(null);
                     player.prepareAsync();
+                    player.setOnPreparedListener(new OnPreparedListener() {
+
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mCurrentMediaPlayer.setNextMediaPlayer(mp);
+                            if (DEBUG) {
+                                Log.d(TAG, "setNextMediaPlayer onPrepared");
+                            }
+                        }
+                    });
                 }
             } catch (IOException ex) {
                 return false;
@@ -302,7 +313,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             mNextMediaPlayer.setWakeMode(PlayMusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
             mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
             if (setDataSourceImpl(info, mNextMediaPlayer, path, false)) {
-                mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
+                // set next at setDataSourceImpl
             } else {
                 mNextMediaPlayer.release();
                 mNextMediaPlayer = null;
@@ -379,7 +390,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         }
 
         public long seek(long whereto) {
-            mCurrentMediaPlayer.seekTo((int)whereto);
+            mCurrentMediaPlayer.seekTo((int) whereto);
             return whereto;
         }
 
@@ -456,7 +467,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public int getCurrentPosition() throws RemoteException {
-            return (int)mPlayer.position();
+            return (int) mPlayer.position();
         }
 
         @Override
