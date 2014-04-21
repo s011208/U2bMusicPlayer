@@ -40,8 +40,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     private PlayList mPlayList;
 
-    private ArrayList<PlayListInfo> mPlayListContent = new ArrayList<PlayListInfo>();
-
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -64,7 +62,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         mPlayer.setHandler(mHandler);
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(this);
-        mPlayListContent = mPlayList.getPlayList();
         startForeground(NotificationBuilder.NOTIFICATION_ID,
                 NotificationBuilder.createSimpleNotification(getApplicationContext(), null));
     }
@@ -104,33 +101,35 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void playMusic(int index) {
+        ArrayList<PlayListInfo> playList= mPlayList.getPlayList();
         int pointer = mPlayList.getPointer();
         if (DEBUG)
             Log.d(TAG, "play: " + index);
-        if (mPlayListContent.isEmpty())
+        if (playList.isEmpty())
             return;
         if (index == PLAY_NEXT_INDEX) {
-            if (pointer >= mPlayListContent.size()) {
+            if (pointer >= playList.size()) {
                 pointer = 0;
             } else {
                 ++pointer;
             }
         } else if (index == PLAY_PREVIOUS_INDEX) {
             if (pointer < 0) {
-                pointer = mPlayListContent.size() - 1;
+                pointer = playList.size() - 1;
             } else {
                 --pointer;
             }
         } else {
             pointer = index;
-            if (pointer >= mPlayListContent.size()) {
+            if (pointer >= playList.size()) {
                 pointer = 0;
             }
         }
         try {
-            PlayListInfo currentInfo = mPlayListContent.get(pointer);
+            PlayListInfo currentInfo = playList.get(pointer);
+            Log.e("QQQQ", "currentInfo: " + currentInfo);
             mPlayer.setDataSource(currentInfo.mRtspHighQuility, currentInfo);
-            PlayListInfo nextInfo = mPlayListContent.get(pointer + 1);
+            PlayListInfo nextInfo = playList.get(pointer + 1);
             if (nextInfo != null) {
                 mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
             }
@@ -554,6 +553,5 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     @Override
     public void loadDone() {
-        mPlayListContent = mPlayList.getPlayList();
     }
 }

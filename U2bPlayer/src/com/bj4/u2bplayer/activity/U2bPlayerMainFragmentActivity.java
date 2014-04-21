@@ -286,9 +286,25 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                     }
                     startToScan();
                     break;
+                case MainActivityOptionDialog.ITEM_SWITCH_DATA_SOURCE_LOCAL:
+                    switchToLocalMusicData();
+                    break;
+                case MainActivityOptionDialog.ITEM_SWITCH_DATA_SOURCE_INTERNET:
+                    switchToInternetMusicData();
+                    break;
             }
         }
     };
+
+    private void switchToInternetMusicData() {
+        mPlayList.retrieveAllPlayList();
+        getPlayListFragment().changePlayIndex();
+    }
+
+    private void switchToLocalMusicData() {
+        mPlayList.retrieveLocalPlayList();
+        getPlayListFragment().changePlayIndex();
+    }
 
     private void startToScan() {
         // scan list

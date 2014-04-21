@@ -10,5 +10,8 @@
     <string name="paly">Play</string>
     <string name="pause">Pause</string>
     <string name="play_or_pause">Play or pause</string>
-	<string name="option_download_data">Download data</string>
+    <string name="option_download_data">Download data</string>
+    <string name="option_switch_data_source_local">Switch to local</string>
+    <string name="option_switch_data_source_internet">Switch to Internet</string>
+
 </resources>

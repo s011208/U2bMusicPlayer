@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.MediaStore;
 import android.util.Log;
 
 public class U2bDatabaseHelper extends SQLiteOpenHelper {
@@ -116,6 +117,11 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public Cursor queryDataFromLocalData() {
+        return mContext.getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+    }
+
     public long insert(ContentValues cv, boolean notify) {
         long rtn = getDb().insert(TABLE_MAIN_INFO, null, cv);
         if (notify)
@@ -176,6 +182,38 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
+
+    public static void convertFromLocalMusicDataCursorToPlayList(Cursor c,
+            ArrayList<PlayListInfo> playList) {
+        if (c != null && playList != null) {
+            int iArtist = c.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int iAlbum = c.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int iMusic = c.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int iRank = c.getColumnIndex(MediaStore.Audio.Media.TRACK);
+            int iRh = c.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int iRl = c.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int iVp = c.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int iVi = c.getColumnIndex(MediaStore.Audio.Media.DATA);
+            while (c.moveToNext()) {
+                String artist = c.getString(iArtist);
+                String album = c.getString(iAlbum);
+                String music = c.getString(iMusic);
+                int rank = c.getInt(iRank);
+                String rh = c.getString(iRh);
+                String rl = c.getString(iRl);
+                String vp = c.getString(iVp);
+                String vi = c.getString(iVi);
+                playList.add(new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank, PlayListInfo.IS_LOCAL_INFO));
+            }
+            c.close();
+        }
+        if (DEBUG) {
+            Log.i(TAG, "convertFromCursorToPlayList");
+            for (PlayListInfo info : playList) {
+                Log.e(TAG, info.toString());
+            }
+        }
     }
 
     public static void convertFromCursorToPlayList(Cursor c, ArrayList<PlayListInfo> playList) {

@@ -5,6 +5,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class PlayListInfo implements Parcelable {
+    public static final int IS_LOCAL_INFO = 0;
+
+    public static final int NOT_LOCAL_INFO = 1;
+
     public String mArtist;
 
     public String mMusicTitle;
@@ -21,11 +25,19 @@ public class PlayListInfo implements Parcelable {
 
     public int mRank;
 
+    public int mIsLocal;
+
     public PlayListInfo() {
     }
 
     public PlayListInfo(String artist, String albumTitle, String musicTitle, String rtspH,
             String rtspL, String httpUri, String videoId, int rank) {
+        this(artist, albumTitle, musicTitle, rtspH,
+                rtspL, httpUri, videoId, rank, NOT_LOCAL_INFO);
+    }
+
+    public PlayListInfo(String artist, String albumTitle, String musicTitle, String rtspH,
+            String rtspL, String httpUri, String videoId, int rank, int isLocal) {
         mArtist = artist;
         mMusicTitle = musicTitle;
         mRtspHighQuility = rtspH;
@@ -34,6 +46,7 @@ public class PlayListInfo implements Parcelable {
         mVideoId = videoId;
         mAlbumTitle = albumTitle;
         mRank = rank;
+        mIsLocal = isLocal;
     }
 
     public String toString() {
@@ -56,6 +69,7 @@ public class PlayListInfo implements Parcelable {
         mVideoId = parcel.readString();
         mAlbumTitle = parcel.readString();
         mRank = parcel.readInt();
+        mIsLocal = parcel.readInt();
     }
 
     public PlayListInfo(Parcel in) {
@@ -72,6 +86,7 @@ public class PlayListInfo implements Parcelable {
         write.writeString(mVideoId);
         write.writeString(mAlbumTitle);
         write.writeInt(mRank);
+        write.writeInt(mIsLocal);
     }
 
     public static final Parcelable.Creator<PlayListInfo> CREATOR = new Parcelable.Creator<PlayListInfo>() {

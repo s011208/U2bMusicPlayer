@@ -69,6 +69,12 @@ public class PlayList {
         public void loadDone();
     }
 
+    public void retrieveLocalPlayList() {
+        mPlayList.clear();
+        Cursor data = mDatabaseHelper.queryDataFromLocalData();
+        U2bDatabaseHelper.convertFromLocalMusicDataCursorToPlayList(data, mPlayList);
+    }
+
     public void retrieveAllPlayList() {
         mPlayList.clear();
         Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
@@ -102,7 +108,7 @@ public class PlayList {
 
     @SuppressWarnings("unchecked")
     public ArrayList<PlayListInfo> getPlayList() {
-        return (ArrayList<PlayListInfo>)mPlayList.clone();
+        return (ArrayList<PlayListInfo>) mPlayList.clone();
     }
 
     public static synchronized PlayList getInstance(Context context) {
@@ -123,9 +129,9 @@ public class PlayList {
     public static String getTimeString(long millis) {
         StringBuffer buf = new StringBuffer();
 
-        int hours = (int)(millis / (1000 * 60 * 60));
-        int minutes = (int)((millis % (1000 * 60 * 60)) / (1000 * 60));
-        int seconds = (int)(((millis % (1000 * 60 * 60)) % (1000 * 60)) / 1000);
+        int hours = (int) (millis / (1000 * 60 * 60));
+        int minutes = (int) ((millis % (1000 * 60 * 60)) / (1000 * 60));
+        int seconds = (int) (((millis % (1000 * 60 * 60)) % (1000 * 60)) / 1000);
 
         buf.append(String.format("%02d", hours)).append(":").append(String.format("%02d", minutes))
                 .append(":").append(String.format("%02d", seconds));
