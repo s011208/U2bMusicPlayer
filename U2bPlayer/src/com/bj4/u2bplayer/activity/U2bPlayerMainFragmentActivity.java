@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -43,6 +44,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private static final String TAG = "U2bPlayerMainFragmentActivity";
 
     private static final boolean DEBUG = false && PlayMusicApplication.OVERALL_DEBUG;
+
+    protected static final boolean DEBUG_STRICT_MODE = false;
 
     public static final int FRAGMENT_TYPE_MAIN = 0;
 
@@ -72,13 +75,19 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private ArrayList<MainFragmentCallback> mFragmentCallbacks = new ArrayList<MainFragmentCallback>();
 
-    public void addCallback(MainFragmentCallback cb) {
-        mFragmentCallbacks.add(cb);
-    }
+    private ISpiderService mSpiderService;
 
-    public void removeCallback(MainFragmentCallback cb) {
-        mFragmentCallbacks.remove(cb);
-    }
+    private PlayList mPlayList;
+
+    private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
+
+        @Override
+        public void loadDone() {
+            if (DEBUG) {
+                Log.i(TAG, "load done");
+            }
+        }
+    };
 
     public interface MainFragmentCallback {
         public void changePlayIndex();
@@ -122,21 +131,26 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     };
 
-    private ISpiderService mSpiderService;
+    public void addCallback(MainFragmentCallback cb) {
+        mFragmentCallbacks.add(cb);
+    }
 
-    private PlayList mPlayList;
+    public void removeCallback(MainFragmentCallback cb) {
+        mFragmentCallbacks.remove(cb);
+    }
 
-    private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
-
-        @Override
-        public void loadDone() {
-            if (DEBUG) {
-                Log.i(TAG, "load done");
-            }
+    protected void runStrictModeIfNeeded() {
+        if (DEBUG_STRICT_MODE) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads()
+                    .detectDiskWrites().detectNetwork().penaltyLog().detectAll().build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects().penaltyLog().penaltyDeath()
+                    .detectActivityLeaks().detectAll().build());
         }
-    };
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
+        runStrictModeIfNeeded();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.u2b_main_activity);
         initComponents();
@@ -175,7 +189,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             Object windowManagerService = m.invoke(null, new Object[] {});
             c = windowManagerService.getClass();
             m = c.getDeclaredMethod("hasNavigationBar", new Class<?>[] {});
-            hasNavigationBar = (Boolean)m.invoke(windowManagerService, new Object[] {});
+            hasNavigationBar = (Boolean) m.invoke(windowManagerService, new Object[] {});
             if (DEBUG)
                 Log.d(TAG, "hasNavigationBar: " + hasNavigationBar);
         } catch (Exception e) {
@@ -185,8 +199,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // TODO do something about transparent navigation bar
-            int statusBarHeight = (int)getResources().getDimension(R.dimen.status_bar_height);
-            int navigationBarHeight = hasNavigationBar ? (int)getResources().getDimension(
+            int statusBarHeight = (int) getResources().getDimension(R.dimen.status_bar_height);
+            int navigationBarHeight = hasNavigationBar ? (int) getResources().getDimension(
                     R.dimen.navigation_bar_height) : 0;
             // mMainLayout.setPadding(mMainLayout.getPaddingLeft(),
             // statusBarHeight,
@@ -200,10 +214,10 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (mPlayList.getPlayList().isEmpty())
             mPlayList.retrieveAllPlayList();
         mPlayList.addCallback(mPlayListCallback);
-        mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
-        mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
-        mOptionBtn = (ImageButton)findViewById(R.id.menu);
-        mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
+        mMainLayout = (RelativeLayout) findViewById(R.id.u2b_main_activity_main_layout);
+        mActionBar = (RelativeLayout) findViewById(R.id.action_bar_parent);
+        mOptionBtn = (ImageButton) findViewById(R.id.menu);
+        mActionBarTitle = (TextView) findViewById(R.id.action_bar_music_info);
         mActionBarTitle.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -220,21 +234,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (mU2bMainFragment == null) {
             mU2bMainFragment = new U2bMainFragment();
         }
-        return (U2bMainFragment)mU2bMainFragment;
+        return (U2bMainFragment) mU2bMainFragment;
     }
 
     private synchronized U2bPlayListFragment getPlayListFragment() {
         if (mU2bPlayListFragment == null) {
             mU2bPlayListFragment = new U2bPlayListFragment();
         }
-        return (U2bPlayListFragment)mU2bPlayListFragment;
+        return (U2bPlayListFragment) mU2bPlayListFragment;
     }
 
     private synchronized U2bPlayInfoFragment getPlayInfoFragment() {
         if (mU2bPlayInfoFragment == null) {
             mU2bPlayInfoFragment = new U2bPlayInfoFragment();
         }
-        return (U2bPlayInfoFragment)mU2bPlayInfoFragment;
+        return (U2bPlayInfoFragment) mU2bPlayInfoFragment;
     }
 
     public void initActionBarComponents() {
