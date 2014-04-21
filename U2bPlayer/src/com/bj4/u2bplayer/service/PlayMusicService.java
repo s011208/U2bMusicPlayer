@@ -102,32 +102,23 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     private void playMusic(int index) {
         ArrayList<PlayListInfo> playList = mPlayList.getPlayList();
-        int pointer = mPlayList.getPointer();
+        int pointer = 0;
         if (DEBUG)
             Log.d(TAG, "play: " + index);
         if (playList.isEmpty())
             return;
         if (index == PLAY_NEXT_INDEX) {
-            if (pointer >= playList.size()) {
-                pointer = 0;
-            } else {
-                ++pointer;
-            }
+            pointer = mPlayList.getNextPointer();
         } else if (index == PLAY_PREVIOUS_INDEX) {
-            if (pointer < 0) {
-                pointer = playList.size() - 1;
-            } else {
-                --pointer;
-            }
+            pointer = mPlayList.getPreviousPointer();
         } else {
             pointer = index;
-            if (pointer >= playList.size()) {
+            if (pointer >= playList.size() || pointer < 0) {
                 pointer = 0;
             }
         }
         try {
             PlayListInfo currentInfo = playList.get(pointer);
-            Log.e("QQQQ", "currentInfo: " + currentInfo);
             mPlayer.setDataSource(currentInfo.mRtspHighQuility, currentInfo);
             PlayListInfo nextInfo = playList.get(pointer + 1);
             if (nextInfo != null) {

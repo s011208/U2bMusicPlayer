@@ -39,26 +39,38 @@ public class PlayList {
     }
 
     public int getPointer() {
-        return mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
+        int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
+        if (index >= mPlayList.size() || index < 0) {
+            index = 0;
+            mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, index).apply();
+        }
+        return index;
+    }
+
+    public int getPreviousPointer() {
+        int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) - 1;
+        if (index >= mPlayList.size()) {
+            index = 0;
+        } else if (index < 0) {
+            index = mPlayList.size() - 1;
+        }
+        return index;
     }
 
     public int getNextPointer() {
-        if (mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1 >= mPlayList.size()) {
-            return 0;
+        int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1;
+        if (index >= mPlayList.size() || index < 0) {
+            index = 0;
         }
-        return mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1;
+        return index;
     }
 
     public PlayListInfo getCurrentPlayListInfo() {
-        return mPlayList.get(mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0));
+        return mPlayList.get(getPointer());
     }
 
     public PlayListInfo getNextPlayListInfo() {
-        PlayListInfo rtn = mPlayList.get(mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1);
-        if (rtn == null) {
-            rtn = mPlayList.get(0);
-        }
-        return rtn;
+        return mPlayList.get(getNextPointer());
     }
 
     public void setPointer(final int pointer) {
