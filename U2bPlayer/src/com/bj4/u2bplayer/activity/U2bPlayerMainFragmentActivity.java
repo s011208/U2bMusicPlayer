@@ -1,7 +1,6 @@
 
 package com.bj4.u2bplayer.activity;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -16,7 +15,6 @@ import com.bj4.u2bplayer.service.PlayMusicService;
 import com.bj4.u2bplayer.service.SpiderService;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,12 +34,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;

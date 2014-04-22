@@ -6,6 +6,7 @@ import com.bj4.u2bplayer.R;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,6 +25,8 @@ public class UnCaughtExceptionHandlerActivity extends Activity {
         try {
             String crashLog = this.getIntent()
                     .getStringExtra(PlayMusicApplication.INTENT_CRASH_LOG);
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String appVersionName = pInfo.versionName;
             final Dialog dialog = new Dialog(UnCaughtExceptionHandlerActivity.this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.uncaught_exception_dialog);
@@ -32,9 +35,9 @@ public class UnCaughtExceptionHandlerActivity extends Activity {
             dialogWindow.setGravity(Gravity.CENTER);
             lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
             lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            TextView tv = (TextView) dialog.findViewById(R.id.exception_log);
-            tv.setText(crashLog);
-            Button btn = (Button) dialog.findViewById(R.id.uncaught_exit);
+            TextView tv = (TextView)dialog.findViewById(R.id.exception_log);
+            tv.setText("version: " + appVersionName + "\n" + crashLog);
+            Button btn = (Button)dialog.findViewById(R.id.uncaught_exit);
             btn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
