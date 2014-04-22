@@ -17,9 +17,11 @@ import com.bj4.u2bplayer.service.SpiderService;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -137,6 +139,26 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     };
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Intent.ACTION_SCREEN_ON.equals(action)) {
+            }
+        }
+    };
+
+    private void unRegisterBroadcastReceiver() {
+        unregisterReceiver(mReceiver);
+    }
+
+    private void registerBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        registerReceiver(mReceiver, filter);
+    }
+
     public void addCallback(MainFragmentCallback cb) {
         mFragmentCallbacks.add(cb);
     }
@@ -161,12 +183,13 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         setContentView(R.layout.u2b_main_activity);
         initComponents();
         themeSwitcher();
-        switchFragment(sCurrentFragment);
+        switchFragment(FRAGMENT_TYPE_PLAYLIST);
         startService(new Intent(this, PlayMusicService.class));
         bindService(new Intent(this, PlayMusicService.class), mMusicPlayServiceConnection,
                 Context.BIND_AUTO_CREATE);
         bindService(new Intent(this, SpiderService.class), mSpiderServiceConnection,
                 Context.BIND_AUTO_CREATE);
+        registerBroadcastReceiver();
     }
 
     public int getApplicationTheme() {
@@ -195,7 +218,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             Object windowManagerService = m.invoke(null, new Object[] {});
             c = windowManagerService.getClass();
             m = c.getDeclaredMethod("hasNavigationBar", new Class<?>[] {});
-            hasNavigationBar = (Boolean) m.invoke(windowManagerService, new Object[] {});
+            hasNavigationBar = (Boolean)m.invoke(windowManagerService, new Object[] {});
             if (DEBUG)
                 Log.d(TAG, "hasNavigationBar: " + hasNavigationBar);
         } catch (Exception e) {
@@ -205,8 +228,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // TODO do something about transparent navigation bar
-            int statusBarHeight = (int) getResources().getDimension(R.dimen.status_bar_height);
-            int navigationBarHeight = hasNavigationBar ? (int) getResources().getDimension(
+            int statusBarHeight = (int)getResources().getDimension(R.dimen.status_bar_height);
+            int navigationBarHeight = hasNavigationBar ? (int)getResources().getDimension(
                     R.dimen.navigation_bar_height) : 0;
             // mMainLayout.setPadding(mMainLayout.getPaddingLeft(),
             // statusBarHeight,
@@ -220,10 +243,10 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (mPlayList.getPlayList().isEmpty())
             mPlayList.retrieveAllPlayList();
         mPlayList.addCallback(mPlayListCallback);
-        mMainLayout = (RelativeLayout) findViewById(R.id.u2b_main_activity_main_layout);
-        mActionBar = (RelativeLayout) findViewById(R.id.action_bar_parent);
-        mOptionBtn = (ImageButton) findViewById(R.id.menu);
-        mActionBarTitle = (TextView) findViewById(R.id.action_bar_music_info);
+        mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
+        mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
+        mOptionBtn = (ImageButton)findViewById(R.id.menu);
+        mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
         mActionBarTitle.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -240,21 +263,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (mU2bMainFragment == null) {
             mU2bMainFragment = new U2bMainFragment();
         }
-        return (U2bMainFragment) mU2bMainFragment;
+        return (U2bMainFragment)mU2bMainFragment;
     }
 
     private synchronized U2bPlayListFragment getPlayListFragment() {
         if (mU2bPlayListFragment == null) {
             mU2bPlayListFragment = new U2bPlayListFragment();
         }
-        return (U2bPlayListFragment) mU2bPlayListFragment;
+        return (U2bPlayListFragment)mU2bPlayListFragment;
     }
 
     private synchronized U2bPlayInfoFragment getPlayInfoFragment() {
         if (mU2bPlayInfoFragment == null) {
             mU2bPlayInfoFragment = new U2bPlayInfoFragment();
         }
-        return (U2bPlayInfoFragment) mU2bPlayInfoFragment;
+        return (U2bPlayInfoFragment)mU2bPlayInfoFragment;
     }
 
     public void initActionBarComponents() {
@@ -392,6 +415,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         unbindService(mMusicPlayServiceConnection);
         unbindService(mSpiderServiceConnection);
         mPlayList.removeCallback(mPlayListCallback);
+        unRegisterBroadcastReceiver();
     }
 
     private ServiceConnection mSpiderServiceConnection = new ServiceConnection() {
