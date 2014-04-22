@@ -1,6 +1,8 @@
 
 package com.bj4.u2bplayer.activity.fragments;
 
+import java.io.IOException;
+
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
@@ -10,6 +12,7 @@ import com.bj4.u2bplayer.utilities.PlayListInfo;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -17,6 +20,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
@@ -25,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallback {
@@ -71,6 +76,8 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
     private static PlayListInfo sInfo;
 
     private boolean mIsFragmentStart = false;
+
+    private SurfaceView mPlaySurface;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -174,7 +181,10 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
             }
         });
         mPlayInfo = (TextView)mContentView.findViewById(R.id.play_info_playing_info);
+        mPlaySurface = (SurfaceView)mContentView.findViewById(R.id.play_info_video_surface);
         mMainContainer = (ViewSwitcher)mContentView.findViewById(R.id.play_info_main_container);
+        mMainContainer.setDisplayedChild(0);
+
         mControlPanel = (RotatedControlPanel)mContentView
                 .findViewById(R.id.play_info_control_panel);
         mControlPanel.setParent(this);
@@ -235,6 +245,21 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
             mPlayOrPause.setDisplayedChild(0);
         }
         startTrackSeekBar();
+    }
+
+    private void playCurrentInfoVideo() {
+        try {
+            mMainContainer.setDisplayedChild(1);
+            Toast.makeText(mActivity, "start to download video", Toast.LENGTH_SHORT).show();
+            MediaPlayer mp = new MediaPlayer();
+            mp.setDataSource(sInfo.mRtspHighQuility);
+            mp.setScreenOnWhilePlaying(true);
+            mp.setDisplay(mPlaySurface.getHolder());
+            mp.prepare();
+            mp.start();
+        } catch (Exception e) {
+            Log.e(TAG, "failed play", e);
+        }
     }
 
     private Runnable mTrackSeekBarRunnable = new Runnable() {

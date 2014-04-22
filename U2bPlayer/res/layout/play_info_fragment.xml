@@ -30,6 +30,11 @@
                 android:textSize="24sp" >
             </TextView>
         </LinearLayout>
+
+        <SurfaceView
+            android:id="@+id/play_info_video_surface"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </ViewSwitcher>
 
     <com.bj4.u2bplayer.activity.fragments.RotatedControlPanel
@@ -47,7 +52,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginBottom="@dimen/play_info_fragment_control_panel_seekbar_margin_bottom"
             android:layout_marginRight="@dimen/play_info_fragment_control_panel_seekbar_margin_left"
-            android:rotation="315"/>
+            android:rotation="315" />
 
         <ImageView
             android:id="@+id/play_info_play_previous"
