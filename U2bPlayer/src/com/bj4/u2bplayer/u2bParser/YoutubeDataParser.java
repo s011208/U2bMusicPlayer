@@ -11,21 +11,26 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
 public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallback {
     // https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters
     // https://gdata.youtube.com/feeds/api/videos?q=五月天+入陣曲&max-results=5&alt=json&orderby=viewCount&format=6&fields=entry(id,media:group(media:content(@url,@duration)))
+    // http://img.youtube.com/vi/<video id>/0.jpg
     private static final String TAG = "YoutubeDataParser";
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
@@ -67,6 +72,11 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                             for (int i = 0; i < entry.length(); i++) {
                                 JSONObject jOb = ((JSONObject)entry.get(i));
                                 info.mVideoId = jOb.getJSONObject("id").getString("$t");
+                                if (info.mVideoId != null) {
+                                    info.mVideoId = info.mVideoId.substring(
+                                            info.mVideoId.lastIndexOf("/") + 1,
+                                            info.mVideoId.length());
+                                }
                                 info.mHttpUri = ((JSONObject)jOb.getJSONObject("media$group")
                                         .getJSONArray("media$content").get(0)).getString("url");
                                 info.mRtspHighQuility = ((JSONObject)jOb
@@ -90,10 +100,6 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                     callback.setResult(infoList);
                     final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication
                             .getDataBaseHelper();
-                    if (DEBUG) {
-                        mDatabaseHelper.getPlayListByArtist("韋禮安");
-                        mDatabaseHelper.getPlayListByMusic("為愛而活");
-                    }
                 }
             }
         });
@@ -160,4 +166,34 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
         }
     }
 
+    public static Bitmap getYoutubeThumbnail(String vId) {
+        return getYoutubeThumbnail(vId, 0);
+    }
+
+    /**
+     * @param vId video id
+     * @param num 0 is the largest one, 1&2&3 are smaller
+     * @return Bitmap if retrieve something, else null
+     */
+    public static Bitmap getYoutubeThumbnail(String vId, int num) {
+        try {
+            URL imageUrl = new URL("http://img.youtube.com/vi/" + vId + "/" + num + ".jpg");
+            URLConnection ucon = imageUrl.openConnection();
+
+            InputStream is = ucon.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+
+            ByteArrayBuffer baf = new ByteArrayBuffer(500);
+            int current = 0;
+            while ((current = bis.read()) != -1) {
+                baf.append((byte)current);
+            }
+            byte[] imageRaw = baf.toByteArray();
+            Bitmap rtn = BitmapFactory.decodeByteArray(imageRaw, 0, imageRaw.length);
+            return rtn;
+        } catch (Exception e) {
+            Log.d("ImageManager", "Error: " + e.toString());
+        }
+        return null;
+    }
 }
