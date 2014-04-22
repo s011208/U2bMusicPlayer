@@ -192,7 +192,7 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
             Bitmap rtn = BitmapFactory.decodeByteArray(imageRaw, 0, imageRaw.length);
             return rtn;
         } catch (Exception e) {
-            Log.d("ImageManager", "Error: " + e.toString());
+            Log.d(TAG, "Error: " + e.toString());
         }
         return null;
     }
