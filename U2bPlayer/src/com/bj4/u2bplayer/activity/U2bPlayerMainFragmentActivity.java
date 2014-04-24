@@ -71,7 +71,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private SharedPreferences mPref;
 
-    private static int sCurrentFragment = -1;
+    private static int sCurrentFragment = 0;
 
     private IPlayMusicService mPlayMusicService;
 

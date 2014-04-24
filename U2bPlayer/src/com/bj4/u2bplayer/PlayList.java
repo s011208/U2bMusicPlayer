@@ -92,6 +92,12 @@ public class PlayList {
         Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
         U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
     }
+    
+    public void setAlbumPlayList(String album) {
+        mPlayList.clear();
+        Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_ALBUM + "='"+ album+ "'");
+        U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
+    }
 
     public void notifyScanDone() {
         for (PlayListLoaderCallback c : mCallbacks) {

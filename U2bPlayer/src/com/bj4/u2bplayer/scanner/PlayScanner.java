@@ -48,12 +48,17 @@ public class PlayScanner {
 
             // 地粂Top100る篯
             String chineseKkbox100 = "http://www.kkbox.com/tw/tc/charts/chinese-monthly-song-latest.html";
-            conversion(chineseKkbox100, "地粂", "KKBOX");
+            conversion(chineseKkbox100, "地粂", "KKBOX", false);
             insertU2bDB(MasterlistSource);
 
             // hitfmtop50
             String htifm50 = "http://www.hitoradio.com/newweb/chart_2.php?ch_year=2013&pageNum_rsList=0";
-            conversion(htifm50, "地粂", "HITFM");
+            conversion(htifm50, "地粂", "HITFM", false);
+            insertU2bDB(MasterlistSource);
+            
+            // hitfmtop50
+            htifm50 = "http://www.hitoradio.com/newweb/chart_2.php?ch_year=2013&pageNum_rsList=1";
+            conversion(htifm50, "地粂", "HITFM", true);
             insertU2bDB(MasterlistSource);
 
         }
@@ -130,9 +135,11 @@ public class PlayScanner {
      * @param language
      * @param webType
      */
-    private void conversion(String link, String language, String webType) {
+    private void conversion(String link, String language, String webType, boolean last) {
         MasterlistSource = new ArrayList<ContentValues>();
         mRank = 0;
+
+        if(last) mRank = 50;
 
         try {
             // 眔呼ず甧 锣Θゅ郎
@@ -193,7 +200,7 @@ public class PlayScanner {
             if (mArtist != null && mSongs != null && mMonth != null) {
                 contentSouce = new ContentValues();
                 contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, mArtist[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + mMonth[1] + "るTop100");
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + mMonth[1] + "るKKbox Top100");
                 contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, mSongs[0]);
                 contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++mRank);
                 MasterlistSource.add(contentSouce);
@@ -212,6 +219,8 @@ public class PlayScanner {
      * @param language
      */
     private void searchHitFMData(String language) {
+        
+            
         try {
             // 簈Ρ
             if (mStr.contains("<td width=\"200\">") && mSongs == null) {
@@ -220,9 +229,9 @@ public class PlayScanner {
             }
 
             // 盡胯
-            if (mStr.contains("<td width=\"200\">") && mSongs != null) {
-                mAlbum = mStr.split("<td width=\"200\">");
-                mAlbum = mAlbum[1].split("</td>");
+            if (mStr.contains("selected>") && mAlbum == null) {
+                mAlbum = mStr.split("selected>");
+                mAlbum = mAlbum[1].split("</option>");
             }
 
             // 簈も
@@ -235,7 +244,7 @@ public class PlayScanner {
             if (mSongs != null && mAlbum != null && mArtist != null) {
                 contentSouce = new ContentValues();
                 contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, mArtist[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, mAlbum[0]);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, mAlbum[0]+"HitFM虫Ρ");
                 contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, mSongs[0]);
                 contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++mRank);
                 MasterlistSource.add(contentSouce);
