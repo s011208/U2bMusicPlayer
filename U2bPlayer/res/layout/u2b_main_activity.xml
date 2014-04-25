@@ -7,32 +7,13 @@
     <include
         android:layout_alignParentTop="true"
         layout="@layout/action_bar" />
-  	<!--    
-	<ListView
+
+    <LinearLayout
         android:id="@+id/main_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/play_list_controll_panel"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:scrollbarStyle="outsideOverlay"
-        android:layout_marginTop="5dp"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="5dp" >
-    </ListView>
-    -->
-  
-	    <LinearLayout
-	        android:id="@+id/main_fragment_container"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:layout_alignParentBottom="true"
-	        android:layout_below="@+id/action_bar_parent"
-	        android:orientation="vertical"
-	        android:scrollbarStyle="outsideOverlay" >  
-	    </LinearLayout>
+        android:layout_below="@+id/action_bar_parent"
+        android:orientation="vertical">  
+    </LinearLayout>
 
 </RelativeLayout>

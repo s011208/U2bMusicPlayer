@@ -177,7 +177,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         setContentView(R.layout.u2b_main_activity);
         initComponents();
         themeSwitcher();
-        switchFragment(FRAGMENT_TYPE_PLAYLIST);
+        switchFragment(FRAGMENT_TYPE_MAIN);
         startService(new Intent(this, PlayMusicService.class));
         bindService(new Intent(this, PlayMusicService.class), mMusicPlayServiceConnection,
                 Context.BIND_AUTO_CREATE);
@@ -322,11 +322,13 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void switchToInternetMusicData() {
         mPlayList.retrieveAllPlayList();
         getPlayListFragment().changePlayIndex();
+        getMainFragment().localMusic("");
     }
 
     private void switchToLocalMusicData() {
         mPlayList.retrieveLocalPlayList();
         getPlayListFragment().changePlayIndex();
+        getMainFragment().localMusic("local");
     }
 
     private void startToScan() {

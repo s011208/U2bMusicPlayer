@@ -50,13 +50,39 @@ public class PlayScanner {
             String chineseKkbox100 = "http://www.kkbox.com/tw/tc/charts/chinese-monthly-song-latest.html";
             conversion(chineseKkbox100, "華語", "KKBOX", false);
             insertU2bDB(MasterlistSource);
+            
+            // 西洋Top100月榜
+            String westernKkbox100 = "http://www.kkbox.com/tw/tc/charts/western-daily-song-latest.html";
+            conversion(westernKkbox100, "西洋", "KKBOX", false);
+            insertU2bDB(MasterlistSource);
+            
+            // 日語Top100月榜
+            String japaneseKkbox100 = "http://www.kkbox.com/tw/tc/charts/japanese-daily-song-latest.html";
+            conversion(japaneseKkbox100, "日語", "KKBOX", false);
+            insertU2bDB(MasterlistSource);
+            
+            // 韓語Top100月榜
+            String koreanKkbox100 = "http://www.kkbox.com/tw/tc/charts/korean-daily-song-latest.html";
+            conversion(koreanKkbox100, "韓語", "KKBOX", false);
+            insertU2bDB(MasterlistSource);
+            
+            // 台語Top100月榜
+            String hokkienKkbox100 = "http://www.kkbox.com/tw/tc/charts/hokkien-daily-song-latest.html";
+            conversion(hokkienKkbox100, "台語", "KKBOX", false);
+            insertU2bDB(MasterlistSource);
+            
+            // 粵語Top100月榜
+            String cantoneseKkbox100 = "http://www.kkbox.com/tw/tc/charts/cantonese-daily-song-latest.html";
+            conversion(cantoneseKkbox100, "粵語", "KKBOX", false);
+            insertU2bDB(MasterlistSource);
+            
+            
+            
 
-            // hitfm年度top50
+            // hitfm年度top50+50
             String htifm50 = "http://www.hitoradio.com/newweb/chart_2.php?ch_year=2013&pageNum_rsList=0";
             conversion(htifm50, "華語", "HITFM", false);
             insertU2bDB(MasterlistSource);
-            
-            // hitfm年度top50
             htifm50 = "http://www.hitoradio.com/newweb/chart_2.php?ch_year=2013&pageNum_rsList=1";
             conversion(htifm50, "華語", "HITFM", true);
             insertU2bDB(MasterlistSource);
@@ -138,7 +164,8 @@ public class PlayScanner {
     private void conversion(String link, String language, String webType, boolean last) {
         MasterlistSource = new ArrayList<ContentValues>();
         mRank = 0;
-
+        
+        //HitFM Top100分兩頁 所以分兩次insert
         if(last) mRank = 50;
 
         try {
