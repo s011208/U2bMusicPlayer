@@ -245,8 +245,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
             @Override
             public void onClick(View v) {
-                getPlayInfoFragment().resetInfo();
-                switchFragment(FRAGMENT_TYPE_MUSIC_INFO);
+//                getPlayInfoFragment().resetInfo();
+//                switchFragment(FRAGMENT_TYPE_MUSIC_INFO);
+                switchFragment(FRAGMENT_TYPE_PLAYLIST);
             }
         });
         initMainLayout();
@@ -352,9 +353,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             case FRAGMENT_TYPE_PLAYLIST:
                 target = getPlayListFragment();
                 break;
-            case FRAGMENT_TYPE_MUSIC_INFO:
-                target = getPlayInfoFragment();
-                break;
+//            case FRAGMENT_TYPE_MUSIC_INFO:
+//                target = getPlayInfoFragment();
+//                break;
             default:
                 target = getPlayListFragment();
                 break;
@@ -372,8 +373,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void viewPlayInfo(PlayListInfo info) {
-        switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_INFO);
-        getPlayInfoFragment().setContentInfo(info);
+//        switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_INFO);
+//        getPlayInfoFragment().setContentInfo(info);
     }
 
     public void setActionMusicInfo(PlayListInfo info) {

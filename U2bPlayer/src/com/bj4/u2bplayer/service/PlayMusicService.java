@@ -8,6 +8,7 @@ import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.utilities.NotificationBuilder;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,6 +28,7 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
 public class PlayMusicService extends Service implements PlayList.PlayListLoaderCallback {
     private static final boolean DEBUG = true;
@@ -63,6 +65,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            NotificationManager nm = (NotificationManager) context
+                    .getSystemService(Context.NOTIFICATION_SERVICE);
             String action = intent.getAction();
             if (Intent.ACTION_HEADSET_PLUG.equals(action) && mPlayer != null) {
                 if (intent.hasExtra("state")) {
@@ -71,8 +75,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                         if (mPlayer.isPlaying()) {
                             pauseMusic();
                         }
+                        nm.cancel(NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID);
                     } else if (!headsetConnected && intent.getIntExtra("state", 0) == 1) {
                         headsetConnected = true;
+                        nm.notify(null, NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID,
+                                NotificationBuilder.createHeadSetConnectedNotification(context));
                     }
                 }
             }
@@ -97,8 +104,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         mPlayer.setHandler(mHandler);
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(this);
-        startForeground(NotificationBuilder.NOTIFICATION_ID,
-                NotificationBuilder.createSimpleNotification(getApplicationContext(), null));
         registerBroadcastReceiver();
     }
 
@@ -514,8 +519,10 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void notifyNotificationChanged() {
-        NotificationBuilder.handleSimpleNotification(getApplicationContext(),
-                mPlayList.getCurrentPlayListInfo());
+        startForeground(
+                NotificationBuilder.NOTIFICATION_ID,
+                NotificationBuilder.createSimpleNotification(getApplicationContext(),
+                        mPlayList.getCurrentPlayListInfo()));
     }
 
     private void notifyPlayInfoChanged() {

@@ -20,6 +20,8 @@ public class NotificationBuilder {
 
     public static final int NOTIFICATION_ID = NotificationBuilder.class.hashCode();
 
+    public static final int RECOMMAND_START_APP_NOTIFICATION_ID = NOTIFICATION_ID + 1;
+
     private NotificationBuilder() {
     }
 
@@ -61,12 +63,45 @@ public class NotificationBuilder {
 
     public static void handleSimpleNotification(final Context context, final PlayListInfo info) {
         try {
-            NotificationManager nm = (NotificationManager)context
+            NotificationManager nm = (NotificationManager) context
                     .getSystemService(Context.NOTIFICATION_SERVICE);
             nm.notify(null, NOTIFICATION_ID, createSimpleNotification(context, info));
         } catch (Exception e) {
             if (DEBUG)
                 Log.w(TAG, "failed to create notification", e);
         }
+    }
+
+    public static Notification createHeadSetConnectedNotification(final Context context) {
+        Intent notifyIntent = new Intent(context, U2bPlayerMainFragmentActivity.class);
+        PendingIntent appIntent = PendingIntent.getActivity(context, 0, notifyIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        String title = "Recommand music apps";
+        String content = "Bj4 U2B music player";
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                Notification.Builder builder = new Notification.Builder(context);
+                builder.setContentTitle(title).setContentText(content)
+                        .setSmallIcon(R.drawable.ic_launcher).setContentIntent(appIntent)
+                        .setAutoCancel(true);
+                int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                if (currentapiVersion >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                    builder.setPriority(Notification.PRIORITY_LOW);
+                    return builder.build();
+                } else {
+                    return builder.getNotification();
+                }
+            } else {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+                builder.setContentTitle(title).setContentText(content)
+                        .setSmallIcon(R.drawable.ic_launcher).setContentIntent(appIntent)
+                        .setPriority(Notification.PRIORITY_LOW).setAutoCancel(true);
+                return builder.build();
+            }
+        } catch (Exception e) {
+            if (DEBUG)
+                Log.w(TAG, "failed to create notification", e);
+        }
+        return null;
     }
 }

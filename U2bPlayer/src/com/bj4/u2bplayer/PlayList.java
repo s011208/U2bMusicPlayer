@@ -82,20 +82,26 @@ public class PlayList {
     }
 
     public void retrieveLocalPlayList() {
-        mPlayList.clear();
+        resetPlayList();
         Cursor data = mDatabaseHelper.queryDataFromLocalData();
         U2bDatabaseHelper.convertFromLocalMusicDataCursorToPlayList(data, mPlayList);
     }
 
     public void retrieveAllPlayList() {
-        mPlayList.clear();
+        resetPlayList();
         Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
         U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
     }
-    
-    public void setAlbumPlayList(String album) {
+
+    public void resetPlayList() {
         mPlayList.clear();
-        Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_ALBUM + "='"+ album+ "'");
+        setPointer(0);
+    }
+
+    public void setAlbumPlayList(String album) {
+        resetPlayList();
+        Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_ALBUM + "='" + album
+                + "'");
         U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
     }
 
