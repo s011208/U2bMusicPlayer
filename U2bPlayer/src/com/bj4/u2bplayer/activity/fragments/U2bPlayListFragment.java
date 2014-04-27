@@ -52,15 +52,15 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
     private void initComponents() {
         if (mContentView != null) {
-            mActivity = (U2bPlayerMainFragmentActivity)getActivity();
+            mActivity = (U2bPlayerMainFragmentActivity) getActivity();
             mPlayList = PlayList.getInstance(mActivity);
             mLayoutInflater = LayoutInflater.from(mActivity);
             if (DEBUG) {
                 Log.d(TAG, "" + mPlayList.getPlayList().size());
             }
-            mControllPanel = (RelativeLayout)mContentView
+            mControllPanel = (RelativeLayout) mContentView
                     .findViewById(R.id.play_list_controll_panel);
-            mPlayListView = (ListView)mContentView.findViewById(R.id.play_list_view);
+            mPlayListView = (ListView) mContentView.findViewById(R.id.play_list_view);
             mPlayListAdapter = new PlayListAdapter();
             mPlayListView.setSelector(R.color.transparent);
             mPlayListView.setAdapter(mPlayListAdapter);
@@ -70,11 +70,14 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
                     v.setHapticFeedbackEnabled(true);
-//                    mActivity.viewPlayInfo(mPlayList.getPlayList().get(position));
-                    mActivity.play(position);
+                    // mActivity.viewPlayInfo(mPlayList.getPlayList().get(position));
+                    int index = mPlayList.getPointer();
+                    if (index != position || mActivity.isInitialized() == false) {
+                        mActivity.play(position);
+                    }
                 }
             });
-            mPlay = (ImageView)mContentView.findViewById(R.id.play_list_play);
+            mPlay = (ImageView) mContentView.findViewById(R.id.play_list_play);
             mPlay.setOnClickListener(new OnClickListener() {
 
                 @Override
@@ -91,7 +94,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                     mPlayOrPause.setDisplayedChild(1);
                 }
             });
-            mPlayNext = (ImageView)mContentView.findViewById(R.id.play_list_play_next);
+            mPlayNext = (ImageView) mContentView.findViewById(R.id.play_list_play_next);
             mPlayNext.setOnClickListener(new OnClickListener() {
 
                 @Override
@@ -100,7 +103,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                     mActivity.playNext();
                 }
             });
-            mPlayPrevious = (ImageView)mContentView.findViewById(R.id.play_list_play_previous);
+            mPlayPrevious = (ImageView) mContentView.findViewById(R.id.play_list_play_previous);
             mPlayPrevious.setOnClickListener(new OnClickListener() {
 
                 @Override
@@ -109,7 +112,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                     mActivity.playPrevious();
                 }
             });
-            mPause = (ImageView)mContentView.findViewById(R.id.play_list_pause);
+            mPause = (ImageView) mContentView.findViewById(R.id.play_list_pause);
             mPause.setOnClickListener(new OnClickListener() {
 
                 @Override
@@ -119,7 +122,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                     mPlayOrPause.setDisplayedChild(0);
                 }
             });
-            mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_list_play_or_pause);
+            mPlayOrPause = (ViewSwitcher) mContentView.findViewById(R.id.play_list_play_or_pause);
             mPlayOrPause.setDisplayedChild(mActivity.isPlaying() ? 1 : 0);
         }
     }
@@ -182,12 +185,12 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             if (contentView == null) {
                 contentView = mLayoutInflater.inflate(R.layout.play_list_content, parent, false);
                 holder = new ViewHolder();
-                holder.mThumbnail = (ImageView)contentView.findViewById(R.id.play_list_thumbnail);
-                holder.mArtist = (TextView)contentView.findViewById(R.id.play_list_artist);
-                holder.mMusic = (TextView)contentView.findViewById(R.id.play_list_music);
+                holder.mThumbnail = (ImageView) contentView.findViewById(R.id.play_list_thumbnail);
+                holder.mArtist = (TextView) contentView.findViewById(R.id.play_list_artist);
+                holder.mMusic = (TextView) contentView.findViewById(R.id.play_list_music);
                 contentView.setTag(holder);
             } else {
-                holder = (ViewHolder)contentView.getTag();
+                holder = (ViewHolder) contentView.getTag();
             }
             holder.mArtist.setText(mPlayList.getPlayList().get(position).mArtist);
             holder.mMusic.setText(mPlayList.getPlayList().get(position).mMusicTitle);
