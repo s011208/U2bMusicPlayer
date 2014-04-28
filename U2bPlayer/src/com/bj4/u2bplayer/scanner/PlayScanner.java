@@ -15,78 +15,159 @@ import android.util.Log;
 
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
+import com.bj4.u2bplayer.utilities.ProgressCallback;
 
 public class PlayScanner {
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
+
+    public static final String WEB_TYPE_KKBOX = "KKBOX";
+
+    public static final String WEB_TYPE_HITFM = "HITFM";
+
+    public static final String KKBOX_MUSIC_RYTHM_CHINESE_URL = "http://www.kkbox.com/tw/tc/charts/chinese-monthly-song-latest.html";
+
+    public static final String KKBOX_MUSIC_RYTHM_WESTERN_URL = "http://www.kkbox.com/tw/tc/charts/western-daily-song-latest.html";
+
+    public static final String KKBOX_MUSIC_RYTHM_JAPANESE_URL = "http://www.kkbox.com/tw/tc/charts/japanese-daily-song-latest.html";
+
+    public static final String KKBOX_MUSIC_RYTHM_KOREAN_URL = "http://www.kkbox.com/tw/tc/charts/korean-daily-song-latest.html";
+
+    public static final String KKBOX_MUSIC_RYTHM_HOKKIEN_URL = "http://www.kkbox.com/tw/tc/charts/hokkien-daily-song-latest.html";
+
+    public static final String KKBOX_MUSIC_RYTHM_CANTONESE_URL = "http://www.kkbox.com/tw/tc/charts/cantonese-daily-song-latest.html";
+
+    public static final String HITFM_MUSIC_RYTHM_CHINESE_URL_0 = "http://www.hitoradio.com/newweb/chart_2.php?ch_year=2013&pageNum_rsList=0";
+
+    public static final String HITFM_MUSIC_RYTHM_CHINESE_URL_1 = "http://www.hitoradio.com/newweb/chart_2.php?ch_year=2013&pageNum_rsList=1";
+
+    public static final String MUSIC_TYPE_CHINESE = "華語";
+
+    public static final String MUSIC_TYPE_WESTERN = "西洋";
+
+    public static final String MUSIC_TYPE_JAPANESE = "日語";
+
+    public static final String MUSIC_TYPE_KOREAN = "韓語";
+
+    public static final String MUSIC_TYPE_HOKKIEN = "台語";
+
+    public static final String MUSIC_TYPE_CANTONESE = "粵語";
+
+    private static final String TAG = "PlayScanner";
 
     private ArrayList<ContentValues> MasterlistSource;
 
     private ContentValues contentSouce;
 
-    private static final String TAG = "GG";
+    private static String[] sSongs = null;
 
-    private static String[] mSongs = null;
+    private static String[] sAlbum = null;
 
-    private static String[] mAlbum = null;
+    private static String[] sArtist = null;
 
-    private static String[] mArtist = null;
+    private static String[] sMonth = null;
 
-    private static String[] mMonth = null;
+    private static String sStr = null;
 
-    private static String mStr = null;
-
-    private static int mRank;
+    private static int sRank;
 
     public void scan() {
-        new Thread(runnable).start();
+        new Thread(mRunnable).start();
     }
 
-    private Runnable runnable = new Runnable() {
+    public void scan(final String webType, final String musicType, final ProgressCallback mCallback) {
+        new Thread(new ScannerRunnable(webType, musicType, mCallback)).start();
+    }
+
+    private class ScannerRunnable implements Runnable {
+
+        private String mWebType;
+
+        private String mMusicType;
+
+        private ProgressCallback mCallback;
+
+        public ScannerRunnable(String webType, String musicType, final ProgressCallback mCallback) {
+            mWebType = webType;
+            mMusicType = musicType;
+        }
+
         @Override
         public void run() {
-            Log.e(TAG, "start scan...");
+            if (WEB_TYPE_KKBOX.equals(mWebType)) {
+                if (MUSIC_TYPE_CHINESE.equals(mMusicType)) {
+                    conversion(KKBOX_MUSIC_RYTHM_CHINESE_URL, MUSIC_TYPE_CHINESE, WEB_TYPE_KKBOX,
+                            false, mCallback);
+                    insertU2bDB(MasterlistSource);
+                } else if (MUSIC_TYPE_WESTERN.equals(mMusicType)) {
+                    conversion(KKBOX_MUSIC_RYTHM_WESTERN_URL, MUSIC_TYPE_WESTERN, WEB_TYPE_KKBOX,
+                            false, mCallback);
+                    insertU2bDB(MasterlistSource);
+                } else if (MUSIC_TYPE_JAPANESE.equals(mMusicType)) {
+                    conversion(KKBOX_MUSIC_RYTHM_JAPANESE_URL, MUSIC_TYPE_JAPANESE, WEB_TYPE_KKBOX,
+                            false, mCallback);
+                    insertU2bDB(MasterlistSource);
+                } else if (MUSIC_TYPE_KOREAN.equals(mMusicType)) {
+                    conversion(KKBOX_MUSIC_RYTHM_KOREAN_URL, MUSIC_TYPE_KOREAN, WEB_TYPE_KKBOX,
+                            false, mCallback);
+                    insertU2bDB(MasterlistSource);
+                } else if (MUSIC_TYPE_HOKKIEN.equals(mMusicType)) {
+                    conversion(KKBOX_MUSIC_RYTHM_HOKKIEN_URL, MUSIC_TYPE_HOKKIEN, WEB_TYPE_KKBOX,
+                            false, mCallback);
+                    insertU2bDB(MasterlistSource);
+                } else if (MUSIC_TYPE_CANTONESE.equals(mMusicType)) {
+                    conversion(KKBOX_MUSIC_RYTHM_CANTONESE_URL, MUSIC_TYPE_CANTONESE,
+                            WEB_TYPE_KKBOX, false, mCallback);
+                    insertU2bDB(MasterlistSource);
+                }
+            } else if (WEB_TYPE_HITFM.equals(mWebType)) {
+                if (MUSIC_TYPE_CHINESE.equals(mMusicType)) {
+                    conversion(HITFM_MUSIC_RYTHM_CHINESE_URL_0, MUSIC_TYPE_CHINESE, WEB_TYPE_HITFM,
+                            false, mCallback);
+                    insertU2bDB(MasterlistSource);
+
+                    conversion(HITFM_MUSIC_RYTHM_CHINESE_URL_1, MUSIC_TYPE_CHINESE, WEB_TYPE_HITFM,
+                            true, mCallback);
+                    insertU2bDB(MasterlistSource);
+                }
+            }
+        }
+    }
+
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(TAG, "start scan...");
 
             // 華語Top100月榜
-            String chineseKkbox100 = "http://www.kkbox.com/tw/tc/charts/chinese-monthly-song-latest.html";
-            conversion(chineseKkbox100, "華語", "KKBOX", false);
+            conversion(KKBOX_MUSIC_RYTHM_CHINESE_URL, MUSIC_TYPE_CHINESE, WEB_TYPE_KKBOX, false);
             insertU2bDB(MasterlistSource);
-            
+
             // 西洋Top100月榜
-            String westernKkbox100 = "http://www.kkbox.com/tw/tc/charts/western-daily-song-latest.html";
-            conversion(westernKkbox100, "西洋", "KKBOX", false);
+            conversion(KKBOX_MUSIC_RYTHM_WESTERN_URL, MUSIC_TYPE_WESTERN, WEB_TYPE_KKBOX, false);
             insertU2bDB(MasterlistSource);
-            
+
             // 日語Top100月榜
-            String japaneseKkbox100 = "http://www.kkbox.com/tw/tc/charts/japanese-daily-song-latest.html";
-            conversion(japaneseKkbox100, "日語", "KKBOX", false);
+            conversion(KKBOX_MUSIC_RYTHM_JAPANESE_URL, MUSIC_TYPE_JAPANESE, WEB_TYPE_KKBOX, false);
             insertU2bDB(MasterlistSource);
-            
+
             // 韓語Top100月榜
-            String koreanKkbox100 = "http://www.kkbox.com/tw/tc/charts/korean-daily-song-latest.html";
-            conversion(koreanKkbox100, "韓語", "KKBOX", false);
+            conversion(KKBOX_MUSIC_RYTHM_KOREAN_URL, MUSIC_TYPE_KOREAN, WEB_TYPE_KKBOX, false);
             insertU2bDB(MasterlistSource);
-            
+
             // 台語Top100月榜
-            String hokkienKkbox100 = "http://www.kkbox.com/tw/tc/charts/hokkien-daily-song-latest.html";
-            conversion(hokkienKkbox100, "台語", "KKBOX", false);
+            conversion(KKBOX_MUSIC_RYTHM_HOKKIEN_URL, MUSIC_TYPE_HOKKIEN, WEB_TYPE_KKBOX, false);
             insertU2bDB(MasterlistSource);
-            
+
             // 粵語Top100月榜
-            String cantoneseKkbox100 = "http://www.kkbox.com/tw/tc/charts/cantonese-daily-song-latest.html";
-            conversion(cantoneseKkbox100, "粵語", "KKBOX", false);
+            conversion(KKBOX_MUSIC_RYTHM_CANTONESE_URL, MUSIC_TYPE_CANTONESE, WEB_TYPE_KKBOX, false);
             insertU2bDB(MasterlistSource);
-            
-            
-            
 
             // hitfm年度top50+50
-            String htifm50 = "http://www.hitoradio.com/newweb/chart_2.php?ch_year=2013&pageNum_rsList=0";
-            conversion(htifm50, "華語", "HITFM", false);
-            insertU2bDB(MasterlistSource);
-            htifm50 = "http://www.hitoradio.com/newweb/chart_2.php?ch_year=2013&pageNum_rsList=1";
-            conversion(htifm50, "華語", "HITFM", true);
+            conversion(HITFM_MUSIC_RYTHM_CHINESE_URL_0, MUSIC_TYPE_CHINESE, WEB_TYPE_HITFM, false);
             insertU2bDB(MasterlistSource);
 
+            conversion(HITFM_MUSIC_RYTHM_CHINESE_URL_1, MUSIC_TYPE_CHINESE, WEB_TYPE_HITFM, true);
+            insertU2bDB(MasterlistSource);
         }
     };
 
@@ -162,11 +243,20 @@ public class PlayScanner {
      * @param webType
      */
     private void conversion(String link, String language, String webType, boolean last) {
-        MasterlistSource = new ArrayList<ContentValues>();
-        mRank = 0;
+        conversion(link, language, webType, last, null);
+    }
+
+    private void conversion(String link, String language, String webType, boolean last,
+            ProgressCallback mCallback) {
+        if (MasterlistSource == null) {
+            MasterlistSource = new ArrayList<ContentValues>();
+        } else {
+            MasterlistSource.clear();
+        }
+        sRank = 0;
         
         //HitFM Top100分兩頁 所以分兩次insert
-        if(last) mRank = 50;
+        if(last) sRank = 50;
 
         try {
             // 取得網頁內容 轉成文字檔
@@ -175,13 +265,16 @@ public class PlayScanner {
                     "UTF-8"));
 
             // 逐行判斷 取得資料
-            while ((mStr = br.readLine()) != null) {
+            while ((sStr = br.readLine()) != null) {
                 // 判斷網站來源
-                if ("KKBOX".equals(webType)) {
+                if (WEB_TYPE_KKBOX.equals(webType)) {
                     searchKkboxData(language);
 
-                } else if ("HITFM".equals(webType)) {
+                } else if (WEB_TYPE_HITFM.equals(webType)) {
                     searchHitFMData(language);
+                }
+                if (mCallback != null) {
+                    mCallback.setProgress(sRank);
                 }
             }
 
@@ -189,11 +282,11 @@ public class PlayScanner {
                 printTest();
 
         } catch (MalformedURLException e) {
-            Log.e(TAG, e.getMessage());
+            Log.w(TAG, e.getMessage());
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, e.getMessage());
+            Log.w(TAG, e.getMessage());
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
+            Log.w(TAG, e.getMessage());
         }
     }
 
@@ -205,38 +298,38 @@ public class PlayScanner {
     private void searchKkboxData(String language) {
         try {
             // 歌曲
-            if (mStr.contains("<h4><a href=")) {
-                mSongs = mStr.split("title=\"");
-                mSongs = mSongs[1].split("\">");
+            if (sStr.contains("<h4><a href=")) {
+                sSongs = sStr.split("title=\"");
+                sSongs = sSongs[1].split("\">");
             }
 
             // 歌手
-            if (mStr.contains("<h5 class=")) {
-                mArtist = mStr.split("title=\"");
-                mArtist = mArtist[1].split("\">");
+            if (sStr.contains("<h5 class=")) {
+                sArtist = sStr.split("title=\"");
+                sArtist = sArtist[1].split("\">");
             }
 
             // 取得的月份 為當月排行榜月份
-            if (mStr.contains("最高第") && mMonth == null) {
-                mMonth = mStr.split("class=\"date\">");
-                mMonth = mMonth[1].split("</span>");
-                mMonth = mMonth[0].split("-");
+            if (sStr.contains("最高第") && sMonth == null) {
+                sMonth = sStr.split("class=\"date\">");
+                sMonth = sMonth[1].split("</span>");
+                sMonth = sMonth[0].split("-");
             }
 
             // 每取得歌曲及歌手 便加入list然後清空
-            if (mArtist != null && mSongs != null && mMonth != null) {
+            if (sArtist != null && sSongs != null && sMonth != null) {
                 contentSouce = new ContentValues();
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, mArtist[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + mMonth[1] + "月KKbox Top100");
-                contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, mSongs[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++mRank);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0]);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + sMonth[1] + "月KKbox Top100");
+                contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0]);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++sRank);
                 MasterlistSource.add(contentSouce);
 
-                mSongs = null;
-                mArtist = null;
+                sSongs = null;
+                sArtist = null;
             }
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            Log.w(TAG, e.getMessage());
         }
     }
 
@@ -250,37 +343,37 @@ public class PlayScanner {
             
         try {
             // 歌曲
-            if (mStr.contains("<td width=\"200\">") && mSongs == null) {
-                mSongs = mStr.split("<td width=\"200\">");
-                mSongs = mSongs[1].split("</td>");
+            if (sStr.contains("<td width=\"200\">") && sSongs == null) {
+                sSongs = sStr.split("<td width=\"200\">");
+                sSongs = sSongs[1].split("</td>");
             }
 
             // 專輯
-            if (mStr.contains("selected>") && mAlbum == null) {
-                mAlbum = mStr.split("selected>");
-                mAlbum = mAlbum[1].split("</option>");
+            if (sStr.contains("selected>") && sAlbum == null) {
+                sAlbum = sStr.split("selected>");
+                sAlbum = sAlbum[1].split("</option>");
             }
 
             // 歌手
-            if (mStr.contains("<td width=\"105\">")) {
-                mArtist = mStr.split("<td width=\"105\">");
-                mArtist = mArtist[1].split("</td>");
+            if (sStr.contains("<td width=\"105\">")) {
+                sArtist = sStr.split("<td width=\"105\">");
+                sArtist = sArtist[1].split("</td>");
             }
 
             // 每取得歌曲及歌手 便加入list然後清空
-            if (mSongs != null && mAlbum != null && mArtist != null) {
+            if (sSongs != null && sAlbum != null && sArtist != null) {
                 contentSouce = new ContentValues();
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, mArtist[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, mAlbum[0]+"HitFM年度單曲");
-                contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, mSongs[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++mRank);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0]);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, sAlbum[0]+"HitFM年度單曲");
+                contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0]);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++sRank);
                 MasterlistSource.add(contentSouce);
 
-                mSongs = null;
-                mArtist = null;
+                sSongs = null;
+                sArtist = null;
             }
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            Log.w(TAG, e.getMessage());
         }
     }
 
@@ -294,7 +387,7 @@ public class PlayScanner {
         String strMusic = "";
         String strRank = "";
 
-        Log.e(TAG, "list size:" + MasterlistSource.size());
+        Log.d(TAG, "list size:" + MasterlistSource.size());
 
         for (int i = 0; i < MasterlistSource.size(); i++) {
             content = MasterlistSource.get(i);
@@ -302,7 +395,7 @@ public class PlayScanner {
             strAlbum = content.getAsString(U2bDatabaseHelper.COLUMN_ALBUM);
             strMusic = content.getAsString(U2bDatabaseHelper.COLUMN_MUSIC);
             strRank = content.getAsString(U2bDatabaseHelper.COLUMN_RANK);
-            Log.e(TAG, "printTest: " + strArtist + ", " + strAlbum + ", " + strMusic + ", "
+            Log.d(TAG, "printTest: " + strArtist + ", " + strAlbum + ", " + strMusic + ", "
                     + strRank);
         }
     }
