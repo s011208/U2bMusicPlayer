@@ -109,9 +109,6 @@ public class PlayList {
         for (PlayListLoaderCallback c : mCallbacks) {
             c.loadDone();
         }
-        Looper.prepare();
-        Toast.makeText(mContext, "parse finish", Toast.LENGTH_LONG).show();
-        Looper.loop();
     }
 
     public String getPlayListTitle() {

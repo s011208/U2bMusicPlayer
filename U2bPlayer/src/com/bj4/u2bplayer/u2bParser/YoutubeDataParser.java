@@ -25,6 +25,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 
 public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallback {
@@ -38,6 +40,17 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
     private static final String SOURCE_PREVIOUS = "https://gdata.youtube.com/feeds/api/videos?q=";
 
     private static final String SOURCE_LAST = "&max-results=1&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
+
+    private static final int QUICK_NOTIFY_LIMIT = 10;
+
+    private static final HandlerThread sWorkerThread = new HandlerThread(
+            "YoutubeDataParser handler");
+    static {
+        sWorkerThread.setPriority(Thread.MAX_PRIORITY);
+        sWorkerThread.start();
+    }
+
+    private static final Handler sWorker = new Handler(sWorkerThread.getLooper());
 
     private Context mContext;
 
@@ -53,9 +66,10 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
             final YoutubeIdParserResultCallback callback) {
         if (infoList.isEmpty())
             return;
-        Thread parseWorker = new Thread(new Runnable() {
+        sWorker.post(new Runnable() {
             @Override
             public void run() {
+                ArrayList<PlayListInfo> listTobeInserted = new ArrayList<PlayListInfo>();
                 Iterator<PlayListInfo> taskIter = infoList.iterator();
                 while (taskIter.hasNext()) {
                     PlayListInfo info = taskIter.next();
@@ -89,22 +103,24 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                                     Log.d(TAG, "url: " + info.mHttpUri);
                             }
                         }
+                        listTobeInserted.add(info);
                     } catch (NullPointerException npe) {
                         taskIter.remove();
                         Log.w(TAG, "failed", npe);
                     } catch (JSONException jse) {
                         Log.w(TAG, "failed", jse);
+                    } finally {
+                        if (listTobeInserted.size() % QUICK_NOTIFY_LIMIT == 0 && callback != null) {
+                            callback.setResult(listTobeInserted);
+                            listTobeInserted.clear();
+                        }
                     }
                 }
-                if (callback != null) {
-                    callback.setResult(infoList);
-                    final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication
-                            .getDataBaseHelper();
+                if (callback != null && listTobeInserted.isEmpty() == false) {
+                    callback.setResult(listTobeInserted);
                 }
             }
         });
-        parseWorker.setPriority(Thread.MIN_PRIORITY);
-        parseWorker.start();
     }
 
     @SuppressWarnings("deprecation")
@@ -156,11 +172,15 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
             data.close();
             YoutubeDataParser.parseYoutubeData(infoList,
                     new YoutubeDataParser.YoutubeIdParserResultCallback() {
-
                         @Override
                         public void setResult(ArrayList<PlayListInfo> infoList) {
                             databaseHelper.insert(infoList);
-                            PlayList.getInstance(mContext).notifyScanDone();
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    PlayList.getInstance(mContext).notifyScanDone();
+                                }
+                            }).start();
                         }
                     });
         }

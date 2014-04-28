@@ -72,7 +72,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, VERSION);
         mContext = context;
         getDb().enableWriteAheadLogging();
-        getDb().execSQL("PRAGMA synchronous=1");
+        getDb().execSQL("PRAGMA synchronous=0");
         createTables();
     }
 
