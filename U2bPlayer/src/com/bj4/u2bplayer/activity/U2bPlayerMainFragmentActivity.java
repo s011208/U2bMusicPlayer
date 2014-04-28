@@ -177,7 +177,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         setContentView(R.layout.u2b_main_activity);
         initComponents();
         themeSwitcher();
-        switchFragment(FRAGMENT_TYPE_MAIN);
+        switchFragment(sCurrentFragment);
         startService(new Intent(this, PlayMusicService.class));
         bindService(new Intent(this, PlayMusicService.class), mMusicPlayServiceConnection,
                 Context.BIND_AUTO_CREATE);
