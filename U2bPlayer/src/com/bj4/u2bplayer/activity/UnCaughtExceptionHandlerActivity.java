@@ -46,6 +46,7 @@ public class UnCaughtExceptionHandlerActivity extends Activity {
                 }
             });
             dialog.show();
+            Log.w(TAG, crashLog);
         } catch (Exception e) {
             Log.e(TAG, "failed to create error handling dialog", e);
             System.exit(1);
