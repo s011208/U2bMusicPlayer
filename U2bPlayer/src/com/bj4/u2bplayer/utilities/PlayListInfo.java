@@ -32,8 +32,7 @@ public class PlayListInfo implements Parcelable {
 
     public PlayListInfo(String artist, String albumTitle, String musicTitle, String rtspH,
             String rtspL, String httpUri, String videoId, int rank) {
-        this(artist, albumTitle, musicTitle, rtspH,
-                rtspL, httpUri, videoId, rank, NOT_LOCAL_INFO);
+        this(artist, albumTitle, musicTitle, rtspH, rtspL, httpUri, videoId, rank, NOT_LOCAL_INFO);
     }
 
     public PlayListInfo(String artist, String albumTitle, String musicTitle, String rtspH,
@@ -98,4 +97,20 @@ public class PlayListInfo implements Parcelable {
             return new PlayListInfo[size];
         }
     };
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null)
+            return false;
+        if (other == this)
+            return true;
+        if (!(other instanceof PlayListInfo))
+            return false;
+        PlayListInfo o = (PlayListInfo)other;
+        if (mMusicTitle != null && mArtist != null && mMusicTitle.equals(o.mMusicTitle)
+                && mArtist.equals(o.mArtist)) {
+            return true;
+        }
+        return false;
+    }
 }
