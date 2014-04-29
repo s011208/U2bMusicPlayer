@@ -357,7 +357,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 //                target = getPlayInfoFragment();
 //                break;
             default:
-                target = getPlayListFragment();
+                target = getMainFragment();
                 break;
         }
         if (target != null) {
