@@ -234,7 +234,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void initComponents() {
         mPref = getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mPlayList = PlayList.getInstance(this);
-        if (mPlayList.getPlayList().isEmpty())
+        if (mPlayList.getDisplayList().isEmpty())
             mPlayList.retrieveAllPlayList();
         mPlayList.addCallback(mPlayListCallback);
         mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);

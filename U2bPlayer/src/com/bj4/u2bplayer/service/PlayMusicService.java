@@ -124,7 +124,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void trackNext() {
-        PlayListInfo nextInfo = mPlayList.getNextPlayListInfo();
+        PlayListInfo nextInfo = mPlayList.getNextDisplayListInfo();
         if (nextInfo != null) {
             mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
         }
@@ -143,7 +143,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void playMusic(int index) {
-        ArrayList<PlayListInfo> playList = mPlayList.getPlayList();
+        ArrayList<PlayListInfo> playList = mPlayList.getDisplayList();
         int pointer = 0;
         if (DEBUG)
             Log.d(TAG, "play: " + index);
@@ -170,7 +170,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             if (DEBUG)
                 Log.w(TAG, "play failed", e);
         } finally {
-            mPlayList.setPlayingAlbumId(playList.get(0).mAlbumTitle);
             mPlayList.setPointer(pointer);
             notifyChanged();
         }
@@ -495,7 +494,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public PlayListInfo getCurrentPlayInfo() throws RemoteException {
-            return mPlayList.getCurrentPlayListInfo();
+            return mPlayList.getCurrentDisplayListInfo();
         }
 
         @Override
@@ -523,7 +522,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         startForeground(
                 NotificationBuilder.NOTIFICATION_ID,
                 NotificationBuilder.createSimpleNotification(getApplicationContext(),
-                        mPlayList.getCurrentPlayListInfo()));
+                        mPlayList.getCurrentDisplayListInfo()));
     }
 
     private void notifyPlayInfoChanged() {
@@ -531,7 +530,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         for (int i = 0; i < N; i++) {
             try {
                 mCallbacks.getBroadcastItem(i).notifyPlayInfoChanged(
-                        mPlayList.getCurrentPlayListInfo());
+                        mPlayList.getCurrentDisplayListInfo());
             } catch (RemoteException e) {
             }
         }

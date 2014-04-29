@@ -268,7 +268,7 @@ public class U2bMainFragment extends Fragment {
     private void toPlayList(String album) {
         mActivity = (U2bPlayerMainFragmentActivity)getActivity();
         mPlayList = PlayList.getInstance(mActivity);
-        mPlayList.setAlbumPlayList(album);
+        mPlayList.setAlbumDisplayList(album);
         mActivity.switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_PLAYLIST);
     }
 }

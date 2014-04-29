@@ -56,7 +56,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             mPlayList = PlayList.getInstance(mActivity);
             mLayoutInflater = LayoutInflater.from(mActivity);
             if (DEBUG) {
-                Log.d(TAG, "" + mPlayList.getPlayList().size());
+                Log.d(TAG, "" + mPlayList.getDisplayList().size());
             }
             mControllPanel = (RelativeLayout)mContentView
                     .findViewById(R.id.play_list_controll_panel);
@@ -159,23 +159,19 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
     }
 
     public void changePlayIndex() {
-        if (mPlayList != null) {
-            if (mPlayList.getDisplayingAlbumId() == mPlayList.getPlayingAlbumId()) {
-                mPlayListAdapter.notifyDataSetChanged();
-            }
-        }
+        mPlayListAdapter.notifyDataSetChanged();
     }
 
     private class PlayListAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return mPlayList.getPlayList().size();
+            return mPlayList.getDisplayList().size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mPlayList.getPlayList().get(position);
+            return mPlayList.getDisplayList().get(position);
         }
 
         @Override
@@ -196,8 +192,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             } else {
                 holder = (ViewHolder)contentView.getTag();
             }
-            holder.mArtist.setText(mPlayList.getPlayList().get(position).mArtist);
-            holder.mMusic.setText(mPlayList.getPlayList().get(position).mMusicTitle);
+            holder.mArtist.setText(mPlayList.getDisplayList().get(position).mArtist);
+            holder.mMusic.setText(mPlayList.getDisplayList().get(position).mMusicTitle);
             initTheme(contentView, position);
             return contentView;
         }
@@ -205,8 +201,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         private void initTheme(final View contentView, final int position) {
             int theme = mActivity.getApplicationTheme();
             if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
-                if (position == mPlayList.getPointer()
-                        && mPlayList.getDisplayingAlbumId() == mPlayList.getPlayingAlbumId()) {
+                if (position == mPlayList.getPointer()) {
                     contentView
                             .setBackgroundResource(R.drawable.theme_blue_list_selected_item_oval_bg);
                 } else {

@@ -188,6 +188,14 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public ArrayList<PlayListInfo> getPlayList(String albumName) {
+        Cursor rtn = getDb().query(TABLE_MAIN_INFO, null, COLUMN_ALBUM + "='" + albumName + "'",
+                null, null, null, COLUMN_RANK);
+        ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
+        convertFromCursorToPlayList(rtn, playList);
+        return playList;
+    }
+
     public int removeAlbum(String albumName) {
         return getDb().delete(TABLE_ALBUM_INFO, COLUMN_ALBUM + "='" + albumName + "'", null);
     }

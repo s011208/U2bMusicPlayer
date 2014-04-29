@@ -96,7 +96,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
             }
         } else {
             if (mPlayList != null) {
-                sInfo = mPlayList.getPlayList().get(mPlayList.getPointer());
+                sInfo = mPlayList.getDisplayList().get(mPlayList.getPointer());
                 if (sInfo != null) {
                     if (mPlayInfo != null) {
                         mPlayInfo.setText("info\nartist: " + sInfo.mArtist + "\nmusic: "
@@ -196,7 +196,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
             @Override
             public void onClick(View v) {
                 v.setHapticFeedbackEnabled(true);
-                int index = mPlayList.getPlayList().indexOf(sInfo);
+                int index = mPlayList.getDisplayList().indexOf(sInfo);
                 if (mActivity.isInitialized() == false || mPlayList.getPointer() != index) {
                     mActivity.play(index);
                 } else {
@@ -235,7 +235,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
         });
         mPlayOrPause = (ViewSwitcher)mContentView.findViewById(R.id.play_info_play_or_pause);
         if (mActivity.isPlaying()) {
-            int index = mPlayList.getPlayList().indexOf(sInfo);
+            int index = mPlayList.getDisplayList().indexOf(sInfo);
             if (mPlayList.getPointer() != index) {
                 mPlayOrPause.setDisplayedChild(0);
             } else {
@@ -274,7 +274,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
                         public void run() {
                             if (mDurationSeekBar != null) {
                                 if (mActivity != null && mPlayList != null) {
-                                    int index = mPlayList.getPlayList().indexOf(sInfo);
+                                    int index = mPlayList.getDisplayList().indexOf(sInfo);
                                     if (mPlayList.getPointer() == index) {
                                         mDurationSeekBar.setProgress(mActivity.getCurrentPosition());
                                     } else {
@@ -300,7 +300,7 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
 
     public void setDuration(int time) {
         if (mPlayList != null) {
-            int index = mPlayList.getPlayList().indexOf(sInfo);
+            int index = mPlayList.getDisplayList().indexOf(sInfo);
             if (mPlayList.getPointer() == index) {
                 mDurationSeekBar.setMax(time);
             }

@@ -21,15 +21,15 @@ public class PlayList {
 
     private final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication.getDataBaseHelper();
 
-    private final ArrayList<PlayListInfo> mPlayList = new ArrayList<PlayListInfo>();
+    private final ArrayList<PlayListInfo> mDisplayList = new ArrayList<PlayListInfo>();
 
     private final ArrayList<PlayListLoaderCallback> mCallbacks = new ArrayList<PlayListLoaderCallback>();
 
     private static PlayList mSingleton;
 
     private SharedPreferences mPref;
-
-    private long mPlayingAlbumId, mDisplayingAlbumId;
+    
+    private int mPlayingAlbumId;
 
     private static final String SHARE_PREF_KEY = "play_list_config";
 
@@ -43,7 +43,7 @@ public class PlayList {
 
     public int getPointer() {
         int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
-        if (index >= mPlayList.size() || index < 0) {
+        if (index >= mDisplayList.size() || index < 0) {
             index = 0;
             mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, index).apply();
         }
@@ -52,28 +52,28 @@ public class PlayList {
 
     public int getPreviousPointer() {
         int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) - 1;
-        if (index >= mPlayList.size()) {
+        if (index >= mDisplayList.size()) {
             index = 0;
         } else if (index < 0) {
-            index = mPlayList.size() - 1;
+            index = mDisplayList.size() - 1;
         }
         return index;
     }
 
     public int getNextPointer() {
         int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1;
-        if (index >= mPlayList.size() || index < 0) {
+        if (index >= mDisplayList.size() || index < 0) {
             index = 0;
         }
         return index;
     }
 
-    public PlayListInfo getCurrentPlayListInfo() {
-        return mPlayList.get(getPointer());
+    public PlayListInfo getCurrentDisplayListInfo() {
+        return mDisplayList.get(getPointer());
     }
 
-    public PlayListInfo getNextPlayListInfo() {
-        return mPlayList.get(getNextPointer());
+    public PlayListInfo getNextDisplayListInfo() {
+        return mDisplayList.get(getNextPointer());
     }
 
     public void setPointer(final int pointer) {
@@ -85,44 +85,24 @@ public class PlayList {
     }
 
     public void retrieveLocalPlayList() {
-        resetPlayList();
+        resetDisplayList();
         Cursor data = mDatabaseHelper.queryDataFromLocalData();
-        U2bDatabaseHelper.convertFromLocalMusicDataCursorToPlayList(data, mPlayList);
+        U2bDatabaseHelper.convertFromLocalMusicDataCursorToPlayList(data, mDisplayList);
     }
 
     public void retrieveAllPlayList() {
-        resetPlayList();
+        resetDisplayList();
         Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
-        U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
+        U2bDatabaseHelper.convertFromCursorToPlayList(data, mDisplayList);
     }
 
-    public void resetPlayList() {
-        mPlayList.clear();
-        setPointer(0);
+    public void resetDisplayList() {
+        mDisplayList.clear();
     }
 
-    public void setAlbumPlayList(String album) {
-        resetPlayList();
-        Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_ALBUM + "='" + album
-                + "'");
-        U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
-        if (mPlayList.size() > 0) {
-            mDisplayingAlbumId = mDatabaseHelper.getAlbumId(mPlayList.get(0).mAlbumTitle);
-        } else {
-            mDisplayingAlbumId = U2bDatabaseHelper.ALBUM_NOT_EXISTED;
-        }
-    }
-
-    public void setPlayingAlbumId(String AlbumName){
-        mPlayingAlbumId = mDatabaseHelper.getAlbumId(mPlayList.get(0).mAlbumTitle);
-    }
-    
-    public long getPlayingAlbumId() {
-        return mPlayingAlbumId;
-    }
-
-    public long getDisplayingAlbumId() {
-        return mDisplayingAlbumId;
+    public void setAlbumDisplayList(String album) {
+        resetDisplayList();
+        mDisplayList.addAll(mDatabaseHelper.getPlayList(album));
     }
 
     public void notifyScanDone() {
@@ -131,25 +111,9 @@ public class PlayList {
         }
     }
 
-    public String getPlayListTitle() {
-        if (mPlayList.isEmpty() == false) {
-            PlayListInfo info = mPlayList.get(0);
-            String rtn = "";
-            if ("".equals(info.mAlbumTitle) == false) {
-                rtn += info.mAlbumTitle;
-            }
-            if ("".equals(rtn) == false) {
-                rtn += "  ";
-            }
-            rtn += info.mArtist;
-            return rtn;
-        }
-        return "";
-    }
-
     @SuppressWarnings("unchecked")
-    public ArrayList<PlayListInfo> getPlayList() {
-        return (ArrayList<PlayListInfo>)mPlayList.clone();
+    public ArrayList<PlayListInfo> getDisplayList() {
+        return (ArrayList<PlayListInfo>)mDisplayList.clone();
     }
 
     public static synchronized PlayList getInstance(Context context) {
