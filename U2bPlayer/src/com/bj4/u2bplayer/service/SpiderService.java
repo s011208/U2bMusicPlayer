@@ -22,6 +22,7 @@ public class SpiderService extends Service {
     private static final HandlerThread sWorkerThread = new HandlerThread("SpiderService-scanner");
     static {
         sWorkerThread.start();
+        sWorkerThread.setPriority(Thread.MAX_PRIORITY);
     }
 
     private static final Handler sWorker = new Handler(sWorkerThread.getLooper());
