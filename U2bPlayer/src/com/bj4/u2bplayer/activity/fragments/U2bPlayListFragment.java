@@ -3,6 +3,7 @@ package com.bj4.u2bplayer.activity.fragments;
 
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.R;
+import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.MainFragmentCallback;
 
@@ -22,7 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-public class U2bPlayListFragment extends Fragment implements MainFragmentCallback {
+public class U2bPlayListFragment extends Fragment implements MainFragmentCallback, ThemeReloader {
     public static final String TAG = "U2bPlayListFragment";
 
     public static final boolean DEBUG = true;
@@ -233,5 +234,10 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
             TextView mMusic;
         }
+    }
+
+    @Override
+    public void reloadTheme() {
+        initTheme();
     }
 }

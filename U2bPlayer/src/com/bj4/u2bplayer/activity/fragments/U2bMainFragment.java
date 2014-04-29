@@ -4,7 +4,9 @@ package com.bj4.u2bplayer.activity.fragments;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import com.bj4.u2bplayer.R;
+
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,10 +22,11 @@ import android.widget.LinearLayout;
 
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
+import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
 
-public class U2bMainFragment extends Fragment {
+public class U2bMainFragment extends Fragment implements ThemeReloader {
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
     public static final String TAG = "U2bMainFragment";
@@ -270,5 +273,10 @@ public class U2bMainFragment extends Fragment {
         mPlayList = PlayList.getInstance(mActivity);
         mPlayList.setAlbumDisplayList(album);
         mActivity.switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_PLAYLIST);
+    }
+
+    @Override
+    public void reloadTheme() {
+        // TODO Auto-generated method stub
     }
 }

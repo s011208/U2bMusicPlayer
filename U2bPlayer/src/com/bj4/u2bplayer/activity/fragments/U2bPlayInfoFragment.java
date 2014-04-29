@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.R;
+import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.MainFragmentCallback;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
@@ -32,7 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallback {
+public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallback, ThemeReloader{
     public static final String TAG = "U2bPlayInfoFragment";
 
     public static final boolean DEBUG = true;
@@ -334,5 +335,11 @@ public class U2bPlayInfoFragment extends Fragment implements MainFragmentCallbac
     public void resetInfo() {
         sInfo = null;
         resetContentView();
+    }
+
+    @Override
+    public void reloadTheme() {
+        // TODO Auto-generated method stub
+        initTheme();
     }
 }

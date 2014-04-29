@@ -219,6 +219,12 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         registerBroadcastReceiver();
     }
 
+    public void setApplicationTheme(int theme) {
+        mPref.edit().putInt(SHARE_PREF_KEY_THEME, theme).commit();
+        themeSwitcher();
+        reloadTheme();
+    }
+
     public int getApplicationTheme() {
         return mPref.getInt(SHARE_PREF_KEY_THEME, THEME_BLUE);
     }
@@ -651,4 +657,29 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 super.onBackPressed();
         }
     }
+
+    public Fragment getCurrentFragment() {
+        Fragment target = null;
+
+        switch (sCurrentFragment) {
+            case FRAGMENT_TYPE_MAIN:
+                target = getMainFragment();
+                break;
+            case FRAGMENT_TYPE_PLAYLIST:
+                target = getPlayListFragment();
+                break;
+        // case FRAGMENT_TYPE_MUSIC_INFO:
+        // target = getPlayInfoFragment();
+        // break;
+        }
+        return target;
+    }
+
+    private void reloadTheme() {
+        Fragment fag = getCurrentFragment();
+        if (fag != null && fag instanceof ThemeReloader) {
+            ((ThemeReloader)fag).reloadTheme();
+        }
+    }
+
 }
