@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 public class PlayList {
@@ -27,6 +28,8 @@ public class PlayList {
     private static PlayList mSingleton;
 
     private SharedPreferences mPref;
+
+    private long mPlayingAlbumId, mDisplayingAlbumId;
 
     private static final String SHARE_PREF_KEY = "play_list_config";
 
@@ -103,6 +106,23 @@ public class PlayList {
         Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_ALBUM + "='" + album
                 + "'");
         U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayList);
+        if (mPlayList.size() > 0) {
+            mDisplayingAlbumId = mDatabaseHelper.getAlbumId(mPlayList.get(0).mAlbumTitle);
+        } else {
+            mDisplayingAlbumId = U2bDatabaseHelper.ALBUM_NOT_EXISTED;
+        }
+    }
+
+    public void setPlayingAlbumId(String AlbumName){
+        mPlayingAlbumId = mDatabaseHelper.getAlbumId(mPlayList.get(0).mAlbumTitle);
+    }
+    
+    public long getPlayingAlbumId() {
+        return mPlayingAlbumId;
+    }
+
+    public long getDisplayingAlbumId() {
+        return mDisplayingAlbumId;
     }
 
     public void notifyScanDone() {
@@ -129,7 +149,7 @@ public class PlayList {
 
     @SuppressWarnings("unchecked")
     public ArrayList<PlayListInfo> getPlayList() {
-        return (ArrayList<PlayListInfo>) mPlayList.clone();
+        return (ArrayList<PlayListInfo>)mPlayList.clone();
     }
 
     public static synchronized PlayList getInstance(Context context) {
@@ -150,9 +170,9 @@ public class PlayList {
     public static String getTimeString(long millis) {
         StringBuffer buf = new StringBuffer();
 
-        int hours = (int) (millis / (1000 * 60 * 60));
-        int minutes = (int) ((millis % (1000 * 60 * 60)) / (1000 * 60));
-        int seconds = (int) (((millis % (1000 * 60 * 60)) % (1000 * 60)) / 1000);
+        int hours = (int)(millis / (1000 * 60 * 60));
+        int minutes = (int)((millis % (1000 * 60 * 60)) / (1000 * 60));
+        int seconds = (int)(((millis % (1000 * 60 * 60)) % (1000 * 60)) / 1000);
 
         buf.append(String.format("%02d", hours)).append(":").append(String.format("%02d", minutes))
                 .append(":").append(String.format("%02d", seconds));

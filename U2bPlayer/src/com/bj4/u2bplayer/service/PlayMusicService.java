@@ -65,7 +65,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            NotificationManager nm = (NotificationManager) context
+            NotificationManager nm = (NotificationManager)context
                     .getSystemService(Context.NOTIFICATION_SERVICE);
             String action = intent.getAction();
             if (Intent.ACTION_HEADSET_PLUG.equals(action) && mPlayer != null) {
@@ -170,6 +170,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             if (DEBUG)
                 Log.w(TAG, "play failed", e);
         } finally {
+            mPlayList.setPlayingAlbumId(playList.get(0).mAlbumTitle);
             mPlayList.setPointer(pointer);
             notifyChanged();
         }
@@ -263,7 +264,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             try {
                 player.reset();
                 if (info != null && player instanceof CompatMediaPlayer) {
-                    ((CompatMediaPlayer) player).setPlayListInfo(info);
+                    ((CompatMediaPlayer)player).setPlayListInfo(info);
                 }
                 if (path.startsWith("content://")) {
                     player.setDataSource(PlayMusicService.this, Uri.parse(path));
@@ -277,7 +278,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                         if (DEBUG) {
                             String debug = "";
                             if (mp instanceof CompatMediaPlayer) {
-                                PlayListInfo info = ((CompatMediaPlayer) mp).getPlayListInfo();
+                                PlayListInfo info = ((CompatMediaPlayer)mp).getPlayListInfo();
                                 if (info != null) {
                                     debug += "title: " + info.mMusicTitle + ", ";
                                 }
@@ -422,7 +423,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         }
 
         public long seek(long whereto) {
-            mCurrentMediaPlayer.seekTo((int) whereto);
+            mCurrentMediaPlayer.seekTo((int)whereto);
             return whereto;
         }
 
@@ -499,7 +500,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public int getCurrentPosition() throws RemoteException {
-            return (int) mPlayer.position();
+            return (int)mPlayer.position();
         }
 
         @Override

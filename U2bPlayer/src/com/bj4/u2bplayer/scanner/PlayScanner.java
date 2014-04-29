@@ -196,26 +196,21 @@ public class PlayScanner {
             U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
             ContentValues contentSouce = listSource.get(0);
             String COLUMN_ALBUM = contentSouce.getAsString(U2bDatabaseHelper.COLUMN_ALBUM);
-            String querySQL = "select *"
-                             + " from " + U2bDatabaseHelper.TABLE_MAIN_INFO 
-                            + " where " + U2bDatabaseHelper.COLUMN_ALBUM + " = '" + COLUMN_ALBUM + "'";
-            Cursor c = databaseHelper.query(querySQL);
-           
-            if(DEBUG){
-                Log.e(TAG, "querySQL:" + querySQL);
-                Log.e(TAG, "data count:"+String.valueOf(c.getCount()));
+            boolean isAlbumExisted = databaseHelper.isAlbumExisted(COLUMN_ALBUM);
+            if (DEBUG) {
+                Log.d(TAG, "isAlbumExisted: " + isAlbumExisted + ", COLUMN_ALBUM: " + COLUMN_ALBUM);
             }
-            
-            if(c.getCount()>0) 
+            if (isAlbumExisted) {
                 return true;
-            
+            } else {
+                databaseHelper.addNewAlbum(COLUMN_ALBUM);
+            }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-        
         return false;
     }
-    
+
     private void dumpDbData() {
         if (DEBUG) {
             U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();

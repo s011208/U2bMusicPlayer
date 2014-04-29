@@ -43,6 +43,10 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     public static final String COLUMN_RANK = "rank";
 
+    public static final String TABLE_ALBUM_INFO = "album_info";
+
+    public static final int ALBUM_NOT_EXISTED = -1;
+
     private Context mContext;
 
     private SQLiteDatabase mDb;
@@ -118,8 +122,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor queryDataFromLocalData() {
-        return mContext.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+        return mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null, null, null, null);
     }
 
     public long insert(ContentValues cv, boolean notify) {
@@ -175,9 +179,45 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                         + " TEXT," + COLUMN_RTSP_L + " TEXT," + COLUMN_VIDEO_ID + " TEXT, "
                         + COLUMN_RANK + " INTEGER,PRIMARY KEY(" + COLUMN_ARTIST + ", "
                         + COLUMN_ALBUM + ", " + COLUMN_MUSIC + "))");
+        getDb().execSQL(
+                "CREATE TABLE IF NOT EXISTS " + TABLE_ALBUM_INFO
+                        + "(_id integer primary key autoincrement, " + COLUMN_ALBUM
+                        + " TEXT NOT NULL)");
         if (DEBUG) {
             Log.d(TAG, "table created!");
         }
+    }
+
+    public int removeAlbum(String albumName) {
+        return getDb().delete(TABLE_ALBUM_INFO, COLUMN_ALBUM + "='" + albumName + "'", null);
+    }
+
+    public boolean isAlbumExisted(String albumName) {
+        Cursor result = query("select _id from " + TABLE_ALBUM_INFO + " where " + COLUMN_ALBUM
+                + "='" + albumName + "'");
+        if (result != null && result.getCount() > 0) {
+            result.close();
+            return true;
+        }
+        return false;
+    }
+
+    public void addNewAlbum(String albumName) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_ALBUM, albumName);
+        getDb().insert(TABLE_ALBUM_INFO, null, cv);
+    }
+
+    public int getAlbumId(String albumName) {
+        Cursor result = query("select _id from " + TABLE_ALBUM_INFO + " where " + COLUMN_ALBUM
+                + "='" + albumName + "'");
+        if (result != null && result.getCount() > 0) {
+            result.moveToNext();
+            int rtn = result.getInt(0);
+            result.close();
+            return rtn;
+        }
+        return ALBUM_NOT_EXISTED;
     }
 
     @Override
@@ -204,7 +244,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 String rl = c.getString(iRl);
                 String vp = c.getString(iVp);
                 String vi = c.getString(iVi);
-                playList.add(new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank, PlayListInfo.IS_LOCAL_INFO));
+                playList.add(new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank,
+                        PlayListInfo.IS_LOCAL_INFO));
             }
             c.close();
         }
