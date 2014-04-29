@@ -15,4 +15,5 @@ interface IPlayMusicService {
 	PlayListInfo getCurrentPlayInfo();
 	int getCurrentPosition();
 	long getDuration();
+	long getPlayingAlbumId();
 }

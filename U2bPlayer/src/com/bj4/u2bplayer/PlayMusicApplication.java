@@ -10,9 +10,12 @@ import com.bj4.u2bplayer.u2bParser.YoutubeDataParser;
 
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
 
 public class PlayMusicApplication extends Application {
     public static final boolean ENABLE_UNCAUGHT_EXCEPTION = true;
+
+    private static final String TAG = "PlayMusicApplication";
 
     public static final boolean OVERALL_DEBUG = true;
 
@@ -62,9 +65,12 @@ public class PlayMusicApplication extends Application {
                 @Override
                 public void uncaughtException(Thread thread, Throwable ex) {
                     try {
+                        Log.getStackTraceString(new Exception());
+                        Log.e(TAG, "failed", ex);
                         StringBuilder sb = new StringBuilder();
+                        sb.append(Log.getStackTraceString(ex) + "\n\n");
                         for (StackTraceElement s : ex.getStackTrace()) {
-                            sb.append(s.toString() + "\n");
+                            sb.append(s.toString() + "\n\n");
                         }
                         Intent crashedIntent = new Intent(PlayMusicApplication.this,
                                 UnCaughtExceptionHandlerActivity.class);

@@ -241,15 +241,6 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
         mOptionBtn = (ImageButton)findViewById(R.id.menu);
         mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
-        mActionBarTitle.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-//                getPlayInfoFragment().resetInfo();
-//                switchFragment(FRAGMENT_TYPE_MUSIC_INFO);
-                switchFragment(FRAGMENT_TYPE_PLAYLIST);
-            }
-        });
         initMainLayout();
         initActionBarComponents();
     }
@@ -276,7 +267,22 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void initActionBarComponents() {
+        mActionBarTitle.setOnClickListener(new OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                // getPlayInfoFragment().resetInfo();
+                // switchFragment(FRAGMENT_TYPE_MUSIC_INFO);
+                if (mPlayList != null) {
+                    String albumName = PlayMusicApplication.getDataBaseHelper().getAlbumName(
+                            getPlayingAlbumId());
+                    if (albumName != null) {
+                        mPlayList.setAlbumDisplayList(albumName);
+                    }
+                }
+                switchFragment(FRAGMENT_TYPE_PLAYLIST);
+            }
+        });
         mOptionBtn.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -353,18 +359,22 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             case FRAGMENT_TYPE_PLAYLIST:
                 target = getPlayListFragment();
                 break;
-//            case FRAGMENT_TYPE_MUSIC_INFO:
-//                target = getPlayInfoFragment();
-//                break;
+            // case FRAGMENT_TYPE_MUSIC_INFO:
+            // target = getPlayInfoFragment();
+            // break;
             default:
                 target = getMainFragment();
                 break;
         }
         if (target != null) {
-            sCurrentFragment = type;
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_fragment_container, target);
-            transaction.commitAllowingStateLoss();
+            if (sCurrentFragment == type && sCurrentFragment == FRAGMENT_TYPE_PLAYLIST) {
+                getPlayListFragment().updateListContent();
+            } else {
+                sCurrentFragment = type;
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.main_fragment_container, target);
+                transaction.commitAllowingStateLoss();
+            }
         } else {
             if (DEBUG) {
                 Log.w(TAG, "wrong fragment type: " + type);
@@ -373,8 +383,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void viewPlayInfo(PlayListInfo info) {
-//        switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_INFO);
-//        getPlayInfoFragment().setContentInfo(info);
+        // switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_MUSIC_INFO);
+        // getPlayInfoFragment().setContentInfo(info);
     }
 
     public void setActionMusicInfo(PlayListInfo info) {
@@ -569,6 +579,19 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (mPlayMusicService != null) {
             try {
                 return mPlayMusicService.getDuration();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
+        return 0;
+    }
+
+    public long getPlayingAlbumId() {
+        if (mPlayMusicService != null) {
+            try {
+                return mPlayMusicService.getPlayingAlbumId();
             } catch (RemoteException e) {
                 if (DEBUG) {
                     Log.w(TAG, "failed to play", e);

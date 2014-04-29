@@ -72,7 +72,12 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                     v.setHapticFeedbackEnabled(true);
                     // mActivity.viewPlayInfo(mPlayList.getPlayList().get(position));
                     int index = mPlayList.getPointer();
-                    if (index != position || mActivity.isInitialized() == false) {
+                    if (DEBUG) {
+                        Log.i(TAG, "getDisplayListAlbumId(): " + mPlayList.getDisplayListAlbumId()
+                                + ", getPlayingAlbumId(): " + mActivity.getPlayingAlbumId());
+                    }
+                    if ((index != position || mPlayList.getDisplayListAlbumId() != mActivity
+                            .getPlayingAlbumId()) || mActivity.isInitialized() == false) {
                         mActivity.play(position);
                     }
                 }
@@ -159,7 +164,16 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
     }
 
     public void changePlayIndex() {
-        mPlayListAdapter.notifyDataSetChanged();
+        if (mPlayListAdapter != null) {
+            mPlayListAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void updateListContent() {
+        if (mPlayListAdapter != null) {
+            mPlayListAdapter.notifyDataSetChanged();
+            mPlayListView.smoothScrollToPosition(mPlayList.getPointer());
+        }
     }
 
     private class PlayListAdapter extends BaseAdapter {

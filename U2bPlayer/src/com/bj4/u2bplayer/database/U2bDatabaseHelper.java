@@ -228,6 +228,18 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         return ALBUM_NOT_EXISTED;
     }
 
+    public String getAlbumName(long id) {
+        Cursor result = query("select " + COLUMN_ALBUM + " from " + TABLE_ALBUM_INFO
+                + " where _id=" + id + "");
+        if (result != null && result.getCount() > 0) {
+            result.moveToNext();
+            String rtn = result.getString(0);
+            result.close();
+            return rtn;
+        }
+        return null;
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }

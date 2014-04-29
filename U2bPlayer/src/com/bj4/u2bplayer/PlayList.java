@@ -29,7 +29,7 @@ public class PlayList {
 
     private SharedPreferences mPref;
     
-    private int mPlayingAlbumId;
+    private int mDisplayAlbumId;
 
     private static final String SHARE_PREF_KEY = "play_list_config";
 
@@ -103,6 +103,11 @@ public class PlayList {
     public void setAlbumDisplayList(String album) {
         resetDisplayList();
         mDisplayList.addAll(mDatabaseHelper.getPlayList(album));
+        mDisplayAlbumId = mDatabaseHelper.getAlbumId(album);
+    }
+
+    public long getDisplayListAlbumId() {
+        return mDisplayAlbumId;
     }
 
     public void notifyScanDone() {

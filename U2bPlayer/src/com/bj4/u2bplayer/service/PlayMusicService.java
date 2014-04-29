@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayList;
+import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.utilities.NotificationBuilder;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
@@ -60,6 +61,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     };
 
     private boolean headsetConnected = false;
+
+    private int mPlayingAlbumId;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -170,6 +173,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             if (DEBUG)
                 Log.w(TAG, "play failed", e);
         } finally {
+            mPlayingAlbumId = PlayMusicApplication.getDataBaseHelper().getAlbumId(
+                    mPlayList.getCurrentDisplayListInfo().mAlbumTitle);
             mPlayList.setPointer(pointer);
             notifyChanged();
         }
@@ -505,6 +510,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         @Override
         public long getDuration() throws RemoteException {
             return mPlayer.duration();
+        }
+
+        @Override
+        public long getPlayingAlbumId() throws RemoteException {
+            return mPlayingAlbumId;
         }
 
     };
