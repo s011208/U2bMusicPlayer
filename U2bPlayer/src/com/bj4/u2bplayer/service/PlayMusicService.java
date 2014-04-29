@@ -108,6 +108,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(this);
         registerBroadcastReceiver();
+        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
