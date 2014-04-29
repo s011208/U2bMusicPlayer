@@ -26,6 +26,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StrictMode;
@@ -81,6 +82,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private PlayList mPlayList;
 
+    private Handler mHandler = new Handler();
+
     private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
 
         @Override
@@ -101,35 +104,65 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
         @Override
         public void notifyPlayIndexChanged() throws RemoteException {
-            for (MainFragmentCallback cb : mFragmentCallbacks) {
-                cb.changePlayIndex();
-            }
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    for (MainFragmentCallback cb : mFragmentCallbacks) {
+                        cb.changePlayIndex();
+                    }
+                }
+            });
         }
 
         @Override
-        public void notifyPlayStateChanged(boolean isPlaying) throws RemoteException {
-            for (MainFragmentCallback cb : mFragmentCallbacks) {
-                cb.setPlayOrPause(isPlaying);
-            }
+        public void notifyPlayStateChanged(final boolean isPlaying) throws RemoteException {
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    for (MainFragmentCallback cb : mFragmentCallbacks) {
+                        cb.setPlayOrPause(isPlaying);
+                    }
+                }
+            });
         }
 
         @Override
-        public void notifyPlayInfoChanged(PlayListInfo info) throws RemoteException {
-            setActionMusicInfo(info);
+        public void notifyPlayInfoChanged(final PlayListInfo info) throws RemoteException {
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    setActionMusicInfo(info);
+                }
+            });
         }
 
         @Override
-        public void updateBufferingPercentage(PlayListInfo info, int percentage)
+        public void updateBufferingPercentage(final PlayListInfo info, final int percentage)
                 throws RemoteException {
-            setActionMusicInfo(info, percentage);
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    setActionMusicInfo(info, percentage);
+                }
+            });
         }
 
         @Override
-        public void updatePlayingTime(int time) throws RemoteException {
-            U2bPlayInfoFragment fragment = getPlayInfoFragment();
-            if (fragment != null) {
-                fragment.setDuration(time);
-            }
+        public void updatePlayingTime(final int time) throws RemoteException {
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    U2bPlayInfoFragment fragment = getPlayInfoFragment();
+                    if (fragment != null) {
+                        fragment.setDuration(time);
+                    }
+                }
+            });
         }
     };
 

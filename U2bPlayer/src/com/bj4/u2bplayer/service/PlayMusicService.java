@@ -22,6 +22,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
@@ -59,6 +60,14 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             }
         }
     };
+
+    private static final HandlerThread sWorkerThread = new HandlerThread("PlayMusicService-player");
+    static {
+        sWorkerThread.start();
+        sWorkerThread.setPriority(Thread.MAX_PRIORITY);
+    }
+
+    private static final Handler sWorker = new Handler(sWorkerThread.getLooper());
 
     private boolean headsetConnected = false;
 
@@ -127,11 +136,20 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         unRegisterBroadcastReceiver();
     }
 
-    private void trackNext() {
-        PlayListInfo nextInfo = mPlayList.getNextDisplayListInfo();
-        if (nextInfo != null) {
-            mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
+    private Runnable mTrackNextRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            PlayListInfo nextInfo = mPlayList.getNextDisplayListInfo();
+            if (nextInfo != null) {
+                mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
+            }
         }
+    };
+
+    private void trackNext() {
+        sWorker.removeCallbacks(mTrackNextRunnable);
+        sWorker.post(mTrackNextRunnable);
     }
 
     private int getNextPointer() {
@@ -146,39 +164,58 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         mPlayer.start();
     }
 
-    private void playMusic(int index) {
-        ArrayList<PlayListInfo> playList = mPlayList.getDisplayList();
-        int pointer = 0;
-        if (DEBUG)
-            Log.d(TAG, "play: " + index);
-        if (playList.isEmpty())
-            return;
-        if (index == PLAY_NEXT_INDEX) {
-            pointer = mPlayList.getNextPointer();
-        } else if (index == PLAY_PREVIOUS_INDEX) {
-            pointer = mPlayList.getPreviousPointer();
-        } else {
-            pointer = index;
-            if (pointer >= playList.size() || pointer < 0) {
-                pointer = 0;
-            }
+    private class PlayMusicRunnable implements Runnable {
+        private int mIndex;
+
+        public PlayMusicRunnable(int index) {
+            mIndex = index;
         }
-        try {
-            PlayListInfo currentInfo = playList.get(pointer);
-            mPlayer.setDataSource(currentInfo.mRtspHighQuility, currentInfo);
-            PlayListInfo nextInfo = playList.get(pointer + 1);
-            if (nextInfo != null) {
-                mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
-            }
-        } catch (Exception e) {
+
+        @Override
+        public void run() {
+            ArrayList<PlayListInfo> playList = mPlayList.getDisplayList();
+            int pointer = 0;
             if (DEBUG)
-                Log.w(TAG, "play failed", e);
-        } finally {
-            mPlayingAlbumId = PlayMusicApplication.getDataBaseHelper().getAlbumId(
-                    mPlayList.getCurrentDisplayListInfo().mAlbumTitle);
-            mPlayList.setPointer(pointer);
-            notifyChanged();
+                Log.d(TAG, "play: " + mIndex);
+            if (playList.isEmpty())
+                return;
+            if (mIndex == PLAY_NEXT_INDEX) {
+                pointer = mPlayList.getNextPointer();
+            } else if (mIndex == PLAY_PREVIOUS_INDEX) {
+                pointer = mPlayList.getPreviousPointer();
+            } else {
+                pointer = mIndex;
+                if (pointer >= playList.size() || pointer < 0) {
+                    pointer = 0;
+                }
+            }
+            try {
+                PlayListInfo currentInfo = playList.get(pointer);
+                mPlayer.setDataSource(currentInfo.mRtspHighQuility, currentInfo);
+                PlayListInfo nextInfo = playList.get(pointer + 1);
+                if (nextInfo != null) {
+                    mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
+                }
+            } catch (Exception e) {
+                if (DEBUG)
+                    Log.w(TAG, "play failed", e);
+            } finally {
+                mPlayingAlbumId = PlayMusicApplication.getDataBaseHelper().getAlbumId(
+                        mPlayList.getCurrentDisplayListInfo().mAlbumTitle);
+                mPlayList.setPointer(pointer);
+                notifyChanged();
+            }
         }
+    }
+
+    private Runnable mPlayMusicRunnable;
+
+    private void playMusic(final int index) {
+        if (mPlayMusicRunnable != null) {
+            sWorker.removeCallbacks(mPlayMusicRunnable);
+        }
+        mPlayMusicRunnable = new PlayMusicRunnable(index);
+        sWorker.post(mPlayMusicRunnable);
     }
 
     private class CompatMediaPlayer extends MediaPlayer implements OnCompletionListener {
