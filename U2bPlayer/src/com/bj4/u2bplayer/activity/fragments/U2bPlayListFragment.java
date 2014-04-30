@@ -1,11 +1,15 @@
 
 package com.bj4.u2bplayer.activity.fragments;
 
+import java.util.ArrayList;
+
 import com.bj4.u2bplayer.PlayList;
+import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.MainFragmentCallback;
+import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,19 +50,38 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
     private ViewSwitcher mPlayOrPause;
 
+    private static String sDisplayAlbumName;
+    
+    private static int sDisplayAlbumId;
+
+    private ArrayList<PlayListInfo> mDisplayList = new ArrayList<PlayListInfo>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    private void reloadDisplayList() {
+        if (mActivity == null)
+            return;
+        final String albumName = mActivity.getDisplayingAlbumName();
+        if (albumName != null && !albumName.isEmpty()) {
+            // keep previous status
+            sDisplayAlbumName = albumName;
+            sDisplayAlbumId = PlayMusicApplication.getDataBaseHelper()
+                    .getAlbumId(sDisplayAlbumName);
+        }
+        mDisplayList.clear();
+        mDisplayList
+                .addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(sDisplayAlbumName));
+    }
+
     private void initComponents() {
         if (mContentView != null) {
             mActivity = (U2bPlayerMainFragmentActivity)getActivity();
+            reloadDisplayList();
             mPlayList = PlayList.getInstance(mActivity);
             mLayoutInflater = LayoutInflater.from(mActivity);
-            if (DEBUG) {
-                Log.d(TAG, "" + mPlayList.getDisplayList().size());
-            }
             mControllPanel = (RelativeLayout)mContentView
                     .findViewById(R.id.play_list_controll_panel);
             mPlayListView = (ListView)mContentView.findViewById(R.id.play_list_view);
@@ -71,13 +94,14 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
                     v.setHapticFeedbackEnabled(true);
+                    mPlayList.setAlbumPlayingList(sDisplayAlbumName);
                     // mActivity.viewPlayInfo(mPlayList.getPlayList().get(position));
                     int index = mPlayList.getPointer();
                     if (DEBUG) {
-                        Log.i(TAG, "getDisplayListAlbumId(): " + mPlayList.getDisplayListAlbumId()
+                        Log.i(TAG, "getDisplayListAlbumId(): " + mPlayList.getPlayingListAlbumId()
                                 + ", getPlayingAlbumId(): " + mActivity.getPlayingAlbumId());
                     }
-                    if ((index != position || mPlayList.getDisplayListAlbumId() != mActivity
+                    if ((index != position || mPlayList.getPlayingListAlbumId() != mActivity
                             .getPlayingAlbumId()) || mActivity.isInitialized() == false) {
                         mActivity.play(position);
                     }
@@ -172,6 +196,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
     public void updateListContent() {
         if (mPlayListAdapter != null) {
+            reloadDisplayList();
             mPlayListAdapter.notifyDataSetChanged();
             mPlayListView.smoothScrollToPosition(mPlayList.getPointer());
         }
@@ -181,12 +206,12 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
         @Override
         public int getCount() {
-            return mPlayList.getDisplayList().size();
+            return mDisplayList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mPlayList.getDisplayList().get(position);
+            return mDisplayList.get(position);
         }
 
         @Override
@@ -207,8 +232,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             } else {
                 holder = (ViewHolder)contentView.getTag();
             }
-            holder.mArtist.setText(mPlayList.getDisplayList().get(position).mArtist);
-            holder.mMusic.setText(mPlayList.getDisplayList().get(position).mMusicTitle);
+            holder.mArtist.setText(mDisplayList.get(position).mArtist);
+            holder.mMusic.setText(mDisplayList.get(position).mMusicTitle);
             initTheme(contentView, position);
             return contentView;
         }
@@ -216,7 +241,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         private void initTheme(final View contentView, final int position) {
             int theme = mActivity.getApplicationTheme();
             if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
-                if (position == mPlayList.getPointer()) {
+                if (position == mPlayList.getPointer() && sDisplayAlbumId == mPlayList.getPlayingListAlbumId()) {
                     contentView
                             .setBackgroundResource(R.drawable.theme_blue_list_selected_item_oval_bg);
                 } else {

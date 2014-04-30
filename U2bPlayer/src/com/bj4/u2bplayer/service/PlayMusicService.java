@@ -140,7 +140,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public void run() {
-            PlayListInfo nextInfo = mPlayList.getNextDisplayListInfo();
+            PlayListInfo nextInfo = mPlayList.getNextPlayingListInfo();
             if (nextInfo != null) {
                 mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
             }
@@ -173,7 +173,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public void run() {
-            ArrayList<PlayListInfo> playList = mPlayList.getDisplayList();
+            ArrayList<PlayListInfo> playList = mPlayList.getPlayingList();
             int pointer = 0;
             if (DEBUG)
                 Log.d(TAG, "play: " + mIndex);
@@ -201,7 +201,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     Log.w(TAG, "play failed", e);
             } finally {
                 mPlayingAlbumId = PlayMusicApplication.getDataBaseHelper().getAlbumId(
-                        mPlayList.getCurrentDisplayListInfo().mAlbumTitle);
+                        mPlayList.getCurrentPlayingListInfo().mAlbumTitle);
                 mPlayList.setPointer(pointer);
                 notifyChanged();
             }
@@ -291,7 +291,12 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         }
 
         public boolean isPlaying() {
-            return mCurrentMediaPlayer.isPlaying();
+            try {
+                return mCurrentMediaPlayer.isPlaying();
+            } catch (Exception e) {
+                Log.w(TAG, "failed", e);
+                return false;
+            }
         }
 
         public void setDataSource(String path, PlayListInfo info) {
@@ -537,7 +542,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public PlayListInfo getCurrentPlayInfo() throws RemoteException {
-            return mPlayList.getCurrentDisplayListInfo();
+            return mPlayList.getCurrentPlayingListInfo();
         }
 
         @Override
@@ -570,7 +575,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         startForeground(
                 NotificationBuilder.NOTIFICATION_ID,
                 NotificationBuilder.createSimpleNotification(getApplicationContext(),
-                        mPlayList.getCurrentDisplayListInfo()));
+                        mPlayList.getCurrentPlayingListInfo()));
     }
 
     private void notifyPlayInfoChanged() {
@@ -578,7 +583,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         for (int i = 0; i < N; i++) {
             try {
                 mCallbacks.getBroadcastItem(i).notifyPlayInfoChanged(
-                        mPlayList.getCurrentDisplayListInfo());
+                        mPlayList.getCurrentPlayingListInfo());
             } catch (RemoteException e) {
             }
         }

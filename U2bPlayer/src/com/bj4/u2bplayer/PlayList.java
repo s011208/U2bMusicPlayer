@@ -21,7 +21,7 @@ public class PlayList {
 
     private final U2bDatabaseHelper mDatabaseHelper = PlayMusicApplication.getDataBaseHelper();
 
-    private final ArrayList<PlayListInfo> mDisplayList = new ArrayList<PlayListInfo>();
+    private final ArrayList<PlayListInfo> mPlayingList = new ArrayList<PlayListInfo>();
 
     private final ArrayList<PlayListLoaderCallback> mCallbacks = new ArrayList<PlayListLoaderCallback>();
 
@@ -29,7 +29,7 @@ public class PlayList {
 
     private SharedPreferences mPref;
     
-    private int mDisplayAlbumId;
+    private int mPlayingAlbumId;
 
     private static final String SHARE_PREF_KEY = "play_list_config";
 
@@ -43,7 +43,7 @@ public class PlayList {
 
     public int getPointer() {
         int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0);
-        if (index >= mDisplayList.size() || index < 0) {
+        if (index >= mPlayingList.size() || index < 0) {
             index = 0;
             mPref.edit().putInt(SHARE_PREF_KEY_LAST_TIME_INDEX, index).apply();
         }
@@ -52,28 +52,28 @@ public class PlayList {
 
     public int getPreviousPointer() {
         int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) - 1;
-        if (index >= mDisplayList.size()) {
+        if (index >= mPlayingList.size()) {
             index = 0;
         } else if (index < 0) {
-            index = mDisplayList.size() - 1;
+            index = mPlayingList.size() - 1;
         }
         return index;
     }
 
     public int getNextPointer() {
         int index = mPref.getInt(SHARE_PREF_KEY_LAST_TIME_INDEX, 0) + 1;
-        if (index >= mDisplayList.size() || index < 0) {
+        if (index >= mPlayingList.size() || index < 0) {
             index = 0;
         }
         return index;
     }
 
-    public PlayListInfo getCurrentDisplayListInfo() {
-        return mDisplayList.get(getPointer());
+    public PlayListInfo getCurrentPlayingListInfo() {
+        return mPlayingList.get(getPointer());
     }
 
-    public PlayListInfo getNextDisplayListInfo() {
-        return mDisplayList.get(getNextPointer());
+    public PlayListInfo getNextPlayingListInfo() {
+        return mPlayingList.get(getNextPointer());
     }
 
     public void setPointer(final int pointer) {
@@ -85,29 +85,29 @@ public class PlayList {
     }
 
     public void retrieveLocalPlayList() {
-        resetDisplayList();
+        resetPlayingList();
         Cursor data = mDatabaseHelper.queryDataFromLocalData();
-        U2bDatabaseHelper.convertFromLocalMusicDataCursorToPlayList(data, mDisplayList);
+        U2bDatabaseHelper.convertFromLocalMusicDataCursorToPlayList(data, mPlayingList);
     }
 
     public void retrieveAllPlayList() {
-        resetDisplayList();
+        resetPlayingList();
         Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
-        U2bDatabaseHelper.convertFromCursorToPlayList(data, mDisplayList);
+        U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayingList);
     }
 
-    public void resetDisplayList() {
-        mDisplayList.clear();
+    public void resetPlayingList() {
+        mPlayingList.clear();
     }
 
-    public void setAlbumDisplayList(String album) {
-        resetDisplayList();
-        mDisplayList.addAll(mDatabaseHelper.getPlayList(album));
-        mDisplayAlbumId = mDatabaseHelper.getAlbumId(album);
+    public void setAlbumPlayingList(String album) {
+        resetPlayingList();
+        mPlayingList.addAll(mDatabaseHelper.getPlayList(album));
+        mPlayingAlbumId = mDatabaseHelper.getAlbumId(album);
     }
 
-    public long getDisplayListAlbumId() {
-        return mDisplayAlbumId;
+    public long getPlayingListAlbumId() {
+        return mPlayingAlbumId;
     }
 
     public void notifyScanDone() {
@@ -117,8 +117,8 @@ public class PlayList {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<PlayListInfo> getDisplayList() {
-        return (ArrayList<PlayListInfo>)mDisplayList.clone();
+    public ArrayList<PlayListInfo> getPlayingList() {
+        return (ArrayList<PlayListInfo>)mPlayingList.clone();
     }
 
     public static synchronized PlayList getInstance(Context context) {

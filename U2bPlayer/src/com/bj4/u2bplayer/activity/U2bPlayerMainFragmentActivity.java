@@ -84,6 +84,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private Handler mHandler = new Handler();
 
+    private String mDisplayingAlbumName;
+
     private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
 
         @Override
@@ -273,8 +275,6 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void initComponents() {
         mPref = getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mPlayList = PlayList.getInstance(this);
-        if (mPlayList.getDisplayList().isEmpty())
-            mPlayList.retrieveAllPlayList();
         mPlayList.addCallback(mPlayListCallback);
         mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
         mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
@@ -315,8 +315,11 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 if (mPlayList != null) {
                     String albumName = PlayMusicApplication.getDataBaseHelper().getAlbumName(
                             getPlayingAlbumId());
+                    Log.e("QQQQ", "albumName: " + albumName
+                            + ", getPlayingAlbumId(): " + getPlayingAlbumId());
                     if (albumName != null) {
-                        mPlayList.setAlbumDisplayList(albumName);
+                        setDisplayingAlbumName(albumName);
+                        mPlayList.setAlbumPlayingList(albumName);
                     }
                 }
                 switchFragment(FRAGMENT_TYPE_PLAYLIST);
@@ -406,13 +409,12 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 break;
         }
         if (target != null) {
+            sCurrentFragment = type;
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_fragment_container, target);
+            transaction.commitAllowingStateLoss();
             if (sCurrentFragment == type && sCurrentFragment == FRAGMENT_TYPE_PLAYLIST) {
                 getPlayListFragment().updateListContent();
-            } else {
-                sCurrentFragment = type;
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.main_fragment_container, target);
-                transaction.commitAllowingStateLoss();
             }
         } else {
             if (DEBUG) {
@@ -682,4 +684,11 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     }
 
+    public void setDisplayingAlbumName(String name) {
+        mDisplayingAlbumName = name;
+    }
+
+    public String getDisplayingAlbumName() {
+        return mDisplayingAlbumName;
+    }
 }
