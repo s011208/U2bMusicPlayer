@@ -142,7 +142,9 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         public void run() {
             PlayListInfo nextInfo = mPlayList.getNextPlayingListInfo();
             if (nextInfo != null) {
-                mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
+                String dataSource = PlayMusicApplication.sUsingHighQuality ? nextInfo.mRtspHighQuility
+                        : nextInfo.mRtspLowQuility;
+                mPlayer.setNextDataSource(dataSource, nextInfo);
             }
         }
     };
@@ -173,37 +175,45 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         @Override
         public void run() {
-            ArrayList<PlayListInfo> playList = mPlayList.getPlayingList();
-            int pointer = 0;
-            if (DEBUG)
-                Log.d(TAG, "play: " + mIndex);
-            if (playList.isEmpty())
-                return;
-            if (mIndex == PLAY_NEXT_INDEX) {
-                pointer = mPlayList.getNextPointer();
-            } else if (mIndex == PLAY_PREVIOUS_INDEX) {
-                pointer = mPlayList.getPreviousPointer();
-            } else {
-                pointer = mIndex;
-                if (pointer >= playList.size() || pointer < 0) {
-                    pointer = 0;
-                }
-            }
             try {
-                PlayListInfo currentInfo = playList.get(pointer);
-                mPlayer.setDataSource(currentInfo.mRtspHighQuility, currentInfo);
-                PlayListInfo nextInfo = playList.get(pointer + 1);
-                if (nextInfo != null) {
-                    mPlayer.setNextDataSource(nextInfo.mRtspHighQuility, nextInfo);
+                ArrayList<PlayListInfo> playList = mPlayList.getPlayingList();
+                int pointer = 0;
+                if (DEBUG)
+                    Log.d(TAG, "play: " + mIndex);
+                if (playList.isEmpty())
+                    return;
+                if (mIndex == PLAY_NEXT_INDEX) {
+                    pointer = mPlayList.getNextPointer();
+                } else if (mIndex == PLAY_PREVIOUS_INDEX) {
+                    pointer = mPlayList.getPreviousPointer();
+                } else {
+                    pointer = mIndex;
+                    if (pointer >= playList.size() || pointer < 0) {
+                        pointer = 0;
+                    }
+                }
+                try {
+                    PlayListInfo currentInfo = playList.get(pointer);
+                    String dataSource = PlayMusicApplication.sUsingHighQuality ? currentInfo.mRtspHighQuility
+                            : currentInfo.mRtspLowQuility;
+                    mPlayer.setDataSource(dataSource, currentInfo);
+                    PlayListInfo nextInfo = playList.get(pointer + 1);
+                    if (nextInfo != null) {
+                        dataSource = PlayMusicApplication.sUsingHighQuality ? nextInfo.mRtspHighQuility
+                                : nextInfo.mRtspLowQuility;
+                        mPlayer.setNextDataSource(dataSource, nextInfo);
+                    }
+                } catch (Exception e) {
+                    if (DEBUG)
+                        Log.w(TAG, "play failed", e);
+                } finally {
+                    mPlayingAlbumId = PlayMusicApplication.getDataBaseHelper().getAlbumId(
+                            mPlayList.getCurrentPlayingListInfo().mAlbumTitle);
+                    mPlayList.setPointer(pointer);
+                    notifyChanged();
                 }
             } catch (Exception e) {
-                if (DEBUG)
-                    Log.w(TAG, "play failed", e);
-            } finally {
-                mPlayingAlbumId = PlayMusicApplication.getDataBaseHelper().getAlbumId(
-                        mPlayList.getCurrentPlayingListInfo().mAlbumTitle);
-                mPlayList.setPointer(pointer);
-                notifyChanged();
+                Log.w(TAG, "play failed", e);
             }
         }
     }
@@ -251,10 +261,14 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         }
 
         public void setNextMediaPlayer(MediaPlayer next) {
-            if (mCompatMode) {
-                mNextPlayer = next;
-            } else {
-                super.setNextMediaPlayer(next);
+            try {
+                if (mCompatMode) {
+                    mNextPlayer = next;
+                } else {
+                    super.setNextMediaPlayer(next);
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "failed to setNextMediaPlayer", e);
             }
         }
 
@@ -391,7 +405,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             }
             mNextMediaPlayer = new CompatMediaPlayer();
             mNextMediaPlayer.setWakeMode(PlayMusicService.this, PowerManager.PARTIAL_WAKE_LOCK);
-            mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
+            try {
+                mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
+            } catch (Exception e) {
+                Log.w(TAG, "failed", e);
+            }
             if (setDataSourceImpl(info, mNextMediaPlayer, path, false)) {
                 // set next at setDataSourceImpl
             } else {
@@ -432,6 +450,9 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
         MediaPlayer.OnCompletionListener listener = new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
+                Log.w(TAG,
+                        "onCompletion, (mp == mCurrentMediaPlayer && mNextMediaPlayer != null): "
+                                + (mp == mCurrentMediaPlayer && mNextMediaPlayer != null));
                 if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
                     mCurrentMediaPlayer.release();
                     mCurrentMediaPlayer = mNextMediaPlayer;
@@ -439,12 +460,15 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     mPlayList.setPointer(getNextPointer());
                     notifyChanged();
                     mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
+                } else {
+                    playMusic(getNextPointer());
                 }
             }
         };
 
         MediaPlayer.OnErrorListener errorListener = new MediaPlayer.OnErrorListener() {
             public boolean onError(MediaPlayer mp, int what, int extra) {
+                Log.w(TAG, "Error: " + what + "," + extra);
                 switch (what) {
                     case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
                         mIsInitialized = false;
@@ -452,10 +476,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                         mCurrentMediaPlayer = new CompatMediaPlayer();
                         mCurrentMediaPlayer.setWakeMode(PlayMusicService.this,
                                 PowerManager.PARTIAL_WAKE_LOCK);
-                        return true;
-                    default:
-                        Log.d(TAG, "Error: " + what + "," + extra);
-                        break;
+                        return false;
                 }
                 return false;
             }
@@ -564,7 +585,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     final RemoteCallbackList<IPlayMusicServiceCallback> mCallbacks = new RemoteCallbackList<IPlayMusicServiceCallback>();
 
-    private void notifyChanged() {
+    private synchronized void notifyChanged() {
         notifyIndexChanged();
         notifyPlayStateChanged(mPlayer.isPlaying());
         notifyPlayInfoChanged();
@@ -572,10 +593,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void notifyNotificationChanged() {
-        startForeground(
-                NotificationBuilder.NOTIFICATION_ID,
-                NotificationBuilder.createSimpleNotification(getApplicationContext(),
-                        mPlayList.getCurrentPlayingListInfo()));
+        final PlayListInfo info = mPlayList.getCurrentPlayingListInfo();
+        if (info == null)
+            return;
+        startForeground(NotificationBuilder.NOTIFICATION_ID,
+                NotificationBuilder.createSimpleNotification(getApplicationContext(), info));
     }
 
     private void notifyPlayInfoChanged() {

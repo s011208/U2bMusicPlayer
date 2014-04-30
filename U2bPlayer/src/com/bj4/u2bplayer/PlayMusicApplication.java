@@ -9,6 +9,7 @@ import com.bj4.u2bplayer.scanner.PlayScanner;
 import com.bj4.u2bplayer.u2bParser.YoutubeDataParser;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -23,11 +24,17 @@ public class PlayMusicApplication extends Application {
 
     public static final String INTENT_CRASH_LOG = "crash_log";
 
+    private static final String GLOABAL_PREF_KEY = "global_pref_key";
+
+    private static final String PREF_MUSIC_QUALITY = "pref_music_quality";
+
     private static U2bDatabaseHelper sDatabase;
 
     private static YoutubeDataParser sU2bParser;
 
     private static PlayScanner sPlayScanner;
+
+    public static boolean sUsingHighQuality = true;
 
     @Override
     public void onCreate() {
@@ -36,6 +43,14 @@ public class PlayMusicApplication extends Application {
         sDatabase = new U2bDatabaseHelper(this);
         sU2bParser = new YoutubeDataParser(this);
         sDatabase.addCallback(sU2bParser);
+        sUsingHighQuality = getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE)
+                .getBoolean(PREF_MUSIC_QUALITY, true);
+    }
+
+    public static void setMusicQuality(Context context, boolean usingHighQuality) {
+        sUsingHighQuality = usingHighQuality;
+        context.getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE).edit()
+                .putBoolean(PREF_MUSIC_QUALITY, sUsingHighQuality);
     }
 
     public synchronized static PlayScanner getPlayScanner() {

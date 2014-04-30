@@ -28,7 +28,7 @@ public class PlayList {
     private static PlayList mSingleton;
 
     private SharedPreferences mPref;
-    
+
     private int mPlayingAlbumId;
 
     private static final String SHARE_PREF_KEY = "play_list_config";
@@ -69,6 +69,8 @@ public class PlayList {
     }
 
     public PlayListInfo getCurrentPlayingListInfo() {
+        if (mPlayingList.isEmpty())
+            return null;
         return mPlayingList.get(getPointer());
     }
 

@@ -136,7 +136,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
                 @Override
                 public void run() {
-                    setActionMusicInfo(info);
+                    if (info != null) {
+                        setActionMusicInfo(info);
+                    }
                 }
             });
         }
@@ -315,8 +317,6 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 if (mPlayList != null) {
                     String albumName = PlayMusicApplication.getDataBaseHelper().getAlbumName(
                             getPlayingAlbumId());
-                    Log.e("QQQQ", "albumName: " + albumName
-                            + ", getPlayingAlbumId(): " + getPlayingAlbumId());
                     if (albumName != null) {
                         setDisplayingAlbumName(albumName);
                         mPlayList.setAlbumPlayingList(albumName);
@@ -409,11 +409,12 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 break;
         }
         if (target != null) {
+            int previouseFragment = sCurrentFragment;
             sCurrentFragment = type;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.main_fragment_container, target);
             transaction.commitAllowingStateLoss();
-            if (sCurrentFragment == type && sCurrentFragment == FRAGMENT_TYPE_PLAYLIST) {
+            if (previouseFragment == type && previouseFragment == FRAGMENT_TYPE_PLAYLIST) {
                 getPlayListFragment().updateListContent();
             }
         } else {

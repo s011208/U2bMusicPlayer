@@ -197,7 +197,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
     }
 
     public void updateListContent() {
-        if (mPlayListAdapter != null && isPlayingList()) {
+        if (mPlayListAdapter != null) {
             reloadDisplayList();
             mPlayListAdapter.notifyDataSetChanged();
             mPlayListView.smoothScrollToPosition(mPlayList.getPointer());
