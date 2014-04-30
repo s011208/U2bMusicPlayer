@@ -51,7 +51,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
     private ViewSwitcher mPlayOrPause;
 
     private static String sDisplayAlbumName;
-    
+
     private static int sDisplayAlbumId;
 
     private ArrayList<PlayListInfo> mDisplayList = new ArrayList<PlayListInfo>();
@@ -88,7 +88,9 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             mPlayListAdapter = new PlayListAdapter();
             mPlayListView.setSelector(R.color.transparent);
             mPlayListView.setAdapter(mPlayListAdapter);
-            mPlayListView.setSelection(mPlayList.getPointer());
+            if (isPlayingList()) {
+                mPlayListView.setSelection(mPlayList.getPointer());
+            }
             mPlayListView.setOnItemClickListener(new OnItemClickListener() {
 
                 @Override
@@ -195,7 +197,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
     }
 
     public void updateListContent() {
-        if (mPlayListAdapter != null) {
+        if (mPlayListAdapter != null && isPlayingList()) {
             reloadDisplayList();
             mPlayListAdapter.notifyDataSetChanged();
             mPlayListView.smoothScrollToPosition(mPlayList.getPointer());
@@ -241,7 +243,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         private void initTheme(final View contentView, final int position) {
             int theme = mActivity.getApplicationTheme();
             if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
-                if (position == mPlayList.getPointer() && sDisplayAlbumId == mPlayList.getPlayingListAlbumId()) {
+                if (position == mPlayList.getPointer()
+                        && isPlayingList()) {
                     contentView
                             .setBackgroundResource(R.drawable.theme_blue_list_selected_item_oval_bg);
                 } else {
@@ -259,6 +262,12 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
             TextView mMusic;
         }
+    }
+
+    private boolean isPlayingList() {
+        if (mPlayList == null)
+            return false;
+        return sDisplayAlbumId == mPlayList.getPlayingListAlbumId();
     }
 
     @Override
