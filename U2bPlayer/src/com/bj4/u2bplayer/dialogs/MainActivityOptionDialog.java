@@ -57,6 +57,10 @@ public class MainActivityOptionDialog extends DialogFragment {
         ArrayList<CharSequence> options = new ArrayList<CharSequence>();
         final String sync = mContext.getString(R.string.option_download_data);
         options.add(sync);
+        final String theme = mContext.getString(R.string.option_theme);
+        options.add(theme);
+        final String dataSourceLists = mContext.getString(R.string.option_source);
+        options.add(dataSourceLists);
         final String switchDataLocal = mContext
                 .getString(R.string.option_switch_data_source_local);
         final String switchDataInternet = mContext
@@ -83,6 +87,10 @@ public class MainActivityOptionDialog extends DialogFragment {
                     if (mCallback != null) {
                         mCallback.onSelected(ITEM_SWITCH_DATA_SOURCE_INTERNET);
                     }
+                } else if (selectedItem.equals(theme)) {
+                    ThemeSelectDialog ts = new ThemeSelectDialog();
+                    ts.show(getActivity().getFragmentManager(), "");
+                } else if (selectedItem.equals(dataSourceLists)) {
                 }
             }
         });
@@ -116,7 +124,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         window.setGravity(Gravity.TOP | Gravity.RIGHT);
         WindowManager.LayoutParams lp = window.getAttributes();
 
-        lp.windowAnimations = android.R.style.Animation_Toast;
+        lp.windowAnimations = android.R.style.Animation_InputMethod;
         lp.x = mLocation[0];
         lp.y = mLocation[1];
         window.setAttributes(lp);

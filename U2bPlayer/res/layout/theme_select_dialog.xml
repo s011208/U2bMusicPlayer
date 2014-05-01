@@ -1,0 +1,20 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <com.bj4.u2bplayer.dialogs.ThemeSelectGridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/theme_selector_grid_layout_margin"
+            android:columnCount="@integer/theme_selector_dialog_column"
+            android:orientation="horizontal" >
+        </com.bj4.u2bplayer.dialogs.ThemeSelectGridLayout>
+    </LinearLayout>
+
+</ScrollView>
