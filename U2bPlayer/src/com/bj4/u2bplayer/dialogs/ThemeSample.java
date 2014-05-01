@@ -15,6 +15,13 @@ public class ThemeSample extends LinearLayout {
         super(context);
         mContext = context;
         setOrientation(LinearLayout.VERTICAL);
+        setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     public void setColors(int header, int light, int dark, int selected, int footer, int background) {
@@ -47,7 +54,6 @@ public class ThemeSample extends LinearLayout {
         v = new View(mContext);
         v.setBackgroundResource(footer);
         addView(v, ll);
-
     }
 
 }
