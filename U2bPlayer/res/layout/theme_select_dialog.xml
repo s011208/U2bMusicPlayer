@@ -8,6 +8,7 @@
         android:orientation="vertical" >
 
         <com.bj4.u2bplayer.dialogs.ThemeSelectGridLayout
+            android:id="@+id/dialog_theme_select_grid_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"

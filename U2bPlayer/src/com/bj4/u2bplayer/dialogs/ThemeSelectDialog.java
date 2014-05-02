@@ -16,13 +16,22 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class ThemeSelectDialog extends DialogFragment {
+public class ThemeSelectDialog extends DialogFragment implements
+        ThemeSelectGridLayout.DismissCallback {
+
+    public void dismissThemeDialog() {
+        dismiss();
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Context context = getActivity();
-        LayoutInflater inflater = (LayoutInflater)
-                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater)context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.theme_select_dialog, null);
+        ThemeSelectGridLayout gl = (ThemeSelectGridLayout)v
+                .findViewById(R.id.dialog_theme_select_grid_layout);
+        gl.setCallback(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.option_theme).setCancelable(true).setView(v);
         return builder.create();

@@ -15,7 +15,6 @@
     <integer name="theme_selector_dialog_column">2</integer>
     <dimen name="theme_selector_grid_layout_margin">3dp</dimen>
     <dimen name="theme_sample_view_height">30dp</dimen>
-    <dimen name="theme_sample_view_Width">140dp</dimen>
     <dimen name="theme_sample_view_margin">10dp</dimen>
     <!-- playList fragment -->
     <dimen name="play_list_fragment_control_panel_height">100dp</dimen>

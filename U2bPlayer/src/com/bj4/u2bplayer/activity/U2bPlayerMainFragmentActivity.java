@@ -56,7 +56,27 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public static final int FRAGMENT_TYPE_MUSIC_INFO = 2;
 
+    public static final String THEME_CHANGED_INTENT = "com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.themeChanged";
+
+    public static final String THEME_CHANGED_INTENT_EXTRA_THEME = "new_theme";
+
     public static final int THEME_BLUE = 0; // default
+
+    public static final int THEME_WHITE = 1;
+
+    public static final int THEME_BLACK = 2;
+
+    public static final int THEME_ORANGE = 3;
+
+    public static final int THEME_YELLOW = 4;
+
+    public static final int THEME_GRAY = 5;
+
+    public static final int THEME_NAVY = 6;
+
+    public static final int THEME_PURPLE = 7;
+
+    public static final int THEME_SIMPLE_WHITE = 8;
 
     public static final String SHARE_PREF_KEY = "sharf";
 
@@ -176,6 +196,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_SCREEN_ON.equals(action)) {
+            } else if (THEME_CHANGED_INTENT.equals(action)) {
+                int newTheme = intent.getIntExtra(THEME_CHANGED_INTENT_EXTRA_THEME, THEME_BLUE);
+                Log.e("QQQQ", "theme: " + newTheme);
             }
         }
     };
@@ -187,6 +210,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void registerBroadcastReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(THEME_CHANGED_INTENT);
         registerReceiver(mReceiver, filter);
     }
 
