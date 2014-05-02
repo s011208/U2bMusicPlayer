@@ -49,6 +49,7 @@ public class ThemeSelectGridLayout extends GridLayout {
         gl = getGridLayoutParams(context, margin);
         ThemeSample v = new ThemeSample(context);
         v.setTheme(U2bPlayerMainFragmentActivity.THEME_BLUE);
+        v.setCallback(mDismissCallback);
         addView(v, gl);
 
         // white

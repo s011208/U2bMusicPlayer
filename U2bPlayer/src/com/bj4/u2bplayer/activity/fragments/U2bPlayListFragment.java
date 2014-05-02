@@ -180,6 +180,22 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         int theme = mActivity.getApplicationTheme();
         if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
             mControllPanel.setBackgroundResource(R.color.theme_blue_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_WHITE) {
+            mControllPanel.setBackgroundResource(R.color.theme_white_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_BLACK) {
+            mControllPanel.setBackgroundResource(R.color.theme_black_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_ORANGE) {
+            mControllPanel.setBackgroundResource(R.color.theme_orange_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_YELLOW) {
+            mControllPanel.setBackgroundResource(R.color.theme_yellow_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_GRAY) {
+            mControllPanel.setBackgroundResource(R.color.theme_gray_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_NAVY) {
+            mControllPanel.setBackgroundResource(R.color.theme_navy_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_PURPLE) {
+            mControllPanel.setBackgroundResource(R.color.theme_purple_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_SIMPLE_WHITE) {
+            mControllPanel.setBackgroundResource(R.color.theme_simple_white_action_bar_bg);
         }
     }
 
@@ -206,6 +222,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
     private class PlayListAdapter extends BaseAdapter {
 
+        private int mSelectedBackground = 0, mLightBackground, mDarkBackground;
+
         @Override
         public int getCount() {
             return mDisplayList.size();
@@ -225,6 +243,9 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         public View getView(int position, View contentView, ViewGroup parent) {
             ViewHolder holder = null;
             if (contentView == null) {
+                if (mSelectedBackground == 0) {
+                    initColor();
+                }
                 contentView = mLayoutInflater.inflate(R.layout.play_list_content, parent, false);
                 holder = new ViewHolder();
                 holder.mThumbnail = (ImageView)contentView.findViewById(R.id.play_list_thumbnail);
@@ -240,18 +261,58 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             return contentView;
         }
 
-        private void initTheme(final View contentView, final int position) {
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+            initColor();
+        }
+
+        private void initColor() {
             int theme = mActivity.getApplicationTheme();
             if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
-                if (position == mPlayList.getPointer()
-                        && isPlayingList()) {
-                    contentView
-                            .setBackgroundResource(R.drawable.theme_blue_list_selected_item_oval_bg);
-                } else {
-                    contentView
-                            .setBackgroundResource(position % 2 == 0 ? R.drawable.theme_blue_list_dark_oval_bg
-                                    : R.drawable.theme_blue_list_light_oval_bg);
-                }
+                mSelectedBackground = R.drawable.theme_blue_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_blue_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_blue_list_dark_oval_bg;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_WHITE) {
+                mSelectedBackground = R.drawable.theme_white_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_white_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_white_list_dark_oval_bg;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_BLACK) {
+                mSelectedBackground = R.drawable.theme_black_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_black_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_black_list_dark_oval_bg;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_ORANGE) {
+                mSelectedBackground = R.drawable.theme_orange_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_orange_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_orange_list_dark_oval_bg;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_YELLOW) {
+                mSelectedBackground = R.drawable.theme_yellow_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_yellow_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_yellow_list_dark_oval_bg;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_GRAY) {
+                mSelectedBackground = R.drawable.theme_gray_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_gray_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_gray_list_dark_oval_bg;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_NAVY) {
+                mSelectedBackground = R.drawable.theme_navy_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_navy_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_navy_list_dark_oval_bg;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_PURPLE) {
+                mSelectedBackground = R.drawable.theme_purple_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_purple_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_purple_list_dark_oval_bg;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_SIMPLE_WHITE) {
+                mSelectedBackground = R.drawable.theme_simple_white_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_simple_white_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_simple_white_list_dark_oval_bg;
+            }
+        }
+
+        private void initTheme(final View contentView, final int position) {
+            if (position == mPlayList.getPointer() && isPlayingList()) {
+                contentView.setBackgroundResource(mSelectedBackground);
+            } else {
+                contentView.setBackgroundResource(position % 2 == 0 ? mDarkBackground
+                        : mLightBackground);
             }
         }
 
@@ -273,5 +334,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
     @Override
     public void reloadTheme() {
         initTheme();
+        if (mPlayListAdapter != null) {
+            mPlayListAdapter.notifyDataSetChanged();
+        }
     }
 }

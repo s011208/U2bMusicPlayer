@@ -198,7 +198,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             if (Intent.ACTION_SCREEN_ON.equals(action)) {
             } else if (THEME_CHANGED_INTENT.equals(action)) {
                 int newTheme = intent.getIntExtra(THEME_CHANGED_INTENT_EXTRA_THEME, THEME_BLUE);
-                Log.e("QQQQ", "theme: " + newTheme);
+                setApplicationTheme(newTheme);
             }
         }
     };
@@ -265,6 +265,30 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (theme == THEME_BLUE) {
             mMainLayout.setBackgroundResource(R.color.theme_blue_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_blue_action_bar_bg);
+        } else if (theme == THEME_WHITE) {
+            mMainLayout.setBackgroundResource(R.color.theme_white_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_white_action_bar_bg);
+        } else if (theme == THEME_BLACK) {
+            mMainLayout.setBackgroundResource(R.color.theme_black_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_black_action_bar_bg);
+        } else if (theme == THEME_ORANGE) {
+            mMainLayout.setBackgroundResource(R.color.theme_orange_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_orange_action_bar_bg);
+        } else if (theme == THEME_YELLOW) {
+            mMainLayout.setBackgroundResource(R.color.theme_yellow_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_yellow_action_bar_bg);
+        } else if (theme == THEME_GRAY) {
+            mMainLayout.setBackgroundResource(R.color.theme_gray_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_gray_action_bar_bg);
+        } else if (theme == THEME_NAVY) {
+            mMainLayout.setBackgroundResource(R.color.theme_navy_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_navy_action_bar_bg);
+        } else if (theme == THEME_PURPLE) {
+            mMainLayout.setBackgroundResource(R.color.theme_purple_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_purple_action_bar_bg);
+        } else if (theme == THEME_SIMPLE_WHITE) {
+            mMainLayout.setBackgroundResource(R.color.theme_simple_white_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_simple_white_action_bar_bg);
         }
     }
 
