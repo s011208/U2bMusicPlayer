@@ -39,7 +39,6 @@ public class ThemeSelectGridLayout extends GridLayout {
     }
 
     private void initThemes(Context context) {
-        setBackgroundColor(0xccffffff);
         int margin = (int)context.getResources().getDimension(R.dimen.theme_sample_view_margin);
         mElementWidth = (context.getResources().getDisplayMetrics().widthPixels - 12 * margin)
                 / context.getResources().getInteger(R.integer.theme_selector_dialog_column);

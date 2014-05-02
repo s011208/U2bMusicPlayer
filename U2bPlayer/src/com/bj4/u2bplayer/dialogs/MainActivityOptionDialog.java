@@ -26,9 +26,11 @@ import android.view.WindowManager.LayoutParams;
 public class MainActivityOptionDialog extends DialogFragment {
 
     public static final boolean DEBUG = true;
+
     public static final int ITEM_DOWNLOAD_DATA = 0;
 
     public static final int ITEM_SWITCH_DATA_SOURCE_LOCAL = 1;
+
     public static final int ITEM_SWITCH_DATA_SOURCE_INTERNET = 2;
 
     public interface MainActivityOptionDialogCallback {
@@ -61,8 +63,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         options.add(theme);
         final String dataSourceLists = mContext.getString(R.string.option_source);
         options.add(dataSourceLists);
-        final String switchDataLocal = mContext
-                .getString(R.string.option_switch_data_source_local);
+        final String switchDataLocal = mContext.getString(R.string.option_switch_data_source_local);
         final String switchDataInternet = mContext
                 .getString(R.string.option_switch_data_source_internet);
         if (DEBUG) {
@@ -73,7 +74,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setItems(options.toArray(optionsContent), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String selectedItem = (String) ((AlertDialog) dialog).getListView()
+                String selectedItem = (String)((AlertDialog)dialog).getListView()
                         .getItemAtPosition(which);
                 if (selectedItem.equals(sync)) {
                     if (mCallback != null) {
@@ -91,6 +92,8 @@ public class MainActivityOptionDialog extends DialogFragment {
                     ThemeSelectDialog ts = new ThemeSelectDialog();
                     ts.show(getActivity().getFragmentManager(), "");
                 } else if (selectedItem.equals(dataSourceLists)) {
+                    DataSourceDialog ds = new DataSourceDialog();
+                    ds.show(getActivity().getFragmentManager(), "");
                 }
             }
         });

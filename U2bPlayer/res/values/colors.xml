@@ -6,6 +6,7 @@
     <drawable name="play_list_selected">#000000</drawable>
 
     <color name="transparent">#00000000</color>
+    <color name="dialog_background">#ccffffff</color>
     <!-- theme blue -->
     <color name="theme_blue_activity_bg">#ba89c4f2</color>
     <color name="theme_blue_action_bar_bg">#7a000000</color>
