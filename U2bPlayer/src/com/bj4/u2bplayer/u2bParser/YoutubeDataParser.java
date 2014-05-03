@@ -37,9 +37,16 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
+    private static final boolean OPTIMIZE_PARSIG = true;
+
+    private static final int RETRIVE_DATA_SIZE = OPTIMIZE_PARSIG ? 5 : 1;
+
+    private static final int IGNORE_DURATION = 90;
+
     private static final String SOURCE_PREVIOUS = "https://gdata.youtube.com/feeds/api/videos?q=";
 
-    private static final String SOURCE_LAST = "&max-results=1&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
+    private static final String SOURCE_LAST = "&max-results=" + RETRIVE_DATA_SIZE
+            + "&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
 
     private static final int QUICK_NOTIFY_LIMIT = 10;
 
@@ -84,23 +91,31 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                                 .getJSONArray("entry");
                         if (entry != null) {
                             for (int i = 0; i < entry.length(); i++) {
-                                JSONObject jOb = ((JSONObject)entry.get(i));
+                                JSONObject jOb = ((JSONObject) entry.get(i));
                                 info.mVideoId = jOb.getJSONObject("id").getString("$t");
                                 if (info.mVideoId != null) {
                                     info.mVideoId = info.mVideoId.substring(
                                             info.mVideoId.lastIndexOf("/") + 1,
                                             info.mVideoId.length());
                                 }
-                                info.mHttpUri = ((JSONObject)jOb.getJSONObject("media$group")
+                                info.mHttpUri = ((JSONObject) jOb.getJSONObject("media$group")
                                         .getJSONArray("media$content").get(0)).getString("url");
-                                info.mRtspHighQuility = ((JSONObject)jOb
+                                int duration = ((JSONObject) jOb.getJSONObject("media$group")
+                                        .getJSONArray("media$content").get(0)).getInt("duration");
+                                if (OPTIMIZE_PARSIG && duration < IGNORE_DURATION) {
+                                    if (DEBUG)
+                                        Log.v(TAG, "duration: " + duration + ", abort");
+                                    continue;
+                                }
+                                info.mRtspHighQuility = ((JSONObject) jOb
                                         .getJSONObject("media$group").getJSONArray("media$content")
                                         .get(2)).getString("url");
-                                info.mRtspLowQuility = ((JSONObject)jOb
+                                info.mRtspLowQuility = ((JSONObject) jOb
                                         .getJSONObject("media$group").getJSONArray("media$content")
                                         .get(1)).getString("url");
                                 if (DEBUG)
                                     Log.d(TAG, "url: " + info.mHttpUri);
+                                break;
                             }
                         }
                         listTobeInserted.add(info);
@@ -206,7 +221,7 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
             ByteArrayBuffer baf = new ByteArrayBuffer(500);
             int current = 0;
             while ((current = bis.read()) != -1) {
-                baf.append((byte)current);
+                baf.append((byte) current);
             }
             byte[] imageRaw = baf.toByteArray();
             Bitmap rtn = BitmapFactory.decodeByteArray(imageRaw, 0, imageRaw.length);
