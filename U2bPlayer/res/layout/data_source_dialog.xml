@@ -1,13 +1,7 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/data_source_list_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/dialog_background" >
 
-    <LinearLayout
-        android:id="@+id/data_source_dialog"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/dialog_background"
-        android:orientation="vertical" >
-    </LinearLayout>
-
-</ScrollView>
+</ListView>

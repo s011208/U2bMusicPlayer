@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -77,6 +78,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     public static final int THEME_PURPLE = 7;
 
     public static final int THEME_SIMPLE_WHITE = 8;
+
+    public static final int THEME_RED = 9;
 
     public static final String SHARE_PREF_KEY = "sharf";
 
@@ -265,31 +268,44 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (theme == THEME_BLUE) {
             mMainLayout.setBackgroundResource(R.color.theme_blue_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_blue_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_WHITE) {
             mMainLayout.setBackgroundResource(R.color.theme_white_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_white_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.BLACK);
         } else if (theme == THEME_BLACK) {
             mMainLayout.setBackgroundResource(R.color.theme_black_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_black_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_ORANGE) {
             mMainLayout.setBackgroundResource(R.color.theme_orange_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_orange_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_YELLOW) {
             mMainLayout.setBackgroundResource(R.color.theme_yellow_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_yellow_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_GRAY) {
             mMainLayout.setBackgroundResource(R.color.theme_gray_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_gray_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_NAVY) {
             mMainLayout.setBackgroundResource(R.color.theme_navy_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_navy_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_PURPLE) {
             mMainLayout.setBackgroundResource(R.color.theme_purple_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_purple_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_SIMPLE_WHITE) {
             mMainLayout.setBackgroundResource(R.color.theme_simple_white_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_simple_white_action_bar_bg);
-        }
+            mActionBarTitle.setTextColor(Color.BLACK);
+        } else if (theme == THEME_RED) {
+            mMainLayout.setBackgroundResource(R.color.theme_red_activity_bg);
+            mActionBar.setBackgroundResource(R.color.theme_red_action_bar_bg);
+            mActionBarTitle.setTextColor(Color.WHITE);
+        } 
     }
 
     /**
@@ -303,7 +319,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             Object windowManagerService = m.invoke(null, new Object[] {});
             c = windowManagerService.getClass();
             m = c.getDeclaredMethod("hasNavigationBar", new Class<?>[] {});
-            hasNavigationBar = (Boolean)m.invoke(windowManagerService, new Object[] {});
+            hasNavigationBar = (Boolean) m.invoke(windowManagerService, new Object[] {});
             if (DEBUG)
                 Log.d(TAG, "hasNavigationBar: " + hasNavigationBar);
         } catch (Exception e) {
@@ -313,8 +329,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // TODO do something about transparent navigation bar
-            int statusBarHeight = (int)getResources().getDimension(R.dimen.status_bar_height);
-            int navigationBarHeight = hasNavigationBar ? (int)getResources().getDimension(
+            int statusBarHeight = (int) getResources().getDimension(R.dimen.status_bar_height);
+            int navigationBarHeight = hasNavigationBar ? (int) getResources().getDimension(
                     R.dimen.navigation_bar_height) : 0;
             // mMainLayout.setPadding(mMainLayout.getPaddingLeft(),
             // statusBarHeight,
@@ -326,10 +342,10 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         mPref = getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(mPlayListCallback);
-        mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
-        mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
-        mOptionBtn = (ImageButton)findViewById(R.id.menu);
-        mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
+        mMainLayout = (RelativeLayout) findViewById(R.id.u2b_main_activity_main_layout);
+        mActionBar = (RelativeLayout) findViewById(R.id.action_bar_parent);
+        mOptionBtn = (ImageButton) findViewById(R.id.menu);
+        mActionBarTitle = (TextView) findViewById(R.id.action_bar_music_info);
         initMainLayout();
         initActionBarComponents();
     }
@@ -338,21 +354,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (mU2bMainFragment == null) {
             mU2bMainFragment = new U2bMainFragment();
         }
-        return (U2bMainFragment)mU2bMainFragment;
+        return (U2bMainFragment) mU2bMainFragment;
     }
 
     private synchronized U2bPlayListFragment getPlayListFragment() {
         if (mU2bPlayListFragment == null) {
             mU2bPlayListFragment = new U2bPlayListFragment();
         }
-        return (U2bPlayListFragment)mU2bPlayListFragment;
+        return (U2bPlayListFragment) mU2bPlayListFragment;
     }
 
     private synchronized U2bPlayInfoFragment getPlayInfoFragment() {
         if (mU2bPlayInfoFragment == null) {
             mU2bPlayInfoFragment = new U2bPlayInfoFragment();
         }
-        return (U2bPlayInfoFragment)mU2bPlayInfoFragment;
+        return (U2bPlayInfoFragment) mU2bPlayInfoFragment;
     }
 
     public void initActionBarComponents() {
@@ -729,7 +745,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void reloadTheme() {
         Fragment fag = getCurrentFragment();
         if (fag != null && fag instanceof ThemeReloader) {
-            ((ThemeReloader)fag).reloadTheme();
+            ((ThemeReloader) fag).reloadTheme();
         }
     }
 

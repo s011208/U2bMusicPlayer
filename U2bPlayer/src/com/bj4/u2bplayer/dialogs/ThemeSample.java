@@ -93,6 +93,17 @@ public class ThemeSample extends LinearLayout {
                         R.color.theme_simple_white_action_bar_bg,
                         R.color.theme_simple_white_activity_bg);
                 break;
+            case U2bPlayerMainFragmentActivity.THEME_RED:
+                setColors(R.color.theme_red_action_bar_bg,
+                        R.drawable.theme_red_list_light_oval_bg_unpress,
+                        R.drawable.theme_red_list_dark_oval_bg_unpress,
+                        R.drawable.theme_red_list_selected_item_oval_bg,
+                        R.color.theme_red_action_bar_bg,
+                        R.color.theme_red_activity_bg);
+                break;
+            default:
+                setTheme(U2bPlayerMainFragmentActivity.THEME_BLUE);
+                break;
         }
     }
 

@@ -11,6 +11,7 @@ import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.MainFragmentCallback;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -196,6 +197,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             mControllPanel.setBackgroundResource(R.color.theme_purple_action_bar_bg);
         } else if (theme == U2bPlayerMainFragmentActivity.THEME_SIMPLE_WHITE) {
             mControllPanel.setBackgroundResource(R.color.theme_simple_white_action_bar_bg);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_RED) {
+            mControllPanel.setBackgroundResource(R.color.theme_red_action_bar_bg);
         }
     }
 
@@ -223,6 +226,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
     private class PlayListAdapter extends BaseAdapter {
 
         private int mSelectedBackground = 0, mLightBackground, mDarkBackground;
+
+        private int mTextColor;
 
         @Override
         public int getCount() {
@@ -256,14 +261,16 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                 holder = (ViewHolder)contentView.getTag();
             }
             holder.mArtist.setText(mDisplayList.get(position).mArtist);
+            holder.mArtist.setTextColor(mTextColor);
             holder.mMusic.setText(mDisplayList.get(position).mMusicTitle);
+            holder.mMusic.setTextColor(mTextColor);
             initTheme(contentView, position);
             return contentView;
         }
 
         public void notifyDataSetChanged() {
-            super.notifyDataSetChanged();
             initColor();
+            super.notifyDataSetChanged();
         }
 
         private void initColor() {
@@ -272,38 +279,52 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                 mSelectedBackground = R.drawable.theme_blue_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_blue_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_blue_list_dark_oval_bg;
+                mTextColor = Color.WHITE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_WHITE) {
                 mSelectedBackground = R.drawable.theme_white_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_white_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_white_list_dark_oval_bg;
+                mTextColor = Color.BLACK;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_BLACK) {
                 mSelectedBackground = R.drawable.theme_black_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_black_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_black_list_dark_oval_bg;
+                mTextColor = Color.WHITE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_ORANGE) {
                 mSelectedBackground = R.drawable.theme_orange_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_orange_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_orange_list_dark_oval_bg;
+                mTextColor = Color.WHITE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_YELLOW) {
                 mSelectedBackground = R.drawable.theme_yellow_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_yellow_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_yellow_list_dark_oval_bg;
+                mTextColor = Color.WHITE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_GRAY) {
                 mSelectedBackground = R.drawable.theme_gray_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_gray_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_gray_list_dark_oval_bg;
+                mTextColor = Color.WHITE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_NAVY) {
                 mSelectedBackground = R.drawable.theme_navy_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_navy_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_navy_list_dark_oval_bg;
+                mTextColor = Color.WHITE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_PURPLE) {
                 mSelectedBackground = R.drawable.theme_purple_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_purple_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_purple_list_dark_oval_bg;
+                mTextColor = Color.WHITE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_SIMPLE_WHITE) {
                 mSelectedBackground = R.drawable.theme_simple_white_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_simple_white_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_simple_white_list_dark_oval_bg;
+                mTextColor = Color.BLACK;
+            } else if (theme == U2bPlayerMainFragmentActivity.THEME_RED) {
+                mSelectedBackground = R.drawable.theme_red_list_selected_item_oval_bg;
+                mLightBackground = R.drawable.theme_red_list_light_oval_bg;
+                mDarkBackground = R.drawable.theme_red_list_dark_oval_bg;
+                mTextColor = Color.WHITE;
             }
         }
 

@@ -31,6 +31,7 @@ public class ThemeSelectGridView extends GridView {
         THEME_LIST.add(U2bPlayerMainFragmentActivity.THEME_NAVY);
         THEME_LIST.add(U2bPlayerMainFragmentActivity.THEME_PURPLE);
         THEME_LIST.add(U2bPlayerMainFragmentActivity.THEME_SIMPLE_WHITE);
+        THEME_LIST.add(U2bPlayerMainFragmentActivity.THEME_RED);
     }
 
     public interface DismissCallback {
