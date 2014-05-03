@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +61,8 @@ public class DataSourceDialog extends DialogFragment {
                 dismiss();
             }
         });
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context,
+                android.R.style.Theme_Holo_Light_Dialog));
         builder.setTitle(R.string.option_source).setCancelable(true).setView(parent);
         return builder.create();
     }

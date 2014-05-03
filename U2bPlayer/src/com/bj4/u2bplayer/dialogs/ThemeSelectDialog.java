@@ -9,6 +9,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,8 @@ public class ThemeSelectDialog extends DialogFragment implements
         ThemeSelectGridView gl = (ThemeSelectGridView)v
                 .findViewById(R.id.dialog_theme_select_grid_layout);
         gl.setCallback(this);
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context,
+                android.R.style.Theme_Holo_Light_Dialog));
         builder.setTitle(R.string.option_theme).setCancelable(true).setView(v);
         return builder.create();
     }
@@ -57,7 +59,7 @@ public class ThemeSelectDialog extends DialogFragment implements
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.MATCH_PARENT;
         lp.gravity = Gravity.CENTER;
-        lp.alpha = 0.95f;
+        lp.alpha = 0.9f;
         window.setAttributes(lp);
     }
 }

@@ -6,5 +6,5 @@
     <drawable name="play_list_selected">#000000</drawable>
 
     <color name="transparent">#00000000</color>
-    <color name="dialog_background">#ccffffff</color>
+    <color name="dialog_background">#55000000</color>
 </resources>
