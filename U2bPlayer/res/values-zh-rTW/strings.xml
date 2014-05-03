@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="option_download_data">下載資料</string>
+    <string name="option_download_data">下載全部資料</string>
+    <string name="option_theme">選擇主題</string>
+    <string name="option_source">選擇歌曲來源</string>
 
 </resources>
