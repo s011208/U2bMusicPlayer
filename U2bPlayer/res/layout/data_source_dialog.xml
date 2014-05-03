@@ -1,7 +1,37 @@
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/data_source_list_view"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dialog_background" >
 
-</ListView>
+    <LinearLayout
+        android:id="@+id/data_source_dialog_confirm_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/data_source_dialog_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@android:string/cancel" />
+
+        <Button
+            android:id="@+id/data_source_dialog_ok"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@android:string/ok" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/data_source_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/data_source_dialog_confirm_ll"
+        android:layout_alignParentTop="true" >
+    </ListView>
+
+</RelativeLayout>

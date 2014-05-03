@@ -11,6 +11,8 @@ import com.bj4.u2bplayer.u2bParser.YoutubeDataParser;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class PlayMusicApplication extends Application {
@@ -35,6 +37,8 @@ public class PlayMusicApplication extends Application {
     private static PlayScanner sPlayScanner;
 
     public static boolean sUsingHighQuality = true;
+    
+    private static SharedPreferences sPref;
 
     @Override
     public void onCreate() {
@@ -45,6 +49,13 @@ public class PlayMusicApplication extends Application {
         sDatabase.addCallback(sU2bParser);
         sUsingHighQuality = getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE)
                 .getBoolean(PREF_MUSIC_QUALITY, true);
+    }
+
+    public static SharedPreferences getPref(Context context) {
+        if (sPref == null) {
+            sPref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        }
+        return sPref;
     }
 
     public static void setMusicQuality(Context context, boolean usingHighQuality) {

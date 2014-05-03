@@ -3,6 +3,8 @@ package com.bj4.u2bplayer.activity;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
@@ -22,6 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -31,6 +34,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -59,6 +63,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public static final String THEME_CHANGED_INTENT = "com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.themeChanged";
 
+    public static final String DATA_SOURCE_LIST_CHANGED_INTENT = "com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.dataSourceChanged";
+
     public static final String THEME_CHANGED_INTENT_EXTRA_THEME = "new_theme";
 
     public static final int THEME_BLUE = 0; // default
@@ -81,9 +87,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public static final int THEME_RED = 9;
 
-    public static final String SHARE_PREF_KEY = "sharf";
-
     public static final String SHARE_PREF_KEY_THEME = "application_theme";
+
+    public static final String SHARE_PREF_KEY_SOURCE_LIST = "source_list";
 
     private RelativeLayout mMainLayout, mActionBar;
 
@@ -202,9 +208,15 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             } else if (THEME_CHANGED_INTENT.equals(action)) {
                 int newTheme = intent.getIntExtra(THEME_CHANGED_INTENT_EXTRA_THEME, THEME_BLUE);
                 setApplicationTheme(newTheme);
+            } else if (DATA_SOURCE_LIST_CHANGED_INTENT.equals(action)) {
+                notifySourceListChanged();
             }
         }
     };
+
+    private void notifySourceListChanged() {
+        // TODO source list changed implements here
+    }
 
     private void unRegisterBroadcastReceiver() {
         unregisterReceiver(mReceiver);
@@ -214,6 +226,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(THEME_CHANGED_INTENT);
+        filter.addAction(DATA_SOURCE_LIST_CHANGED_INTENT);
         registerReceiver(mReceiver, filter);
     }
 
@@ -305,7 +318,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             mMainLayout.setBackgroundResource(R.color.theme_red_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_red_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
-        } 
+        }
     }
 
     /**
@@ -338,8 +351,31 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     }
 
+    private void checkSourceListInAdvance() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    HashSet<String> set = (HashSet<String>) mPref.getStringSet(
+                            SHARE_PREF_KEY_SOURCE_LIST,
+                            new HashSet<String>());
+                    if (set.size() == 0) {
+                        // put default
+                        set.add("1");
+                    }
+                    mPref.edit().putStringSet(SHARE_PREF_KEY_SOURCE_LIST, set).commit();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+        }).start();
+
+    }
+
     private void initComponents() {
-        mPref = getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
+        mPref = PlayMusicApplication.getPref(getApplicationContext());
+        checkSourceListInAdvance();
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(mPlayListCallback);
         mMainLayout = (RelativeLayout) findViewById(R.id.u2b_main_activity_main_layout);
