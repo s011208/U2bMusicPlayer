@@ -13,7 +13,8 @@
     <!-- dialogs -->
     <dimen name="main_activity_option_dialog_width">250dp</dimen>
     <integer name="theme_selector_dialog_column">2</integer>
-    <dimen name="theme_selector_grid_layout_margin">3dp</dimen>
+    <dimen name="theme_selector_grid_layout_margin">10dp</dimen>
+    <dimen name="theme_selector_grid_padding">5dp</dimen>
     <dimen name="theme_sample_view_height">30dp</dimen>
     <dimen name="theme_sample_view_margin">10dp</dimen>
     <!-- playList fragment -->

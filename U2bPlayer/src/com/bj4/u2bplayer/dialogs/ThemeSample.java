@@ -3,10 +3,9 @@ package com.bj4.u2bplayer.dialogs;
 
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
-import com.bj4.u2bplayer.dialogs.ThemeSelectGridLayout.DismissCallback;
 
 import android.content.Context;
-import android.content.Intent;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -14,34 +13,21 @@ public class ThemeSample extends LinearLayout {
 
     private Context mContext;
 
-    private int mTheme;
-
-    private DismissCallback mDismissCallback;
-
-    public void setCallback(DismissCallback c) {
-        mDismissCallback = c;
+    public ThemeSample(Context context) {
+        this(context, null);
     }
 
-    public ThemeSample(Context context) {
-        super(context);
+    public ThemeSample(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public ThemeSample(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
         mContext = context;
         setOrientation(LinearLayout.VERTICAL);
-        setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mContext.sendBroadcast(new Intent(
-                        U2bPlayerMainFragmentActivity.THEME_CHANGED_INTENT).putExtra(
-                        U2bPlayerMainFragmentActivity.THEME_CHANGED_INTENT_EXTRA_THEME, mTheme));
-                if (mDismissCallback != null) {
-                    mDismissCallback.dismissThemeDialog();
-                }
-            }
-        });
     }
 
     public void setTheme(int theme) {
-        mTheme = theme;
         switch (theme) {
             case U2bPlayerMainFragmentActivity.THEME_BLUE:
                 setColors(R.color.theme_blue_action_bar_bg,
@@ -111,7 +97,8 @@ public class ThemeSample extends LinearLayout {
     }
 
     public void setColors(int header, int light, int dark, int selected, int footer, int background) {
-        int viewHeight = (int)mContext.getResources()
+        removeAllViews();
+        int viewHeight = (int) mContext.getResources()
                 .getDimension(R.dimen.theme_sample_view_height);
         setBackgroundResource(background);
         LinearLayout.LayoutParams ll = new LinearLayout.LayoutParams(
