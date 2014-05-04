@@ -104,7 +104,7 @@ public class PlayList {
 
     public void setAlbumPlayingList(String album) {
         resetPlayingList();
-        mPlayingList.addAll(mDatabaseHelper.getPlayList(album));
+        mPlayingList.addAll(mDatabaseHelper.getPlayList(album, true));
         mPlayingAlbumId = mDatabaseHelper.getAlbumId(album);
     }
 

@@ -118,12 +118,21 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
     public Cursor queryDataForU2bParser() {
         return query("select * from " + TABLE_MAIN_INFO + " where " + COLUMN_VIDEO_PATH
                 + " is NULL or " + COLUMN_RTSP_H + " is NULL or " + COLUMN_RTSP_L + " is NULL");
-
     }
 
     public Cursor queryDataFromLocalData() {
+        return queryDataFromLocalData(null, null, null, null);
+    }
+
+    public Cursor queryDataFromLocalData(String[] projections, String selection,
+            String[] selectionArgs, String sortOrder) {
+        if (selection == null) {
+            selection = MediaStore.Audio.Media.IS_MUSIC + "=1";
+        } else {
+            selection += " and " + MediaStore.Audio.Media.IS_MUSIC + "=1";
+        }
         return mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                null, null, null, null);
+                projections, selection, selectionArgs, sortOrder);
     }
 
     public long insert(ContentValues cv, boolean notify) {
@@ -189,20 +198,35 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<PlayListInfo> getPlayList(String albumName) {
+        return getPlayList(albumName, false);
+    }
+
+    public ArrayList<PlayListInfo> getPlayList(String albumName, boolean fromLocalIfNotFound) {
         Cursor rtn = getDb().query(TABLE_MAIN_INFO, null, COLUMN_ALBUM + "='" + albumName + "'",
                 null, null, null, COLUMN_RANK);
         ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
-        convertFromCursorToPlayList(rtn, playList);
+        if (rtn != null && rtn.getCount() > 0) {
+            convertFromCursorToPlayList(rtn, playList);
+        } else {
+            if (rtn != null && rtn.isClosed() == false) {
+                rtn.close();
+            }
+            if (fromLocalIfNotFound) {
+                rtn = queryDataFromLocalData(null,
+                        MediaStore.Audio.Media.ALBUM + "='" + albumName
+                                + "'", null, null);
+                convertFromLocalMusicDataCursorToPlayList(rtn, playList);
+            }
+        }
         return playList;
     }
-    
+
     public ArrayList<PlayListInfo> getLocalPlayList(String albumName) {
         Cursor rtn = queryDataFromLocalData();
         ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
-        convertFromCursorToPlayList(rtn, playList);
+        convertFromLocalMusicDataCursorToPlayList(rtn, playList);
         return playList;
     }
-    
 
     public int removeAlbum(String albumName) {
         return getDb().delete(TABLE_ALBUM_INFO, COLUMN_ALBUM + "='" + albumName + "'", null);
@@ -232,6 +256,21 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
             int rtn = result.getInt(0);
             result.close();
             return rtn;
+        } else {
+            if (result != null && result.isClosed() == false) {
+                result.close();
+            }
+            result = queryDataFromLocalData(new String[] {
+                    MediaStore.Audio.Media._ID
+            },
+                    MediaStore.Audio.Media.ALBUM + "='" + albumName
+                            + "'", null, null);
+            if (result != null && result.getCount() > 0) {
+                result.moveToNext();
+                int rtn = result.getInt(0);
+                result.close();
+                return rtn;
+            }
         }
         return ALBUM_NOT_EXISTED;
     }
@@ -244,6 +283,21 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
             String rtn = result.getString(0);
             result.close();
             return rtn;
+        } else {
+            if (result != null && result.isClosed() == false) {
+                result.close();
+            }
+            result = queryDataFromLocalData(new String[] {
+                    MediaStore.Audio.Media.ALBUM
+            },
+                    MediaStore.Audio.Media._ID + "=" + id
+                    , null, null);
+            if (result != null && result.getCount() > 0) {
+                result.moveToNext();
+                String rtn = result.getString(0);
+                result.close();
+                return rtn;
+            }
         }
         return null;
     }

@@ -74,7 +74,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         }
         mDisplayList.clear();
         mDisplayList
-                .addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(sDisplayAlbumName));
+                .addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(sDisplayAlbumName, true));
     }
 
     private void initComponents() {
