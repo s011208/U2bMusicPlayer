@@ -52,7 +52,7 @@ public class SettingsDialog extends SubDialogs {
             }
         });
         AlertDialog.Builder builder = getDialogBuilder();
-        builder.setTitle(R.string.option_theme).setCancelable(true).setView(v);
+        builder.setTitle(R.string.option_settings).setCancelable(true).setView(v);
         return builder.create();
     }
 }
