@@ -19,6 +19,8 @@
     <dimen name="source_dialog_cb_margin_left">10dp</dimen>
 
     <integer name="theme_selector_dialog_column">2</integer>
+    <integer name="text_shawdow">2</integer>
+    <integer name="text_shawdow_radius">2</integer>
 
     <!-- playList fragment -->
     <dimen name="play_list_fragment_control_panel_height">100dp</dimen>

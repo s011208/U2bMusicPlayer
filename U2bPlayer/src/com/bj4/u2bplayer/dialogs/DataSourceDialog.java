@@ -32,7 +32,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-public class DataSourceDialog extends DialogFragment {
+public class DataSourceDialog extends SubDialogs {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -61,34 +61,9 @@ public class DataSourceDialog extends DialogFragment {
                 dismiss();
             }
         });
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context,
-                android.R.style.Theme_Holo_Light_Dialog));
+        AlertDialog.Builder builder = getDialogBuilder();
         builder.setTitle(R.string.option_source).setCancelable(true).setView(parent);
         return builder.create();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setupGravityAndPosition();
-        return container;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
-    }
-
-    public void setupGravityAndPosition() {
-        Dialog dialog = getDialog();
-        Window window = dialog.getWindow();
-
-        WindowManager.LayoutParams lp = window.getAttributes();
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.gravity = Gravity.CENTER;
-        lp.alpha = 0.95f;
-        window.setAttributes(lp);
     }
 
     private class DataSourceListAdapter extends BaseAdapter {

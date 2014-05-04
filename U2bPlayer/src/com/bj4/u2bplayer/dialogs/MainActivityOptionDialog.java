@@ -63,6 +63,8 @@ public class MainActivityOptionDialog extends DialogFragment {
         options.add(theme);
         final String dataSourceLists = mContext.getString(R.string.option_source);
         options.add(dataSourceLists);
+        final String settings = mContext.getString(R.string.option_settings);
+        options.add(settings);
         final String switchDataLocal = mContext.getString(R.string.option_switch_data_source_local);
         final String switchDataInternet = mContext
                 .getString(R.string.option_switch_data_source_internet);
@@ -74,7 +76,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setItems(options.toArray(optionsContent), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String selectedItem = (String)((AlertDialog)dialog).getListView()
+                String selectedItem = (String) ((AlertDialog) dialog).getListView()
                         .getItemAtPosition(which);
                 if (selectedItem.equals(sync)) {
                     if (mCallback != null) {
@@ -94,6 +96,9 @@ public class MainActivityOptionDialog extends DialogFragment {
                 } else if (selectedItem.equals(dataSourceLists)) {
                     DataSourceDialog ds = new DataSourceDialog();
                     ds.show(getActivity().getFragmentManager(), "");
+                } else if (selectedItem.equals(settings)) {
+                    SettingsDialog sd = new SettingsDialog();
+                    sd.show(getActivity().getFragmentManager(), "");
                 }
             }
         });

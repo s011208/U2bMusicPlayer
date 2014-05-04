@@ -17,22 +17,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class ThemeSelectDialog extends SubDialogs implements
-        ThemeSelectGridView.DismissCallback {
-
-    public void dismissThemeDialog() {
-        dismiss();
-    }
-
+public class SettingsDialog extends SubDialogs {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Context context = getActivity();
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.theme_select_dialog, null);
-        ThemeSelectGridView gl = (ThemeSelectGridView) v
-                .findViewById(R.id.dialog_theme_select_grid_layout);
-        gl.setCallback(this);
+        View v = inflater.inflate(R.layout.settings_dialog, null);
+
         AlertDialog.Builder builder = getDialogBuilder();
         builder.setTitle(R.string.option_theme).setCancelable(true).setView(v);
         return builder.create();

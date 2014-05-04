@@ -1,0 +1,101 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:orientation="vertical"
+        android:paddingBottom="25dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/theme_navy_list_light_oval_bg_unpress"
+            android:orientation="horizontal"
+            android:padding="10dp" >
+
+            <RadioGroup
+                android:id="@+id/music_quality_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/music_quality_high"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_high_quality"
+                    android:textColor="#000000" />
+
+                <RadioButton
+                    android:id="@+id/music_quality_low"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_low_quality"
+                    android:textColor="#000000" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/theme_navy_list_light_oval_bg_unpress"
+            android:orientation="horizontal"
+            android:padding="10dp" >
+
+            <RadioGroup
+                android:id="@+id/optimize_parsing_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/optimize_parsing_true"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_optimize_parsing"
+                    android:textColor="#000000" />
+
+                <RadioButton
+                    android:id="@+id/optimize_parsing_false"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_normal_parsingy"
+                    android:textColor="#000000" />
+            </RadioGroup>
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
