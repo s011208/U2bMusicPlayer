@@ -228,7 +228,10 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         return playList;
     }
 
-    public int removeAlbum(String albumName) {
+    public int removeAlbum(String albumName, boolean removeMusic) {
+        if (removeMusic) {
+            getDb().delete(TABLE_MAIN_INFO, COLUMN_ALBUM + "='" + albumName + "'", null);
+        }
         return getDb().delete(TABLE_ALBUM_INFO, COLUMN_ALBUM + "='" + albumName + "'", null);
     }
 
