@@ -471,13 +471,11 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void switchToInternetMusicData() {
         mPlayList.retrieveAllPlayList();
         getPlayListFragment().changePlayIndex();
-        getMainFragment().localMusic("");
     }
 
     private void switchToLocalMusicData() {
         mPlayList.retrieveLocalPlayList();
         getPlayListFragment().changePlayIndex();
-        getMainFragment().localMusic("local");
     }
 
     private void startToScan() {

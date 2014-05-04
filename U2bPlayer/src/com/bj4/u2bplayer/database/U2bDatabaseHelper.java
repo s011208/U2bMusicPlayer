@@ -17,7 +17,7 @@ import android.util.Log;
 
 public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final boolean DEBUG = false && PlayMusicApplication.OVERALL_DEBUG;
+    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
     private static final String TAG = "U2bDatabaseHelper";
 
@@ -195,6 +195,14 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         convertFromCursorToPlayList(rtn, playList);
         return playList;
     }
+    
+    public ArrayList<PlayListInfo> getLocalPlayList(String albumName) {
+        Cursor rtn = queryDataFromLocalData();
+        ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
+        convertFromCursorToPlayList(rtn, playList);
+        return playList;
+    }
+    
 
     public int removeAlbum(String albumName) {
         return getDb().delete(TABLE_ALBUM_INFO, COLUMN_ALBUM + "='" + albumName + "'", null);
