@@ -28,6 +28,8 @@ public class PlayMusicApplication extends Application {
 
     private static final String GLOABAL_PREF_KEY = "global_pref_key";
 
+    private static final String PREF_OPTIMIZE_PARSING = "pref_optimize_parsing";
+
     private static final String PREF_MUSIC_QUALITY = "pref_music_quality";
 
     private static U2bDatabaseHelper sDatabase;
@@ -37,7 +39,9 @@ public class PlayMusicApplication extends Application {
     private static PlayScanner sPlayScanner;
 
     public static boolean sUsingHighQuality = true;
-    
+
+    public static boolean sOptimizeParsing = true;
+
     private static SharedPreferences sPref;
 
     @Override
@@ -49,6 +53,8 @@ public class PlayMusicApplication extends Application {
         sDatabase.addCallback(sU2bParser);
         sUsingHighQuality = getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE)
                 .getBoolean(PREF_MUSIC_QUALITY, true);
+        sOptimizeParsing = getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE)
+                .getBoolean(PREF_OPTIMIZE_PARSING, true);
     }
 
     public static SharedPreferences getPref(Context context) {
@@ -62,6 +68,12 @@ public class PlayMusicApplication extends Application {
         sUsingHighQuality = usingHighQuality;
         context.getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE).edit()
                 .putBoolean(PREF_MUSIC_QUALITY, sUsingHighQuality);
+    }
+
+    public static void setOptimizeParsing(Context context, boolean optimizeParsing) {
+        sOptimizeParsing = optimizeParsing;
+        context.getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE).edit()
+                .putBoolean(PREF_OPTIMIZE_PARSING, sOptimizeParsing);
     }
 
     public synchronized static PlayScanner getPlayScanner() {

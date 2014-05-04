@@ -37,18 +37,11 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
 
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
 
-    private static final boolean OPTIMIZE_PARSIG = true;
-
-    private static final int RETRIVE_DATA_SIZE = OPTIMIZE_PARSIG ? 5 : 1;
-
     private static final int IGNORE_DURATION = 90;
 
     private static final String SOURCE_PREVIOUS = "https://gdata.youtube.com/feeds/api/videos?q=";
 
-    private static final String SOURCE_LAST = "&max-results=" + RETRIVE_DATA_SIZE
-            + "&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
-
-    private static final int QUICK_NOTIFY_LIMIT = 10;
+    private static final int QUICK_NOTIFY_LIMIT = 20;
 
     private static final HandlerThread sWorkerThread = new HandlerThread(
             "YoutubeDataParser handler");
@@ -69,6 +62,13 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
         public void setResult(ArrayList<PlayListInfo> infoList);
     }
 
+    private static final String getSource(PlayListInfo info) {
+        return SOURCE_PREVIOUS
+                + Uri.encode(info.mArtist + "+" + info.mMusicTitle) + "&max-results="
+                + (PlayMusicApplication.sOptimizeParsing ? 5 : 1)
+                + "&alt=json&format=6&fields=entry(id,media:group(media:content(@url,@duration)))";
+    }
+
     public static void parseYoutubeData(final ArrayList<PlayListInfo> infoList,
             final YoutubeIdParserResultCallback callback) {
         if (infoList.isEmpty())
@@ -83,8 +83,7 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                     try {
                         if (DEBUG)
                             Log.i(TAG, "key: " + info.mArtist + "+" + info.mMusicTitle);
-                        String source = SOURCE_PREVIOUS
-                                + Uri.encode(info.mArtist + "+" + info.mMusicTitle) + SOURCE_LAST;
+                        String source = getSource(info);
 
                         String rawData = parseOnInternet(source);
                         JSONArray entry = new JSONObject(rawData).getJSONObject("feed")
@@ -102,7 +101,8 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                                         .getJSONArray("media$content").get(0)).getString("url");
                                 int duration = ((JSONObject) jOb.getJSONObject("media$group")
                                         .getJSONArray("media$content").get(0)).getInt("duration");
-                                if (OPTIMIZE_PARSIG && duration < IGNORE_DURATION) {
+                                if (PlayMusicApplication.sOptimizeParsing
+                                        && duration < IGNORE_DURATION) {
                                     if (DEBUG)
                                         Log.v(TAG, "duration: " + duration + ", abort");
                                     continue;
