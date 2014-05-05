@@ -5,123 +5,145 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:orientation="vertical"
-        android:paddingBottom="25dp" >
+        android:orientation="vertical" >
 
-        <RadioGroup
-            android:id="@+id/music_quality_group"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="5dp"
+            android:layout_margin="10dp"
             android:background="@drawable/settings_items_bg"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="10dp" >
+            android:orientation="vertical" >
 
-            <RadioButton
-                android:id="@+id/music_quality_high"
+            <RadioGroup
+                android:id="@+id/music_quality_group"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:shadowColor="#ffffff"
-                android:shadowDx="@integer/text_shawdow"
-                android:shadowDy="@integer/text_shawdow"
-                android:shadowRadius="@integer/text_shawdow_radius"
-                android:text="@string/settings_high_quality"
-                android:textColor="#000000" />
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp" >
 
-            <RadioButton
-                android:id="@+id/music_quality_low"
+                <RadioButton
+                    android:id="@+id/music_quality_high"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_high_quality"
+                    android:textColor="#000000" />
+
+                <RadioButton
+                    android:id="@+id/music_quality_low"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_low_quality"
+                    android:textColor="#000000" />
+            </RadioGroup>
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="2dp"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:shadowColor="#ffffff"
-                android:shadowDx="@integer/text_shawdow"
-                android:shadowDy="@integer/text_shawdow"
-                android:shadowRadius="@integer/text_shawdow_radius"
-                android:text="@string/settings_low_quality"
-                android:textColor="#000000" />
-        </RadioGroup>
+                android:background="@color/theme_navy_play_list_light_bg_unpress" >
+            </View>
 
-        <RadioGroup
-            android:id="@+id/optimize_parsing_group"
+            <RadioGroup
+                android:id="@+id/optimize_parsing_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp" >
+
+                <RadioButton
+                    android:id="@+id/optimize_parsing_true"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_optimize_parsing"
+                    android:textColor="#000000" />
+
+                <RadioButton
+                    android:id="@+id/optimize_parsing_false"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_normal_parsing"
+                    android:textColor="#000000" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="5dp"
+            android:layout_margin="10dp"
             android:background="@drawable/settings_items_bg"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="10dp" >
+            android:orientation="vertical" >
 
-            <RadioButton
-                android:id="@+id/optimize_parsing_true"
+            <RadioGroup
+                android:id="@+id/show_status_bar_group"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:shadowColor="#ffffff"
-                android:shadowDx="@integer/text_shawdow"
-                android:shadowDy="@integer/text_shawdow"
-                android:shadowRadius="@integer/text_shawdow_radius"
-                android:text="@string/settings_optimize_parsing"
-                android:textColor="#000000" />
+                android:layout_margin="5dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp" >
 
-            <RadioButton
-                android:id="@+id/optimize_parsing_false"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:shadowColor="#ffffff"
-                android:shadowDx="@integer/text_shawdow"
-                android:shadowDy="@integer/text_shawdow"
-                android:shadowRadius="@integer/text_shawdow_radius"
-                android:text="@string/settings_normal_parsing"
-                android:textColor="#000000" />
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/show_status_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_show_status"
+                    android:textColor="#000000" />
 
-        <RadioGroup
-            android:id="@+id/show_status_bar_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:background="@drawable/settings_items_bg"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="10dp" >
-
-            <RadioButton
-                android:id="@+id/show_status_bar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:shadowColor="#ffffff"
-                android:shadowDx="@integer/text_shawdow"
-                android:shadowDy="@integer/text_shawdow"
-                android:shadowRadius="@integer/text_shawdow_radius"
-                android:text="@string/settings_show_status"
-                android:textColor="#000000" />
-
-            <RadioButton
-                android:id="@+id/hide_status_bar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:shadowColor="#ffffff"
-                android:shadowDx="@integer/text_shawdow"
-                android:shadowDy="@integer/text_shawdow"
-                android:shadowRadius="@integer/text_shawdow_radius"
-                android:text="@string/settings_hide_status"
-                android:textColor="#000000" />
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/hide_status_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:shadowColor="#ffffff"
+                    android:shadowDx="@integer/text_shawdow"
+                    android:shadowDy="@integer/text_shawdow"
+                    android:shadowRadius="@integer/text_shawdow_radius"
+                    android:text="@string/settings_hide_status"
+                    android:textColor="#000000" />
+            </RadioGroup>
+        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>
