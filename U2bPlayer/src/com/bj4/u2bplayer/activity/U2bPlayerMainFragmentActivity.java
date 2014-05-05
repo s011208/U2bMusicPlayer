@@ -34,7 +34,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StrictMode;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -43,7 +42,9 @@ import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.bj4.u2bplayer.activity.fragments.*;
@@ -91,7 +92,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public static final String SHARE_PREF_KEY_SOURCE_LIST = "source_list";
 
-    private RelativeLayout mMainLayout, mActionBar;
+    private RelativeLayout mMainLayout, mActionBar, mStatusBar;
+
+    private LinearLayout mMainContentFragment;
 
     private ImageButton mOptionBtn;
 
@@ -210,9 +213,22 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 setApplicationTheme(newTheme);
             } else if (DATA_SOURCE_LIST_CHANGED_INTENT.equals(action)) {
                 notifySourceListChanged();
+            } else if (PlayMusicApplication.INTENT_STATUS_BAR_VISIBLITY_CHANGED.equals(action)) {
+                notifyStatusBarVisibilityChanged();
             }
         }
     };
+
+    private void notifyStatusBarVisibilityChanged() {
+        if (mMainLayout == null || mMainContentFragment == null || mStatusBar == null)
+            return;
+        boolean isVisible = PlayMusicApplication.sShowStatus;
+        if (isVisible) {
+            mStatusBar.setVisibility(View.VISIBLE);
+        } else {
+            mStatusBar.setVisibility(View.GONE);
+        }
+    }
 
     private void notifySourceListChanged() {
         // TODO source list changed implements here
@@ -227,6 +243,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(THEME_CHANGED_INTENT);
         filter.addAction(DATA_SOURCE_LIST_CHANGED_INTENT);
+        filter.addAction(PlayMusicApplication.INTENT_STATUS_BAR_VISIBLITY_CHANGED);
         registerReceiver(mReceiver, filter);
     }
 
@@ -281,42 +298,52 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (theme == THEME_BLUE) {
             mMainLayout.setBackgroundResource(R.color.theme_blue_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_blue_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_blue_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_WHITE) {
             mMainLayout.setBackgroundResource(R.color.theme_white_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_white_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_white_action_bar_bg);
             mActionBarTitle.setTextColor(Color.BLACK);
         } else if (theme == THEME_BLACK) {
             mMainLayout.setBackgroundResource(R.color.theme_black_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_black_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_black_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_ORANGE) {
             mMainLayout.setBackgroundResource(R.color.theme_orange_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_orange_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_orange_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_YELLOW) {
             mMainLayout.setBackgroundResource(R.color.theme_yellow_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_yellow_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_yellow_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_GRAY) {
             mMainLayout.setBackgroundResource(R.color.theme_gray_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_gray_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_gray_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_NAVY) {
             mMainLayout.setBackgroundResource(R.color.theme_navy_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_navy_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_navy_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_PURPLE) {
             mMainLayout.setBackgroundResource(R.color.theme_purple_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_purple_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_purple_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
         } else if (theme == THEME_SIMPLE_WHITE) {
             mMainLayout.setBackgroundResource(R.color.theme_simple_white_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_simple_white_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_simple_white_action_bar_bg);
             mActionBarTitle.setTextColor(Color.BLACK);
         } else if (theme == THEME_RED) {
             mMainLayout.setBackgroundResource(R.color.theme_red_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_red_action_bar_bg);
+            mStatusBar.setBackgroundResource(R.color.theme_red_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
         }
     }
@@ -378,10 +405,13 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         checkSourceListInAdvance();
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(mPlayListCallback);
-        mMainLayout = (RelativeLayout) findViewById(R.id.u2b_main_activity_main_layout);
-        mActionBar = (RelativeLayout) findViewById(R.id.action_bar_parent);
-        mOptionBtn = (ImageButton) findViewById(R.id.menu);
-        mActionBarTitle = (TextView) findViewById(R.id.action_bar_music_info);
+        mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
+        mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
+        mOptionBtn = (ImageButton)findViewById(R.id.menu);
+        mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
+        mMainContentFragment = (LinearLayout)findViewById(R.id.main_fragment_container);
+        mStatusBar = (RelativeLayout)findViewById(R.id.main_status_bar);
+        notifyStatusBarVisibilityChanged();
         initMainLayout();
         initActionBarComponents();
     }

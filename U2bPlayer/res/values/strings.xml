@@ -18,5 +18,7 @@
 	<string name="settings_high_quality">High quality</string>
 	<string name="settings_low_quality">Low quality</string>
 	<string name="settings_optimize_parsing">Optimize parsing</string>
-	<string name="settings_normal_parsingy">Normal parsing</string>
+	<string name="settings_normal_parsing">Normal parsing</string>
+	<string name="settings_show_status">Show status</string>
+	<string name="settings_hide_status">Hide status</string>
 </resources>

@@ -12,7 +12,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class PlayMusicApplication extends Application {
@@ -26,11 +25,15 @@ public class PlayMusicApplication extends Application {
 
     public static final String INTENT_CRASH_LOG = "crash_log";
 
+    public static final String INTENT_STATUS_BAR_VISIBLITY_CHANGED = "com.bj4.u2bplayer.statusbar_visibility_changed";
+
     private static final String GLOABAL_PREF_KEY = "global_pref_key";
 
     private static final String PREF_OPTIMIZE_PARSING = "pref_optimize_parsing";
 
     private static final String PREF_MUSIC_QUALITY = "pref_music_quality";
+
+    private static final String PREF_SHOW_STATUS = "pref_show_status";
 
     private static U2bDatabaseHelper sDatabase;
 
@@ -42,6 +45,8 @@ public class PlayMusicApplication extends Application {
 
     public static boolean sOptimizeParsing = true;
 
+    public static boolean sShowStatus = false;
+
     private static SharedPreferences sPref;
 
     @Override
@@ -51,29 +56,34 @@ public class PlayMusicApplication extends Application {
         sDatabase = new U2bDatabaseHelper(this);
         sU2bParser = new YoutubeDataParser(this);
         sDatabase.addCallback(sU2bParser);
-        sUsingHighQuality = getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE)
-                .getBoolean(PREF_MUSIC_QUALITY, true);
-        sOptimizeParsing = getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE)
-                .getBoolean(PREF_OPTIMIZE_PARSING, true);
+        sUsingHighQuality = getPref(this).getBoolean(PREF_MUSIC_QUALITY, true);
+        sOptimizeParsing = getPref(this).getBoolean(PREF_OPTIMIZE_PARSING, true);
+        sShowStatus = getPref(this).getBoolean(PREF_SHOW_STATUS, false);
+        // this.getSharedPreferences(name, mode)
     }
 
     public static SharedPreferences getPref(Context context) {
         if (sPref == null) {
-            sPref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+            sPref = context.getApplicationContext().getSharedPreferences(GLOABAL_PREF_KEY,
+                    Context.MODE_PRIVATE);
         }
         return sPref;
     }
 
     public static void setMusicQuality(Context context, boolean usingHighQuality) {
         sUsingHighQuality = usingHighQuality;
-        context.getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE).edit()
-                .putBoolean(PREF_MUSIC_QUALITY, sUsingHighQuality);
+        getPref(context).edit().putBoolean(PREF_MUSIC_QUALITY, usingHighQuality).commit();
     }
 
     public static void setOptimizeParsing(Context context, boolean optimizeParsing) {
         sOptimizeParsing = optimizeParsing;
-        context.getSharedPreferences(GLOABAL_PREF_KEY, Context.MODE_PRIVATE).edit()
-                .putBoolean(PREF_OPTIMIZE_PARSING, sOptimizeParsing);
+        getPref(context).edit().putBoolean(PREF_OPTIMIZE_PARSING, optimizeParsing).commit();
+    }
+
+    public static void setShowStatus(Context context, boolean showStatus) {
+        sShowStatus = showStatus;
+        getPref(context).edit().putBoolean(PREF_SHOW_STATUS, showStatus).commit();
+        context.sendBroadcast(new Intent(INTENT_STATUS_BAR_VISIBLITY_CHANGED));
     }
 
     public synchronized static PlayScanner getPlayScanner() {

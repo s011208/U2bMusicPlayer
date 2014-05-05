@@ -24,17 +24,17 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class SettingsDialog extends SubDialogs {
 
-    private RadioGroup mQualityGroup, mOptimizeParsingGroup;
-    private SharedPreferences mPref;
+    private RadioGroup mQualityGroup, mOptimizeParsingGroup, mShowStatusGroup;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
-        LayoutInflater inflater = (LayoutInflater) context
+        LayoutInflater inflater = (LayoutInflater)context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.settings_dialog, null);
-        mQualityGroup = (RadioGroup) v.findViewById(R.id.music_quality_group);
-        mQualityGroup.check(PlayMusicApplication.sUsingHighQuality ? R.id.music_quality_high : R.id.music_quality_low);
+        mQualityGroup = (RadioGroup)v.findViewById(R.id.music_quality_group);
+        mQualityGroup.check(PlayMusicApplication.sUsingHighQuality ? R.id.music_quality_high
+                : R.id.music_quality_low);
         mQualityGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
@@ -42,13 +42,27 @@ public class SettingsDialog extends SubDialogs {
                 PlayMusicApplication.setMusicQuality(context, checkedId == R.id.music_quality_high);
             }
         });
-        mOptimizeParsingGroup = (RadioGroup) v.findViewById(R.id.optimize_parsing_group);
-        mOptimizeParsingGroup.check(PlayMusicApplication.sOptimizeParsing ? R.id.optimize_parsing_true : R.id.optimize_parsing_false);
+        mOptimizeParsingGroup = (RadioGroup)v.findViewById(R.id.optimize_parsing_group);
+        mOptimizeParsingGroup
+                .check(PlayMusicApplication.sOptimizeParsing ? R.id.optimize_parsing_true
+                        : R.id.optimize_parsing_false);
         mOptimizeParsingGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                PlayMusicApplication.setOptimizeParsing(context, checkedId == R.id.optimize_parsing_true);
+                PlayMusicApplication.setOptimizeParsing(context,
+                        checkedId == R.id.optimize_parsing_true);
+            }
+        });
+        mShowStatusGroup = (RadioGroup)v.findViewById(R.id.show_status_bar_group);
+        mShowStatusGroup.check(PlayMusicApplication.sShowStatus ? R.id.show_status_bar
+                : R.id.hide_status_bar);
+        mShowStatusGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                PlayMusicApplication.setShowStatus(context,
+                        checkedId == R.id.show_status_bar);
             }
         });
         AlertDialog.Builder builder = getDialogBuilder();

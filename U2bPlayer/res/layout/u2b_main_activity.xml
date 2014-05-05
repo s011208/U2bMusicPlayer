@@ -8,12 +8,34 @@
         android:layout_alignParentTop="true"
         layout="@layout/action_bar" />
 
+    <RelativeLayout
+        android:id="@+id/main_status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_status_bar_height"
+        android:layout_alignParentBottom="true"
+        android:gravity="center" >
+
+        <View
+            android:id="@+id/main_status_bar_sep_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentTop="true"
+            android:background="#ffffff" />
+
+        <TextView
+            android:layout_below="@+id/main_status_bar_sep_line"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="TEST" />
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/main_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/main_status_bar"
         android:layout_below="@+id/action_bar_parent"
-        android:orientation="vertical">  
+        android:orientation="vertical" >
     </LinearLayout>
 
 </RelativeLayout>
