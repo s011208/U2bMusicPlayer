@@ -16,42 +16,15 @@
             android:gravity="center"
             android:orientation="vertical" >
 
-            <RadioGroup
-                android:id="@+id/music_quality_group"
-                android:layout_width="match_parent"
+            <ToggleButton
+                android:id="@+id/music_quality_toggle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="right"
                 android:layout_margin="5dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="10dp" >
-
-                <RadioButton
-                    android:id="@+id/music_quality_high"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:shadowColor="#ffffff"
-                    android:shadowDx="@integer/text_shawdow"
-                    android:shadowDy="@integer/text_shawdow"
-                    android:shadowRadius="@integer/text_shawdow_radius"
-                    android:text="@string/settings_high_quality"
-                    android:textColor="#000000" />
-
-                <RadioButton
-                    android:id="@+id/music_quality_low"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:shadowColor="#ffffff"
-                    android:shadowDx="@integer/text_shawdow"
-                    android:shadowDy="@integer/text_shawdow"
-                    android:shadowRadius="@integer/text_shawdow_radius"
-                    android:text="@string/settings_low_quality"
-                    android:textColor="#000000" />
-            </RadioGroup>
+                android:background="@drawable/toggle_btn_bg"
+                android:textOff="@string/settings_low"
+                android:textOn="@string/settings_high" />
 
             <View
                 android:layout_width="match_parent"
@@ -60,42 +33,15 @@
                 android:background="@color/theme_navy_play_list_light_bg_unpress" >
             </View>
 
-            <RadioGroup
-                android:id="@+id/optimize_parsing_group"
-                android:layout_width="match_parent"
+            <ToggleButton
+                android:id="@+id/optimize_parsing_toggle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="right"
                 android:layout_margin="5dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="10dp" >
-
-                <RadioButton
-                    android:id="@+id/optimize_parsing_true"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:shadowColor="#ffffff"
-                    android:shadowDx="@integer/text_shawdow"
-                    android:shadowDy="@integer/text_shawdow"
-                    android:shadowRadius="@integer/text_shawdow_radius"
-                    android:text="@string/settings_optimize_parsing"
-                    android:textColor="#000000" />
-
-                <RadioButton
-                    android:id="@+id/optimize_parsing_false"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:shadowColor="#ffffff"
-                    android:shadowDx="@integer/text_shawdow"
-                    android:shadowDy="@integer/text_shawdow"
-                    android:shadowRadius="@integer/text_shawdow_radius"
-                    android:text="@string/settings_normal_parsing"
-                    android:textColor="#000000" />
-            </RadioGroup>
+                android:background="@drawable/toggle_btn_bg"
+                android:textOff="@string/settings_normal"
+                android:textOn="@string/settings_optimize" />
         </LinearLayout>
 
         <LinearLayout
@@ -107,42 +53,15 @@
             android:gravity="center"
             android:orientation="vertical" >
 
-            <RadioGroup
-                android:id="@+id/show_status_bar_group"
-                android:layout_width="match_parent"
+            <ToggleButton
+                android:id="@+id/show_status_bar_toggle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="right"
                 android:layout_margin="5dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="10dp" >
-
-                <RadioButton
-                    android:id="@+id/show_status_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:shadowColor="#ffffff"
-                    android:shadowDx="@integer/text_shawdow"
-                    android:shadowDy="@integer/text_shawdow"
-                    android:shadowRadius="@integer/text_shawdow_radius"
-                    android:text="@string/settings_show_status"
-                    android:textColor="#000000" />
-
-                <RadioButton
-                    android:id="@+id/hide_status_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:shadowColor="#ffffff"
-                    android:shadowDx="@integer/text_shawdow"
-                    android:shadowDy="@integer/text_shawdow"
-                    android:shadowRadius="@integer/text_shawdow_radius"
-                    android:text="@string/settings_hide_status"
-                    android:textColor="#000000" />
-            </RadioGroup>
+                android:background="@drawable/toggle_btn_bg"
+                android:textOff="@string/settings_hide_status"
+                android:textOn="@string/settings_show_status" />
         </LinearLayout>
     </LinearLayout>
 
