@@ -12,6 +12,7 @@
     <string name="option_theme">Select theme</string>
     <string name="option_source">Select source lists</string>
     <string name="option_settings">Settings</string>
+    <string name="option_share">Share playing music</string>
     <string name="option_switch_data_source_local">Switch to local</string>
     <string name="option_switch_data_source_internet">Switch to Internet</string>
     <string name="exit">Exit</string>
@@ -27,5 +28,8 @@
     <string name="settings_optimize_parsing_info">Get results more accurate</string>
     <string name="settings_show_status_bar_title">Visibility of status bar</string>
     <string name="settings_show_status_bar_info">Get more detail status on the bottom of screen</string>
+    <string name="share_chooser_title">Share music to ...</string>
+    <string name="share_string_former">"I am using U2B music player to listen to the "</string>
+    <string name="share_string_rear">". Join me now and let us have fun together!\n"</string>
 
 </resources>

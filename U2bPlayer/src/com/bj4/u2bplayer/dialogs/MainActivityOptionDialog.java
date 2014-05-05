@@ -3,15 +3,19 @@ package com.bj4.u2bplayer.dialogs;
 
 import java.util.ArrayList;
 
+import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.R;
+import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -67,6 +71,8 @@ public class MainActivityOptionDialog extends DialogFragment {
         options.add(dataSourceLists);
         final String settings = mContext.getString(R.string.option_settings);
         options.add(settings);
+        final String share = mContext.getString(R.string.option_share);
+        options.add(share);
         final String switchDataLocal = mContext.getString(R.string.option_switch_data_source_local);
         final String switchDataInternet = mContext
                 .getString(R.string.option_switch_data_source_internet);
@@ -78,7 +84,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setItems(options.toArray(optionsContent), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String selectedItem = (String)((AlertDialog)dialog).getListView()
+                String selectedItem = (String) ((AlertDialog) dialog).getListView()
                         .getItemAtPosition(which);
                 if (selectedItem.equals(sync)) {
                     if (mCallback != null) {
@@ -101,10 +107,29 @@ public class MainActivityOptionDialog extends DialogFragment {
                 } else if (selectedItem.equals(settings)) {
                     SettingsDialog sd = new SettingsDialog();
                     sd.show(getActivity().getFragmentManager(), "");
+                } else if (selectedItem.equals(share)) {
+                    PlayList pl = PlayList.getInstance(mContext);
+                    PlayListInfo info = pl.getCurrentPlayingListInfo();
+                    if (info != null) {
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_SUBJECT,
+                                mContext.getString(R.string.app_name));
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, createShareText(mContext, info));
+                        sendIntent.setType("text/plain");
+                        startActivity(Intent.createChooser(sendIntent,
+                                getResources().getText(R.string.share_chooser_title)));
+                    }
                 }
             }
         });
         return builder.create();
+    }
+
+    private static final String createShareText(Context context, PlayListInfo info) {
+        String former = context.getString(R.string.share_string_former);
+        String rear = context.getString(R.string.share_string_rear);
+        return former + info.mMusicTitle + rear;
     }
 
     @Override
