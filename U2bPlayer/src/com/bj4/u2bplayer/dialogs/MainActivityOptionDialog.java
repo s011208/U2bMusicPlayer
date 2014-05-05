@@ -25,7 +25,9 @@ import android.view.WindowManager.LayoutParams;
 
 public class MainActivityOptionDialog extends DialogFragment {
 
-    public static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
+
+    private static final boolean DEBUG_SWITHER = false;
 
     public static final int ITEM_DOWNLOAD_DATA = 0;
 
@@ -68,7 +70,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         final String switchDataLocal = mContext.getString(R.string.option_switch_data_source_local);
         final String switchDataInternet = mContext
                 .getString(R.string.option_switch_data_source_internet);
-        if (DEBUG) {
+        if (DEBUG_SWITHER) {
             options.add(switchDataLocal);
             options.add(switchDataInternet);
         }
@@ -76,7 +78,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setItems(options.toArray(optionsContent), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String selectedItem = (String) ((AlertDialog) dialog).getListView()
+                String selectedItem = (String)((AlertDialog)dialog).getListView()
                         .getItemAtPosition(which);
                 if (selectedItem.equals(sync)) {
                     if (mCallback != null) {

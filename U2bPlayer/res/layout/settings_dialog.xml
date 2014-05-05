@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
-            android:background="@drawable/theme_navy_list_light_oval_bg_unpress"
+            android:background="@drawable/settings_items_bg"
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="10dp" >
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
-            android:background="@drawable/theme_navy_list_light_oval_bg_unpress"
+            android:background="@drawable/settings_items_bg"
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="10dp" >
