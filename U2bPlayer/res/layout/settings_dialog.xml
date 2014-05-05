@@ -16,15 +16,46 @@
             android:gravity="center"
             android:orientation="vertical" >
 
-            <ToggleButton
-                android:id="@+id/music_quality_toggle"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_margin="5dp"
-                android:background="@drawable/toggle_btn_bg"
-                android:textOff="@string/settings_low"
-                android:textOn="@string/settings_high" />
+                android:layout_margin="10dp" >
+
+                <ToggleButton
+                    android:id="@+id/music_quality_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:background="@drawable/toggle_btn_bg"
+                    android:textOff="@string/settings_low"
+                    android:textOn="@string/settings_high" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="3dp"
+                    android:layout_toLeftOf="@+id/music_quality_toggle"
+                    android:text="@string/settings_music_quality_title"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_title_text_size" />
+
+                <TextView
+                    android:id="@+id/info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/title"
+                    android:layout_toLeftOf="@+id/music_quality_toggle"
+                    android:text="@string/settings_music_quality_info"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_info_text_size" />
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -33,15 +64,46 @@
                 android:background="@color/theme_navy_play_list_light_bg_unpress" >
             </View>
 
-            <ToggleButton
-                android:id="@+id/optimize_parsing_toggle"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_margin="5dp"
-                android:background="@drawable/toggle_btn_bg"
-                android:textOff="@string/settings_normal"
-                android:textOn="@string/settings_optimize" />
+                android:layout_margin="10dp" >
+
+                <ToggleButton
+                    android:id="@+id/optimize_parsing_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:background="@drawable/toggle_btn_bg"
+                    android:textOff="@string/settings_normal"
+                    android:textOn="@string/settings_optimize" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="3dp"
+                    android:layout_toLeftOf="@+id/optimize_parsing_toggle"
+                    android:text="@string/settings_optimize_parsing_title"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_title_text_size" />
+
+                <TextView
+                    android:id="@+id/info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/title"
+                    android:layout_toLeftOf="@+id/optimize_parsing_toggle"
+                    android:text="@string/settings_optimize_parsing_info"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_info_text_size" />
+            </RelativeLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -53,15 +115,46 @@
             android:gravity="center"
             android:orientation="vertical" >
 
-            <ToggleButton
-                android:id="@+id/show_status_bar_toggle"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_margin="5dp"
-                android:background="@drawable/toggle_btn_bg"
-                android:textOff="@string/settings_hide_status"
-                android:textOn="@string/settings_show_status" />
+                android:layout_margin="10dp" >
+
+                <ToggleButton
+                    android:id="@+id/show_status_bar_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:background="@drawable/toggle_btn_bg"
+                    android:textOff="@string/settings_hide_status"
+                    android:textOn="@string/settings_show_status" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="3dp"
+                    android:layout_toLeftOf="@+id/show_status_bar_toggle"
+                    android:text="@string/settings_show_status_bar_title"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_title_text_size" />
+
+                <TextView
+                    android:id="@+id/info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/title"
+                    android:layout_toLeftOf="@+id/show_status_bar_toggle"
+                    android:text="@string/settings_show_status_bar_info"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_info_text_size" />
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 

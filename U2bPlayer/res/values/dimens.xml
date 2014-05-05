@@ -18,6 +18,8 @@
     <dimen name="theme_sample_view_height">30dp</dimen>
     <dimen name="theme_sample_view_margin">10dp</dimen>
     <dimen name="source_dialog_cb_margin_left">10dp</dimen>
+    <dimen name="settings_title_text_size">18sp</dimen>
+    <dimen name="settings_info_text_size">12sp</dimen>
 
     <integer name="theme_selector_dialog_column">2</integer>
     <integer name="text_shawdow">2</integer>
