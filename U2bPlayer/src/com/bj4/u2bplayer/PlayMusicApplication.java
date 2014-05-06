@@ -35,6 +35,8 @@ public class PlayMusicApplication extends Application {
 
     private static final String PREF_SHOW_STATUS = "pref_show_status";
 
+    private static final String PREF_ALLOW_3G_UPDATE = "pref_allow_3g_update";
+
     private static U2bDatabaseHelper sDatabase;
 
     private static YoutubeDataParser sU2bParser;
@@ -46,6 +48,8 @@ public class PlayMusicApplication extends Application {
     public static boolean sOptimizeParsing = true;
 
     public static boolean sShowStatus = false;
+
+    public static boolean sAllow3GUpdate = true;
 
     private static SharedPreferences sPref;
 
@@ -59,6 +63,7 @@ public class PlayMusicApplication extends Application {
         sUsingHighQuality = getPref(this).getBoolean(PREF_MUSIC_QUALITY, true);
         sOptimizeParsing = getPref(this).getBoolean(PREF_OPTIMIZE_PARSING, true);
         sShowStatus = getPref(this).getBoolean(PREF_SHOW_STATUS, false);
+        sAllow3GUpdate = getPref(this).getBoolean(PREF_ALLOW_3G_UPDATE, true);
         // this.getSharedPreferences(name, mode)
     }
 
@@ -68,6 +73,11 @@ public class PlayMusicApplication extends Application {
                     Context.MODE_PRIVATE);
         }
         return sPref;
+    }
+
+    public static void setAllow3gUpdate(Context context, boolean allow) {
+        sAllow3GUpdate = allow;
+        getPref(context).edit().putBoolean(PREF_ALLOW_3G_UPDATE, allow).commit();
     }
 
     public static void setMusicQuality(Context context, boolean usingHighQuality) {

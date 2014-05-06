@@ -22,14 +22,18 @@
     <string name="settings_normal">Normal</string>
     <string name="settings_hide_status">Hide</string>
     <string name="settings_show_status">Show</string>
+    <string name="settings_allow_3g_update">Allow</string>
+    <string name="settings_disallow_3g_update">Disallow</string>
     <string name="settings_music_quality_title">Quality</string>
     <string name="settings_music_quality_info">Music play quality</string>
     <string name="settings_optimize_parsing_title">Optimize parsing</string>
     <string name="settings_optimize_parsing_info">Get results more accurate</string>
     <string name="settings_show_status_bar_title">Visibility of status bar</string>
     <string name="settings_show_status_bar_info">Get more detail status on the bottom of screen</string>
-    <string name="share_chooser_title">Share music to ...</string>
+    <string name="settings_allow_3g_update_title">Updating option</string>
+    <string name="settings_allow_3g_update_info">Allowing update data when using 3g</string>
+    <string name="share_chooser_title">"Share music to ..."</string>
     <string name="share_string_former">"I am using U2B music player to listen to the "</string>
     <string name="share_string_rear">". Join me now and let us have fun together!\n"</string>
-
+	<string name="dialog_alarm_3g_update">"Using 3g to update data?"</string>
 </resources>

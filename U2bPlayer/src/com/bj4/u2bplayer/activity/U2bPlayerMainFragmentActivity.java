@@ -17,9 +17,11 @@ import com.bj4.u2bplayer.service.PlayMusicService;
 import com.bj4.u2bplayer.service.SpiderService;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -28,6 +30,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +42,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -498,7 +503,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                     if (DEBUG) {
                         Log.d(TAG, "action bar -- sync pressed");
                     }
-                    startToScan();
+                    checkWifiStatusAndScan();
                     break;
                 case MainActivityOptionDialog.ITEM_SWITCH_DATA_SOURCE_LOCAL:
                     switchToLocalMusicData();
@@ -518,6 +523,43 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void switchToLocalMusicData() {
         mPlayList.retrieveLocalPlayList();
         getPlayListFragment().changePlayIndex();
+    }
+
+    private void checkWifiStatusAndScan() {
+        ConnectivityManager connManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        final boolean isWifiConnected = mWifi.isConnected();
+        final boolean is3GAllowed = PlayMusicApplication.sAllow3GUpdate;
+        if (isWifiConnected) {
+            // parse directly
+            startToScan();
+        } else {
+            if (is3GAllowed) {
+                // parse directly
+                startToScan();
+            } else {
+                // show alarm dialog
+                AlertDialog.Builder dialog = new AlertDialog.Builder(new ContextThemeWrapper(this,
+                        android.R.style.Theme_Holo_Light_Dialog));
+                dialog.setNegativeButton(android.R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                dialog.setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startToScan();
+                                dialog.dismiss();
+                            }
+                        });
+                dialog.setTitle(R.string.dialog_alarm_3g_update);
+                dialog.show();
+            }
+        }
     }
 
     private void startToScan() {

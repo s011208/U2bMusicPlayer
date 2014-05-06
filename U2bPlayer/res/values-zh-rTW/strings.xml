@@ -12,14 +12,19 @@
     <string name="settings_normal">一般</string>
     <string name="settings_hide_status">隱藏</string>
     <string name="settings_show_status">顯示</string>
+    <string name="settings_allow_3g_update">允許</string>
+    <string name="settings_disallow_3g_update">不允許</string>
     <string name="settings_music_quality_title">音質</string>
     <string name="settings_music_quality_info">撥放音樂音質</string>
     <string name="settings_optimize_parsing_title">最佳化搜尋</string>
     <string name="settings_optimize_parsing_info">更精確的搜尋列表</string>
     <string name="settings_show_status_bar_title">顯示狀態列</string>
     <string name="settings_show_status_bar_info">更多的顯示資訊</string>
+    <string name="settings_allow_3g_update_title">更新選項</string>
+    <string name="settings_allow_3g_update_info">3g 環境下允許更新</string>
     <string name="share_chooser_title">分享音樂給...</string>
     <string name="share_string_former">"我正在使用 U2B 音樂撥放器聽 "</string>
     <string name="share_string_rear">"， 趕快加入我讓我們一起享受吧！"</string>
+    <string name="dialog_alarm_3g_update">"允許使用3g下載資料嗎?"</string>
 
 </resources>

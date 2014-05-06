@@ -156,6 +156,57 @@
                     android:textSize="@dimen/settings_info_text_size" />
             </RelativeLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:background="@drawable/settings_items_bg"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp" >
+
+                <ToggleButton
+                    android:id="@+id/allow_3g_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:background="@drawable/toggle_btn_bg"
+                    android:textOff="@string/settings_disallow_3g_update"
+                    android:textOn="@string/settings_allow_3g_update" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="3dp"
+                    android:layout_toLeftOf="@+id/allow_3g_update"
+                    android:text="@string/settings_allow_3g_update_title"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_title_text_size" />
+
+                <TextView
+                    android:id="@+id/info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/title"
+                    android:layout_toLeftOf="@+id/allow_3g_update"
+                    android:text="@string/settings_allow_3g_update_info"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_info_text_size" />
+            </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>

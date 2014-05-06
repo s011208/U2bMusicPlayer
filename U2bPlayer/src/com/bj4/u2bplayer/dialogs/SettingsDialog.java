@@ -24,7 +24,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
 
 public class SettingsDialog extends SubDialogs {
-    private ToggleButton mQualityGroup, mOptimizeParsingGroup, mShowStatusGroup;
+    private ToggleButton mQualityGroup, mOptimizeParsingGroup, mShowStatusGroup, mAllow3GUpdate;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -59,6 +59,16 @@ public class SettingsDialog extends SubDialogs {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 PlayMusicApplication.setShowStatus(context, isChecked);
+            }
+        });
+
+        mAllow3GUpdate = (ToggleButton)v.findViewById(R.id.allow_3g_update);
+        mAllow3GUpdate.setChecked(PlayMusicApplication.sAllow3GUpdate);
+        mAllow3GUpdate.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                PlayMusicApplication.setAllow3gUpdate(context, isChecked);
             }
         });
 
