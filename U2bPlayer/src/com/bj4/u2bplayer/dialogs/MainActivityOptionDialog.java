@@ -47,8 +47,6 @@ public class MainActivityOptionDialog extends DialogFragment {
 
     private MainActivityOptionDialogCallback mCallback;
 
-    private int mWidth;
-
     private int[] mLocation = {
             0, 0
     };
@@ -84,7 +82,7 @@ public class MainActivityOptionDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setItems(options.toArray(optionsContent), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String selectedItem = (String) ((AlertDialog) dialog).getListView()
+                String selectedItem = (String)((AlertDialog)dialog).getListView()
                         .getItemAtPosition(which);
                 if (selectedItem.equals(sync)) {
                     if (mCallback != null) {
@@ -141,7 +139,7 @@ public class MainActivityOptionDialog extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        getDialog().getWindow().setLayout(mWidth, LayoutParams.WRAP_CONTENT);
+        getDialog().getWindow().setLayout(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
     }
 
     @Override
@@ -153,8 +151,6 @@ public class MainActivityOptionDialog extends DialogFragment {
     public void setupGravityAndPosition() {
         Dialog dialog = getDialog();
         Window window = dialog.getWindow();
-        mWidth = getResources().getDimensionPixelSize(R.dimen.main_activity_option_dialog_width);
-
         window.setBackgroundDrawable(new ColorDrawable(0));
         window.setGravity(Gravity.TOP | Gravity.RIGHT);
         WindowManager.LayoutParams lp = window.getAttributes();
