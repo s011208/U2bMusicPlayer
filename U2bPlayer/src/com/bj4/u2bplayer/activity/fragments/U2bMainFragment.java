@@ -296,7 +296,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mAlbumButton.setText(mStrAlbum);
             mAlbumButton.setWidth(10);
             mAlbumButton.setSingleLine(true);
-            mAlbumButton.setEllipsize(TruncateAt.END) ;
+            mAlbumButton.setEllipsize(TruncateAt.END);
             mAlbumButton.setTextSize(25);
             mAlbumButton.setTextColor(Color.WHITE);
             mAlbumButton.setGravity(Gravity.TOP);
@@ -333,6 +333,9 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mAlbumButton.getBackground().setAlpha(180);
             mAlbumButton.setText("µÿªy03§ÎKKbox Top100");
             mAlbumButton.setTextSize(25);
+            mAlbumButton.setWidth(10);
+            mAlbumButton.setSingleLine(true);
+            mAlbumButton.setEllipsize(TruncateAt.END);
             mAlbumButton.setTextColor(Color.WHITE);
             mAlbumButton.setGravity(Gravity.TOP);
             mAlbumButton.setOnClickListener(default_clickHandler);
