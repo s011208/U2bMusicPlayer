@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.bj4.u2bplayer.R;
-
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,6 +23,7 @@ import android.widget.LinearLayout;
 
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
+import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
@@ -294,6 +294,9 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mAlbumButton.setTag(mStrAlbum);
             // mAlbumButton.getBackground().setAlpha(180);
             mAlbumButton.setText(mStrAlbum);
+            mAlbumButton.setWidth(10);
+            mAlbumButton.setSingleLine(true);
+            mAlbumButton.setEllipsize(TruncateAt.END) ;
             mAlbumButton.setTextSize(25);
             mAlbumButton.setTextColor(Color.WHITE);
             mAlbumButton.setGravity(Gravity.TOP);
