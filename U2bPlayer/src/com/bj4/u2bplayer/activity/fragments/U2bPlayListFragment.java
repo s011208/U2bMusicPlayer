@@ -21,11 +21,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 public class U2bPlayListFragment extends Fragment implements MainFragmentCallback, ThemeReloader {
@@ -108,6 +110,21 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                             .getPlayingAlbumId()) || mActivity.isInitialized() == false) {
                         mActivity.play(position);
                     }
+                }
+            });
+            mPlayListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
+                        long id) {
+                    PlayListInfo info = mDisplayList.get(position);
+                    if (info != null) {
+                        Toast.makeText(mActivity,
+                                info.mMusicTitle + " has been added into favorite list",
+                                Toast.LENGTH_SHORT).show();
+                        PlayMusicApplication.getDataBaseHelper().addIntoFavorite(info.mVideoId);
+                    }
+                    return true;
                 }
             });
             mPlay = (ImageView)mContentView.findViewById(R.id.play_list_play);

@@ -47,6 +47,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     public static final int ALBUM_NOT_EXISTED = -1;
 
+    public static final String TABLE_FAVORITE = "favorite";
+
     private Context mContext;
 
     private SQLiteDatabase mDb;
@@ -192,9 +194,65 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 "CREATE TABLE IF NOT EXISTS " + TABLE_ALBUM_INFO
                         + "(_id integer primary key autoincrement, " + COLUMN_ALBUM
                         + " TEXT NOT NULL)");
+        getDb().execSQL(
+                "CREATE TABLE IF NOT EXISTS " + TABLE_FAVORITE + "(" + COLUMN_ARTIST
+                        + " TEXT NOT NULL," + COLUMN_ALBUM + " TEXT NOT NULL," + COLUMN_MUSIC
+                        + " TEXT NOT NULL," + COLUMN_VIDEO_PATH + " TEXT," + COLUMN_RTSP_H
+                        + " TEXT," + COLUMN_RTSP_L + " TEXT," + COLUMN_VIDEO_ID + " TEXT, "
+                        + COLUMN_RANK + " INTEGER,PRIMARY KEY(" + COLUMN_ARTIST + ", "
+                        + COLUMN_ALBUM + ", " + COLUMN_MUSIC + "))");
         if (DEBUG) {
             Log.d(TAG, "table created!");
         }
+    }
+
+    public void addIntoFavorite(final String videoId) {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                PlayListInfo info = getPlayInfo(videoId);
+                if (info != null) {
+                    addIntoFavorite(info);
+                }
+            }
+        }).start();
+    }
+
+    public void addIntoFavorite(PlayListInfo info) {
+        ContentValues cv = new ContentValues();
+        cv.put(U2bDatabaseHelper.COLUMN_ARTIST, info.mArtist);
+        cv.put(U2bDatabaseHelper.COLUMN_ALBUM, info.mAlbumTitle);
+        cv.put(U2bDatabaseHelper.COLUMN_MUSIC, info.mMusicTitle);
+        cv.put(U2bDatabaseHelper.COLUMN_RANK, info.mRank);
+        cv.put(U2bDatabaseHelper.COLUMN_RTSP_H, info.mRtspHighQuility);
+        cv.put(U2bDatabaseHelper.COLUMN_RTSP_L, info.mRtspLowQuility);
+        cv.put(U2bDatabaseHelper.COLUMN_VIDEO_PATH, info.mHttpUri);
+        cv.put(U2bDatabaseHelper.COLUMN_VIDEO_ID, info.mVideoId);
+        getDb().insert(TABLE_FAVORITE, null, cv);
+    }
+
+    public void removeFromFavorite(PlayListInfo info) {
+        getDb().delete(TABLE_FAVORITE, COLUMN_VIDEO_ID + "='" + info.mVideoId + "'", null);
+    }
+
+    public void removeAllFavorites() {
+        getDb().delete(TABLE_FAVORITE, null, null);
+    }
+
+    public ArrayList<PlayListInfo> getFavoritePlayList() {
+        ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
+        Cursor rtn = getDb().query(TABLE_FAVORITE, null, null, null, null, null, null);
+        if (rtn != null) {
+            convertFromCursorToPlayList(rtn, playList);
+        }
+        return playList;
+    }
+
+    public PlayListInfo getPlayInfo(String videoId) {
+        Cursor rtn = getDb().query(TABLE_MAIN_INFO, null, COLUMN_VIDEO_ID + "='" + videoId + "'",
+                null, null, null, null);
+        return convertFromCursorToPlayInfo(rtn);
     }
 
     public ArrayList<PlayListInfo> getPlayList(String albumName) {
@@ -212,9 +270,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 rtn.close();
             }
             if (fromLocalIfNotFound) {
-                rtn = queryDataFromLocalData(null,
-                        MediaStore.Audio.Media.ALBUM + "='" + albumName
-                                + "'", null, null);
+                rtn = queryDataFromLocalData(null, MediaStore.Audio.Media.ALBUM + "='" + albumName
+                        + "'", null, null);
                 convertFromLocalMusicDataCursorToPlayList(rtn, playList);
             }
         }
@@ -264,10 +321,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 result.close();
             }
             result = queryDataFromLocalData(new String[] {
-                    MediaStore.Audio.Media._ID
-            },
-                    MediaStore.Audio.Media.ALBUM + "='" + albumName
-                            + "'", null, null);
+                MediaStore.Audio.Media._ID
+            }, MediaStore.Audio.Media.ALBUM + "='" + albumName + "'", null, null);
             if (result != null && result.getCount() > 0) {
                 result.moveToNext();
                 int rtn = result.getInt(0);
@@ -291,10 +346,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 result.close();
             }
             result = queryDataFromLocalData(new String[] {
-                    MediaStore.Audio.Media.ALBUM
-            },
-                    MediaStore.Audio.Media._ID + "=" + id
-                    , null, null);
+                MediaStore.Audio.Media.ALBUM
+            }, MediaStore.Audio.Media._ID + "=" + id, null, null);
             if (result != null && result.getCount() > 0) {
                 result.moveToNext();
                 String rtn = result.getString(0);
@@ -307,6 +360,34 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
+
+    public static PlayListInfo convertFromLocalMusicDataCursorToPlayInfo(Cursor c) {
+        PlayListInfo rtn = null;
+        if (c != null) {
+            int iArtist = c.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int iAlbum = c.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int iMusic = c.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int iRank = c.getColumnIndex(MediaStore.Audio.Media.TRACK);
+            int iRh = c.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int iRl = c.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int iVp = c.getColumnIndex(MediaStore.Audio.Media.DATA);
+            int iVi = c.getColumnIndex(MediaStore.Audio.Media.DATA);
+            while (c.moveToNext()) {
+                String artist = c.getString(iArtist);
+                String album = c.getString(iAlbum);
+                String music = c.getString(iMusic);
+                int rank = c.getInt(iRank);
+                String rh = c.getString(iRh);
+                String rl = c.getString(iRl);
+                String vp = c.getString(iVp);
+                String vi = c.getString(iVi);
+                rtn = new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank,
+                        PlayListInfo.IS_LOCAL_INFO);
+            }
+            c.close();
+        }
+        return rtn;
     }
 
     public static void convertFromLocalMusicDataCursorToPlayList(Cursor c,
@@ -340,6 +421,33 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 Log.e(TAG, info.toString());
             }
         }
+    }
+
+    public static PlayListInfo convertFromCursorToPlayInfo(Cursor c) {
+        PlayListInfo rtn = null;
+        if (c != null) {
+            int iArtist = c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST);
+            int iAlbum = c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM);
+            int iMusic = c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC);
+            int iRank = c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK);
+            int iRh = c.getColumnIndex(U2bDatabaseHelper.COLUMN_RTSP_H);
+            int iRl = c.getColumnIndex(U2bDatabaseHelper.COLUMN_RTSP_L);
+            int iVp = c.getColumnIndex(U2bDatabaseHelper.COLUMN_VIDEO_PATH);
+            int iVi = c.getColumnIndex(U2bDatabaseHelper.COLUMN_VIDEO_ID);
+            while (c.moveToNext()) {
+                String artist = c.getString(iArtist);
+                String album = c.getString(iAlbum);
+                String music = c.getString(iMusic);
+                int rank = c.getInt(iRank);
+                String rh = c.getString(iRh);
+                String rl = c.getString(iRl);
+                String vp = c.getString(iVp);
+                String vi = c.getString(iVi);
+                rtn = new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank);
+            }
+            c.close();
+        }
+        return rtn;
     }
 
     public static void convertFromCursorToPlayList(Cursor c, ArrayList<PlayListInfo> playList) {
