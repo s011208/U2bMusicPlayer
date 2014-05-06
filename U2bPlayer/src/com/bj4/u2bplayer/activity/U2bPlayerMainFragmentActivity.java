@@ -100,7 +100,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private Fragment mU2bPlayListFragment, mU2bMainFragment, mU2bPlayInfoFragment;
 
-    private TextView mActionBarTitle;
+    private TextView mActionBarTitle, mStatusBarInfo;
 
     private SharedPreferences mPref;
 
@@ -182,7 +182,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
                 @Override
                 public void run() {
-                    setActionMusicInfo(info, percentage);
+                    setActionMusicInfo(info);
+                    setBufferStatus(percentage);
                 }
             });
         }
@@ -300,51 +301,61 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             mActionBar.setBackgroundResource(R.color.theme_blue_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_blue_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
+            mStatusBarInfo.setTextColor(Color.WHITE);
         } else if (theme == THEME_WHITE) {
             mMainLayout.setBackgroundResource(R.color.theme_white_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_white_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_white_action_bar_bg);
             mActionBarTitle.setTextColor(Color.BLACK);
+            mStatusBarInfo.setTextColor(Color.BLACK);
         } else if (theme == THEME_BLACK) {
             mMainLayout.setBackgroundResource(R.color.theme_black_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_black_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_black_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
+            mStatusBarInfo.setTextColor(Color.WHITE);
         } else if (theme == THEME_ORANGE) {
             mMainLayout.setBackgroundResource(R.color.theme_orange_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_orange_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_orange_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
+            mStatusBarInfo.setTextColor(Color.WHITE);
         } else if (theme == THEME_YELLOW) {
             mMainLayout.setBackgroundResource(R.color.theme_yellow_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_yellow_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_yellow_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
+            mStatusBarInfo.setTextColor(Color.WHITE);
         } else if (theme == THEME_GRAY) {
             mMainLayout.setBackgroundResource(R.color.theme_gray_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_gray_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_gray_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
+            mStatusBarInfo.setTextColor(Color.WHITE);
         } else if (theme == THEME_NAVY) {
             mMainLayout.setBackgroundResource(R.color.theme_navy_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_navy_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_navy_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
+            mStatusBarInfo.setTextColor(Color.WHITE);
         } else if (theme == THEME_PURPLE) {
             mMainLayout.setBackgroundResource(R.color.theme_purple_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_purple_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_purple_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
+            mStatusBarInfo.setTextColor(Color.WHITE);
         } else if (theme == THEME_SIMPLE_WHITE) {
             mMainLayout.setBackgroundResource(R.color.theme_simple_white_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_simple_white_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_simple_white_action_bar_bg);
             mActionBarTitle.setTextColor(Color.BLACK);
+            mStatusBarInfo.setTextColor(Color.BLACK);
         } else if (theme == THEME_RED) {
             mMainLayout.setBackgroundResource(R.color.theme_red_activity_bg);
             mActionBar.setBackgroundResource(R.color.theme_red_action_bar_bg);
             mStatusBar.setBackgroundResource(R.color.theme_red_action_bar_bg);
             mActionBarTitle.setTextColor(Color.WHITE);
+            mStatusBarInfo.setTextColor(Color.WHITE);
         }
     }
 
@@ -411,6 +422,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
         mMainContentFragment = (LinearLayout)findViewById(R.id.main_fragment_container);
         mStatusBar = (RelativeLayout)findViewById(R.id.main_status_bar);
+        mStatusBarInfo = (TextView)findViewById(R.id.main_status_bar_info);
         notifyStatusBarVisibilityChanged();
         initMainLayout();
         initActionBarComponents();
@@ -563,11 +575,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     }
 
-    public void setActionMusicInfo(PlayListInfo info, int percentage) {
-        if (mActionBarTitle != null) {
-            mActionBarTitle.setText("buffering: " + percentage + "  " + info.mMusicTitle + "  "
-                    + info.mArtist);
-        }
+    public void setBufferStatus(int percentage) {
+        mStatusBarInfo.setText("loading progress: " + percentage);
     }
 
     public void setActionMusicInfo(String text) {

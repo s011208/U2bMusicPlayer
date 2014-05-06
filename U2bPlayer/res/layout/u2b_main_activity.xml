@@ -23,10 +23,11 @@
             android:background="#ffffff" />
 
         <TextView
-            android:layout_below="@+id/main_status_bar_sep_line"
+            android:id="@+id/main_status_bar_info"
+            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="TEST" />
+            android:layout_below="@+id/main_status_bar_sep_line" />
     </RelativeLayout>
 
     <LinearLayout
