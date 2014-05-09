@@ -22,6 +22,7 @@ import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -43,6 +44,16 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     public static final int PLAY_PREVIOUS_INDEX = -2;
 
     private static final int TRACK_WENT_TO_NEXT = 1;
+
+    public static final String INTENT_PLAY_INDEX = "play_index";
+
+    public static final String INTENT_ACTION = "actions";
+
+    public static final String INTENT_ACTION_PLAY = "play";
+
+    public static final String INTENT_SWITCH_FAVORITE = "favorite";
+
+    public static final String INTENT_ACTION_PAUSE = "pause";
 
     private MultiPlayer mPlayer;
 
@@ -125,6 +136,18 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         super.onStartCommand(intent, flags, startId);
         if (DEBUG)
             Log.d(TAG, "onStartCommand");
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            String action = extras.getString(INTENT_ACTION);
+            if (action != null) {
+                if (INTENT_ACTION_PLAY.equals(action)) {
+                    playMusic(extras.getInt(INTENT_PLAY_INDEX));
+                } else if (INTENT_SWITCH_FAVORITE.equals(action)) {
+                } else if (INTENT_ACTION_PAUSE.equals(action)) {
+                    pauseMusic();
+                }
+            }
+        }
         return Service.START_STICKY;
     }
 
@@ -591,6 +614,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         notifyPlayStateChanged(mPlayer.isPlaying());
         notifyPlayInfoChanged();
         notifyNotificationChanged();
+        notifiWidgetsChanged();
     }
 
     private void notifyNotificationChanged() {
@@ -599,7 +623,13 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             return;
         startForeground(NotificationBuilder.NOTIFICATION_ID,
                 NotificationBuilder.createSimpleNotification(getApplicationContext(), info));
-        SimplePlayWidget.performUpdate(this, info);
+    }
+
+    private void notifiWidgetsChanged() {
+        final PlayListInfo info = mPlayList.getCurrentPlayingListInfo();
+        if (info == null)
+            return;
+        SimplePlayWidget.performUpdate(this, info, mPlayer.isPlaying());
     }
 
     private void notifyPlayInfoChanged() {

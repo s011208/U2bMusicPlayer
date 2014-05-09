@@ -44,6 +44,17 @@
             android:src="@drawable/widget_play" />
 
         <ImageButton
+            android:id="@+id/simple_play_widget_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:background="@drawable/widget_simple_item_bg"
+            android:scaleType="centerInside"
+            android:src="@drawable/widget_pause" />
+
+        <ImageButton
             android:id="@+id/simple_play_widget_next"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -61,12 +72,18 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_weight="4"
+        android:duplicateParentState="true"
         android:ellipsize="marquee"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:marqueeRepeatLimit="marquee_forever"
         android:maxLines="1"
         android:singleLine="true" >
+
+        <requestFocus
+            android:duplicateParentState="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
     </TextView>
 
 </LinearLayout>

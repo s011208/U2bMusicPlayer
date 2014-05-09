@@ -27,6 +27,8 @@ public class PlayListInfo implements Parcelable {
 
     public int mIsLocal;
 
+    public boolean mIsFavorite = false;
+
     public PlayListInfo() {
     }
 
