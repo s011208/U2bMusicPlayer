@@ -8,6 +8,7 @@ import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.utilities.NotificationBuilder;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
+import com.bj4.u2bplayer.widget.SimplePlayWidget;
 
 import android.app.NotificationManager;
 import android.app.Service;
@@ -598,6 +599,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             return;
         startForeground(NotificationBuilder.NOTIFICATION_ID,
                 NotificationBuilder.createSimpleNotification(getApplicationContext(), info));
+        SimplePlayWidget.performUpdate(this, info);
     }
 
     private void notifyPlayInfoChanged() {

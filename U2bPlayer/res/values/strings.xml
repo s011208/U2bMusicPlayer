@@ -35,5 +35,7 @@
     <string name="share_chooser_title">"Share music to ..."</string>
     <string name="share_string_former">"I am using U2B music player to listen to the "</string>
     <string name="share_string_rear">". Join me now and let us have fun together!\n"</string>
-	<string name="dialog_alarm_3g_update">"Using 3g to update data?"</string>
+    <string name="dialog_alarm_3g_update">"Using 3g to update data?"</string>
+    <string name="simple_play_widget_none_playinfo">"Let's rock now!"</string>
+
 </resources>
