@@ -13,7 +13,7 @@
         android:orientation="horizontal" >
 
         <ImageButton
-            android:id="@+id/favorite"
+            android:id="@+id/simple_play_widget_favorite"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -22,7 +22,7 @@
             android:src="@drawable/widget_favorite" />
 
         <ImageButton
-            android:id="@+id/previous"
+            android:id="@+id/simple_play_widget_previous"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -31,7 +31,7 @@
             android:src="@drawable/widget_previous" />
 
         <ImageButton
-            android:id="@+id/play"
+            android:id="@+id/simple_play_widget_play"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -40,7 +40,7 @@
             android:src="@drawable/widget_play" />
 
         <ImageButton
-            android:id="@+id/next"
+            android:id="@+id/simple_play_widget_next"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
