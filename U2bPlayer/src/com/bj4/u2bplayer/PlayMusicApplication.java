@@ -37,6 +37,8 @@ public class PlayMusicApplication extends Application {
 
     private static final String PREF_ALLOW_3G_UPDATE = "pref_allow_3g_update";
 
+    private static final String PREF_SHOW_NOTIFICATION_WHEN_HEADSET_ON = "pref_show_notification_when_headset_on";
+
     private static U2bDatabaseHelper sDatabase;
 
     private static YoutubeDataParser sU2bParser;
@@ -51,6 +53,8 @@ public class PlayMusicApplication extends Application {
 
     public static boolean sAllow3GUpdate = true;
 
+    public static boolean sShowNotificationWhenHeadsetOn = true;
+
     private static SharedPreferences sPref;
 
     @Override
@@ -64,6 +68,8 @@ public class PlayMusicApplication extends Application {
         sOptimizeParsing = getPref(this).getBoolean(PREF_OPTIMIZE_PARSING, true);
         sShowStatus = getPref(this).getBoolean(PREF_SHOW_STATUS, false);
         sAllow3GUpdate = getPref(this).getBoolean(PREF_ALLOW_3G_UPDATE, true);
+        sShowNotificationWhenHeadsetOn = getPref(this).getBoolean(
+                PREF_SHOW_NOTIFICATION_WHEN_HEADSET_ON, true);
         // this.getSharedPreferences(name, mode)
     }
 
@@ -73,6 +79,11 @@ public class PlayMusicApplication extends Application {
                     Context.MODE_PRIVATE);
         }
         return sPref;
+    }
+
+    public static void setShowNotificationWhenHeadsetOn(Context context, boolean show) {
+        sShowNotificationWhenHeadsetOn = show;
+        getPref(context).edit().putBoolean(PREF_SHOW_NOTIFICATION_WHEN_HEADSET_ON, show).commit();
     }
 
     public static void setAllow3gUpdate(Context context, boolean allow) {

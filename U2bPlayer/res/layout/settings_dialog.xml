@@ -155,6 +155,54 @@
                     android:textColor="@color/settings_text_color"
                     android:textSize="@dimen/settings_info_text_size" />
             </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:background="@color/theme_navy_play_list_light_bg_unpress" >
+            </View>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp" >
+
+                <ToggleButton
+                    android:id="@+id/show_notification_when_headset_on_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:background="@drawable/toggle_btn_bg"
+                    android:textOff="@string/settings_hide_status"
+                    android:textOn="@string/settings_show_status" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="3dp"
+                    android:layout_toLeftOf="@+id/show_notification_when_headset_on_toggle"
+                    android:text="@string/settings_headset_notification_title"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_title_text_size" />
+
+                <TextView
+                    android:id="@+id/info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/title"
+                    android:layout_toLeftOf="@+id/show_notification_when_headset_on_toggle"
+                    android:text="@string/settings_headset_notification_info"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_info_text_size" />
+            </RelativeLayout>
         </LinearLayout>
 
         <LinearLayout

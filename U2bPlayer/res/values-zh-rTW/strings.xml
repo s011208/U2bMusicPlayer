@@ -22,6 +22,8 @@
     <string name="settings_show_status_bar_info">更多的顯示資訊</string>
     <string name="settings_allow_3g_update_title">更新選項</string>
     <string name="settings_allow_3g_update_info">3g 環境下允許更新</string>
+    <string name="settings_headset_notification_title">顯示開始提醒</string>
+    <string name="settings_headset_notification_info">插入音效裝置時顯示提醒</string>
     <string name="share_chooser_title">分享音樂給...</string>
     <string name="share_string_former">"我正在使用 U2B 音樂撥放器聽 "</string>
     <string name="share_string_rear">"， 趕快加入我讓我們一起享受吧！"</string>

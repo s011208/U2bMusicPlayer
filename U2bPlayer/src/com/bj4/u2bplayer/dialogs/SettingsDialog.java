@@ -24,7 +24,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
 
 public class SettingsDialog extends SubDialogs {
-    private ToggleButton mQualityGroup, mOptimizeParsingGroup, mShowStatusGroup, mAllow3GUpdate;
+    private ToggleButton mQualityGroup, mOptimizeParsingGroup, mShowStatusGroup, mAllow3GUpdate,
+            mShowNotificationWhenHeasetOn;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -71,7 +72,17 @@ public class SettingsDialog extends SubDialogs {
                 PlayMusicApplication.setAllow3gUpdate(context, isChecked);
             }
         });
+        mShowNotificationWhenHeasetOn = (ToggleButton)v
+                .findViewById(R.id.show_notification_when_headset_on_toggle);
+        mShowNotificationWhenHeasetOn
+                .setChecked(PlayMusicApplication.sShowNotificationWhenHeadsetOn);
+        mShowNotificationWhenHeasetOn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                PlayMusicApplication.setShowNotificationWhenHeadsetOn(context, isChecked);
+            }
+        });
         AlertDialog.Builder builder = getDialogBuilder();
         builder.setTitle(R.string.option_settings).setCancelable(true).setView(v);
         return builder.create();

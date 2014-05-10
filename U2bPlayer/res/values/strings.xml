@@ -32,6 +32,8 @@
     <string name="settings_show_status_bar_info">Get more detail status on the bottom of screen</string>
     <string name="settings_allow_3g_update_title">Updating option</string>
     <string name="settings_allow_3g_update_info">Allowing update data when using 3g</string>
+    <string name="settings_headset_notification_title">Show start notification</string>
+    <string name="settings_headset_notification_info">Show start notification when headset on</string>
     <string name="share_chooser_title">"Share music to ..."</string>
     <string name="share_string_former">"I am using U2B music player to listen to the "</string>
     <string name="share_string_rear">". Join me now and let us have fun together!\n"</string>

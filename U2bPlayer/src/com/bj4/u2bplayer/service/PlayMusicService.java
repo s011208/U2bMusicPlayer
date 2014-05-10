@@ -98,6 +98,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     .getSystemService(Context.NOTIFICATION_SERVICE);
             String action = intent.getAction();
             if (Intent.ACTION_HEADSET_PLUG.equals(action) && mPlayer != null) {
+                if (PlayMusicApplication.sShowNotificationWhenHeadsetOn == false)
+                    return;
                 if (intent.hasExtra("state")) {
                     if (headsetConnected && intent.getIntExtra("state", 0) == 0) {
                         headsetConnected = false;
