@@ -117,6 +117,10 @@ public class PlayList {
         return mPlayingAlbumId;
     }
 
+    public String getPlayingListAlbumName() {
+        return mPlayingAlbumName;
+    }
+
     public void notifyScanDone() {
         for (PlayListLoaderCallback c : mCallbacks) {
             c.loadDone();

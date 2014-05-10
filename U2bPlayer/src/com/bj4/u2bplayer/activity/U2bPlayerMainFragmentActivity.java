@@ -569,6 +569,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 if (mPlayList != null) {
                     String albumName = PlayMusicApplication.getDataBaseHelper().getAlbumName(
                             getPlayingAlbumId());
+                    if (albumName == null) {
+                        albumName = mPlayList.getPlayingListAlbumName();
+                    }
                     if (albumName != null) {
                         setDisplayingAlbumName(albumName);
                         mPlayList.setAlbumPlayingList(albumName);
