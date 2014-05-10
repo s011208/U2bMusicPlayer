@@ -46,6 +46,8 @@ import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -53,6 +55,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.bj4.u2bplayer.activity.fragments.*;
+import com.google.android.gms.ads.*;
 
 public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private static final String TAG = "U2bPlayerMainFragmentActivity";
@@ -122,6 +125,12 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private Handler mHandler = new Handler();
 
     private String mDisplayingAlbumName;
+
+    private AdView mAdView;
+
+    private Button mCloseAdViewBtn;
+
+    private FrameLayout mAdViewParent;
 
     private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
 
@@ -380,7 +389,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             Object windowManagerService = m.invoke(null, new Object[] {});
             c = windowManagerService.getClass();
             m = c.getDeclaredMethod("hasNavigationBar", new Class<?>[] {});
-            hasNavigationBar = (Boolean) m.invoke(windowManagerService, new Object[] {});
+            hasNavigationBar = (Boolean)m.invoke(windowManagerService, new Object[] {});
             if (DEBUG)
                 Log.d(TAG, "hasNavigationBar: " + hasNavigationBar);
         } catch (Exception e) {
@@ -390,8 +399,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // TODO do something about transparent navigation bar
-            int statusBarHeight = (int) getResources().getDimension(R.dimen.status_bar_height);
-            int navigationBarHeight = hasNavigationBar ? (int) getResources().getDimension(
+            int statusBarHeight = (int)getResources().getDimension(R.dimen.status_bar_height);
+            int navigationBarHeight = hasNavigationBar ? (int)getResources().getDimension(
                     R.dimen.navigation_bar_height) : 0;
             // mMainLayout.setPadding(mMainLayout.getPaddingLeft(),
             // statusBarHeight,
@@ -405,9 +414,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             @Override
             public void run() {
                 try {
-                    HashSet<String> set = (HashSet<String>) mPref.getStringSet(
-                            SHARE_PREF_KEY_SOURCE_LIST,
-                            new HashSet<String>());
+                    HashSet<String> set = (HashSet<String>)mPref.getStringSet(
+                            SHARE_PREF_KEY_SOURCE_LIST, new HashSet<String>());
                     if (set.size() == 0) {
                         // put default
                         set.add("1");
@@ -433,30 +441,54 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         mMainContentFragment = (LinearLayout)findViewById(R.id.main_fragment_container);
         mStatusBar = (RelativeLayout)findViewById(R.id.main_status_bar);
         mStatusBarInfo = (TextView)findViewById(R.id.main_status_bar_info);
+
         notifyStatusBarVisibilityChanged();
         initMainLayout();
         initActionBarComponents();
+
+        // main button adview
+        mAdViewParent = (FrameLayout)findViewById(R.id.ad_view_parent);
+        mAdView = (AdView)findViewById(R.id.adView);
+        mAdView.loadAd(new AdRequest.Builder().build());
+        mCloseAdViewBtn = (Button)findViewById(R.id.close_adview_btn);
+        mCloseAdViewBtn.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mAdViewParent.setVisibility(View.GONE);
+            }
+        });
     }
+
+    private Runnable mShowAdViewRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            if (mAdViewParent != null) {
+                mAdViewParent.setVisibility(View.VISIBLE);
+            }
+        }
+    };
 
     private synchronized U2bMainFragment getMainFragment() {
         if (mU2bMainFragment == null) {
             mU2bMainFragment = new U2bMainFragment();
         }
-        return (U2bMainFragment) mU2bMainFragment;
+        return (U2bMainFragment)mU2bMainFragment;
     }
 
     private synchronized U2bPlayListFragment getPlayListFragment() {
         if (mU2bPlayListFragment == null) {
             mU2bPlayListFragment = new U2bPlayListFragment();
         }
-        return (U2bPlayListFragment) mU2bPlayListFragment;
+        return (U2bPlayListFragment)mU2bPlayListFragment;
     }
 
     private synchronized U2bPlayInfoFragment getPlayInfoFragment() {
         if (mU2bPlayInfoFragment == null) {
             mU2bPlayInfoFragment = new U2bPlayInfoFragment();
         }
-        return (U2bPlayInfoFragment) mU2bPlayInfoFragment;
+        return (U2bPlayInfoFragment)mU2bPlayInfoFragment;
     }
 
     public void initActionBarComponents() {
@@ -618,16 +650,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public void onResume() {
         super.onResume();
+        mAdView.resume();
         if (sCurrentFragment == FRAGMENT_TYPE_PLAYLIST) {
             getPlayListFragment().changePlayIndex();
         }
+        mHandler.removeCallbacks(mShowAdViewRunnable);
+        mHandler.post(mShowAdViewRunnable);
     }
 
     public void onPause() {
+        mAdView.pause();
         super.onPause();
     }
 
     public void onDestroy() {
+        mAdView.destroy();
         super.onDestroy();
         unbindService(mMusicPlayServiceConnection);
         unbindService(mSpiderServiceConnection);
@@ -861,7 +898,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void reloadTheme() {
         Fragment fag = getCurrentFragment();
         if (fag != null && fag instanceof ThemeReloader) {
-            ((ThemeReloader) fag).reloadTheme();
+            ((ThemeReloader)fag).reloadTheme();
         }
     }
 
