@@ -141,7 +141,16 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             String action = extras.getString(INTENT_ACTION);
             if (action != null) {
                 if (INTENT_ACTION_PLAY.equals(action)) {
-                    playMusic(extras.getInt(INTENT_PLAY_INDEX));
+                    int index = extras.getInt(INTENT_PLAY_INDEX);
+                    if (index >= 0) {
+                        if (mPlayer.isInitialized()) {
+                            mPlayer.start();
+                        } else {
+                            playMusic(index);
+                        }
+                    } else {
+                        playMusic(index);
+                    }
                 } else if (INTENT_SWITCH_FAVORITE.equals(action)) {
                 } else if (INTENT_ACTION_PAUSE.equals(action)) {
                     pauseMusic();
@@ -449,23 +458,27 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         public void start() {
             mCurrentMediaPlayer.start();
             notifyPlayStateChanged(true);
+            notifiWidgetsChanged(true);
         }
 
         public void stop() {
             mCurrentMediaPlayer.reset();
             mIsInitialized = false;
             notifyPlayStateChanged(false);
+            notifiWidgetsChanged(false);
         }
 
         public void release() {
             stop();
             mCurrentMediaPlayer.release();
             notifyPlayStateChanged(false);
+            notifiWidgetsChanged(false);
         }
 
         public void pause() {
             mCurrentMediaPlayer.pause();
             notifyPlayStateChanged(false);
+            notifiWidgetsChanged(false);
         }
 
         public void setHandler(Handler handler) {
@@ -614,7 +627,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         notifyPlayStateChanged(mPlayer.isPlaying());
         notifyPlayInfoChanged();
         notifyNotificationChanged();
-        notifiWidgetsChanged();
+        notifiWidgetsChanged(mPlayer.isPlaying());
     }
 
     private void notifyNotificationChanged() {
@@ -625,11 +638,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                 NotificationBuilder.createSimpleNotification(getApplicationContext(), info));
     }
 
-    private void notifiWidgetsChanged() {
+    private void notifiWidgetsChanged(boolean isPlaying) {
         final PlayListInfo info = mPlayList.getCurrentPlayingListInfo();
         if (info == null)
             return;
-        SimplePlayWidget.performUpdate(this, info, mPlayer.isPlaying());
+        SimplePlayWidget.performUpdate(this, info, isPlaying);
     }
 
     private void notifyPlayInfoChanged() {

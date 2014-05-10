@@ -85,7 +85,6 @@ public class SimplePlayWidget extends AppWidgetProvider {
         super.onReceive(context, intent);
         String action = intent.getAction();
         if (PLAY.equals(action)) {
-            sIsPlaying = true;
             sendActions(context, PlayMusicService.INTENT_ACTION_PLAY, PlayList.getInstance(context)
                     .getPointer());
         } else if (FAVORITE.equals(action)) {
@@ -97,7 +96,6 @@ public class SimplePlayWidget extends AppWidgetProvider {
             sendActions(context, PlayMusicService.INTENT_ACTION_PLAY,
                     PlayMusicService.PLAY_PREVIOUS_INDEX);
         } else if (PAUSE.equals(action)) {
-            sIsPlaying = false;
             sendActions(context, PlayMusicService.INTENT_ACTION_PAUSE);
         }
         performUpdate(context, sCurrentInfo, sIsPlaying);
