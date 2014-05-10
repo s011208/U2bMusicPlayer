@@ -32,6 +32,8 @@ import android.os.PowerManager;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -114,18 +116,59 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                         }
                     }
                 }
+            } else if (Intent.ACTION_NEW_OUTGOING_CALL.equals(action)) {
+                if (mIsForeground) {
+                    if (mPlayer.isPlaying()) {
+                        pauseMusic();
+                    }
+                }
+            } else if (Intent.ACTION_CALL.equals(action)) {
+                if (mIsForeground) {
+                    if (mPlayer.isPlaying()) {
+                        pauseMusic();
+                    }
+                }
             }
         }
     };
 
+    private class MyPhoneStateListener extends PhoneStateListener {
+        public void onCallStateChanged(int state, String incomingNumber) {
+            switch (state) {
+                case TelephonyManager.CALL_STATE_IDLE:
+                    if (mIsForeground) {
+                        if (mPlayer.isPlaying() == false) {
+                            resumeMusic();
+                        }
+                    }
+                    break;
+                case TelephonyManager.CALL_STATE_OFFHOOK:
+                    break;
+                case TelephonyManager.CALL_STATE_RINGING:
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private MyPhoneStateListener mPhoneListener = new MyPhoneStateListener();
+
     private void registerBroadcastReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        filter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
+        filter.addAction(Intent.ACTION_CALL);
         registerReceiver(mReceiver, filter);
+        TelephonyManager tmgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        tmgr.listen(mPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+
     }
 
     private void unRegisterBroadcastReceiver() {
         unregisterReceiver(mReceiver);
+        TelephonyManager tmgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        tmgr.listen(mPhoneListener, PhoneStateListener.LISTEN_NONE);
     }
 
     public void onCreate() {
