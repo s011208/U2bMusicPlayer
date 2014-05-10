@@ -163,7 +163,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void switchFavorite() {
+        if (mPlayList == null)
+            return;
         PlayListInfo info = mPlayList.getCurrentPlayingListInfo();
+        if (info == null)
+            return;
         if (info.mIsFavorite) {
             Toast.makeText(this, info.mMusicTitle + getString(R.string.toast_remove_from_favorite),
                     Toast.LENGTH_SHORT).show();

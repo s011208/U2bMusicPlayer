@@ -37,9 +37,17 @@ public class PlayList {
 
     private static final String SHARE_PREF_KEY_LAST_TIME_INDEX = "last_time_index";
 
+    private static final String SHARE_PREF_KEY_LAST_TIME_ALBUM = "last_tiem_album";
+
     private PlayList(Context context) {
         mContext = context.getApplicationContext();
         mPref = mContext.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
+        initPlayList();
+    }
+
+    private void initPlayList() {
+        String album = mPref.getString(SHARE_PREF_KEY_LAST_TIME_ALBUM, null);
+        setAlbumPlayingList(album);
     }
 
     public int getPointer() {
@@ -102,6 +110,7 @@ public class PlayList {
         mPlayingList.addAll(mDatabaseHelper.getPlayList(album, true));
         mPlayingAlbumId = mDatabaseHelper.getAlbumId(album);
         mPlayingAlbumName = album;
+        mPref.edit().putString(SHARE_PREF_KEY_LAST_TIME_ALBUM, album).apply();
     }
 
     public long getPlayingListAlbumId() {

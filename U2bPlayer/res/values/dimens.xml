@@ -43,5 +43,7 @@
     <dimen name="play_info_fragment_control_panel_seekbar_width">280dp</dimen>
     <dimen name="play_info_fragment_control_panel_seekbar_margin_bottom">170dp</dimen>
     <dimen name="play_info_fragment_control_panel_seekbar_margin_left">10dp</dimen>
+    <!-- widget -->
+    <dimen name="simple_music_widget_items_margin">10dp</dimen>
 
 </resources>
