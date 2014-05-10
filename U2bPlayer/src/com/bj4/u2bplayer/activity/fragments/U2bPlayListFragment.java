@@ -98,6 +98,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+                    mActivity.countInterstitial();
                     v.setHapticFeedbackEnabled(true);
                     mPlayList.setAlbumPlayingList(sDisplayAlbumName);
                     // mActivity.viewPlayInfo(mPlayList.getPlayList().get(position));

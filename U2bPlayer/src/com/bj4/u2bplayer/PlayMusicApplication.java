@@ -57,6 +57,10 @@ public class PlayMusicApplication extends Application {
 
     private static SharedPreferences sPref;
 
+    public static int sAdCount = 0;
+
+    public static final int AD_TIME = 20;
+
     @Override
     public void onCreate() {
         super.onCreate();

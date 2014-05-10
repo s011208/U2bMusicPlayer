@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:vpadn="http://schemas.android.com/apk/lib/com.vpadn.ads"
     android:id="@+id/action_bar_parent"
     android:layout_width="match_parent"
     android:layout_height="@dimen/action_bar_height" >
@@ -33,5 +34,30 @@
         android:singleLine="true"
         android:textColor="#fff"
         android:textSize="30sp" />
+
+    <FrameLayout
+        android:id="@+id/vpon_ad_view_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" >
+
+        <com.vpadn.ads.VpadnBanner
+            android:id="@+id/vpadnBannerXML"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            vpadn:adSize="SMART_BANNER"
+            vpadn:autoFresh="true"
+            vpadn:bannerId="8a80818245da428c0145e71393d00709"
+            vpadn:loadAdOnCreate="true"
+            vpadn:platform="TW" />
+
+        <Button
+            android:id="@+id/close_vpon_adview_btn"
+            android:layout_width="@dimen/ad_view_clear_button"
+            android:layout_height="@dimen/ad_view_clear_button"
+            android:layout_gravity="top|right"
+            android:background="@drawable/widget_base" />
+    </FrameLayout>
 
 </RelativeLayout>

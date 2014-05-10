@@ -41,6 +41,7 @@ import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
@@ -56,6 +57,13 @@ import android.widget.TextView;
 
 import com.bj4.u2bplayer.activity.fragments.*;
 import com.google.android.gms.ads.*;
+import com.vpadn.ads.VpadnAd;
+import com.vpadn.ads.VpadnAdListener;
+import com.vpadn.ads.VpadnAdRequest;
+import com.vpadn.ads.VpadnAdRequest.VpadnErrorCode;
+import com.vpadn.ads.VpadnAdSize;
+import com.vpadn.ads.VpadnBanner;
+import com.vpadn.ads.VpadnInterstitialAd;
 
 public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private static final String TAG = "U2bPlayerMainFragmentActivity";
@@ -128,9 +136,19 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private AdView mAdView;
 
-    private Button mCloseAdViewBtn;
+    private Button mCloseAdViewBtn, mCloseVponAdViewBtn;
 
-    private FrameLayout mAdViewParent;
+    private FrameLayout mAdViewParent, mVponAdViewParent;
+
+    private InterstitialAd mInterstitial;
+
+    private boolean mCanLoadNextAd = false;
+
+    private VpadnBanner mVponBanner;
+
+    private VpadnInterstitialAd mVponInterstitialAd;
+
+    private boolean mCanShowVponInterstitialAd = false;
 
     private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
 
@@ -446,7 +464,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         initMainLayout();
         initActionBarComponents();
 
-        // main button adview
+        // main admob
         mAdViewParent = (FrameLayout)findViewById(R.id.ad_view_parent);
         mAdView = (AdView)findViewById(R.id.adView);
         mAdView.loadAd(new AdRequest.Builder().build());
@@ -458,6 +476,56 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 mAdViewParent.setVisibility(View.GONE);
             }
         });
+        mInterstitial = new InterstitialAd(this);
+        mInterstitial.setAdUnitId("ca-app-pub-6081210604737939/5840186808");
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mInterstitial.loadAd(adRequest);
+
+        // vpon
+        mVponBanner = (VpadnBanner)findViewById(R.id.vpadnBannerXML);
+        mCloseVponAdViewBtn = (Button)findViewById(R.id.close_vpon_adview_btn);
+        mVponAdViewParent = (FrameLayout)findViewById(R.id.vpon_ad_view_parent);
+        mCloseVponAdViewBtn.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mVponAdViewParent.setVisibility(View.GONE);
+            }
+        });
+        mVponInterstitialAd = new VpadnInterstitialAd(this, "8a80818245da428c0145e72982a9070e",
+                "TW");
+        VpadnAdRequest interstitialAdRequest = new VpadnAdRequest();
+        mVponInterstitialAd.setAdListener(new VpadnAdListener() {
+
+            @Override
+            public void onVpadnDismissScreen(VpadnAd arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onVpadnFailedToReceiveAd(VpadnAd arg0, VpadnErrorCode arg1) {
+                mCanShowVponInterstitialAd = false;
+            }
+
+            @Override
+            public void onVpadnLeaveApplication(VpadnAd arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onVpadnPresentScreen(VpadnAd arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onVpadnReceiveAd(VpadnAd arg0) {
+                mCanShowVponInterstitialAd = true;
+            }
+        });
+        mVponInterstitialAd.loadAd(interstitialAdRequest);
     }
 
     private Runnable mShowAdViewRunnable = new Runnable() {
@@ -656,6 +724,45 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
         mHandler.removeCallbacks(mShowAdViewRunnable);
         mHandler.post(mShowAdViewRunnable);
+        countInterstitial();
+    }
+
+    public void countInterstitial() {
+        ++PlayMusicApplication.sAdCount;
+        if (PlayMusicApplication.sAdCount % PlayMusicApplication.AD_TIME == 0) {
+            displayInterstitial();
+            PlayMusicApplication.sAdCount = 1;
+        } else if (PlayMusicApplication.sAdCount % PlayMusicApplication.AD_TIME == 3) {
+            if (mCanLoadNextAd) {
+                AdRequest adRequest = new AdRequest.Builder().build();
+                mInterstitial.loadAd(adRequest);
+                mCanLoadNextAd = false;
+            }
+        }
+    }
+
+    public void displayInterstitial() {
+        if (mInterstitial.isLoaded()) {
+            mInterstitial.show();
+            mCanLoadNextAd = true;
+        } else {
+            mInterstitial.setAdListener(new AdListener() {
+                public void onAdLoaded() {
+                    mInterstitial.show();
+                }
+
+                public void onAdFailedToLoad(int errorCode) {
+                    mCanLoadNextAd = true;
+                }
+
+                public void onAdLeftApplication() {
+                }
+
+                public void onAdClosed() {
+                    mCanLoadNextAd = true;
+                }
+            });
+        }
     }
 
     public void onPause() {
@@ -665,6 +772,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public void onDestroy() {
         mAdView.destroy();
+        mVponBanner.destroy();
+        mVponInterstitialAd.destroy();
         super.onDestroy();
         unbindService(mMusicPlayServiceConnection);
         unbindService(mSpiderServiceConnection);
@@ -874,7 +983,17 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 break;
             default:
                 sCurrentFragment = -1;
+                showVponAdIfNeeded();
                 super.onBackPressed();
+        }
+    }
+
+    private void showVponAdIfNeeded() {
+        if (mCanShowVponInterstitialAd) {
+            ++PlayMusicApplication.sAdCount;
+            if (PlayMusicApplication.sAdCount % PlayMusicApplication.AD_TIME == 0) {
+                mVponInterstitialAd.show();
+            }
         }
     }
 
