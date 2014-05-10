@@ -64,7 +64,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         super.onCreate(savedInstanceState);
     }
 
-    private void reloadDisplayList() {
+    public void reloadDisplayList() {
         if (mActivity == null)
             return;
         final String albumName = mActivity.getDisplayingAlbumName();
@@ -120,19 +120,27 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                     PlayListInfo info = mDisplayList.get(position);
                     if (info != null) {
                         if (info.mIsFavorite) {
-                            Toast.makeText(mActivity,
-                                    info.mMusicTitle + " has been removed from favorite list",
+                            Toast.makeText(
+                                    mActivity,
+                                    info.mMusicTitle
+                                            + mActivity
+                                                    .getString(R.string.toast_remove_from_favorite),
                                     Toast.LENGTH_SHORT).show();
                             info.mIsFavorite = !info.mIsFavorite;
                             PlayMusicApplication.getDataBaseHelper().removeFromFavorite(info);
                         } else {
-                            Toast.makeText(mActivity,
-                                    info.mMusicTitle + " has been added into favorite list",
+                            Toast.makeText(
+                                    mActivity,
+                                    info.mMusicTitle
+                                            + mActivity.getString(R.string.toast_add_into_favorite),
                                     Toast.LENGTH_SHORT).show();
                             info.mIsFavorite = !info.mIsFavorite;
                             PlayMusicApplication.getDataBaseHelper().addIntoFavorite(info);
                         }
-
+                        if (mPlayListAdapter != null) {
+                            mPlayListAdapter.notifyDataSetChanged();
+                        }
+                        mActivity.notifyFavoriteChanged();
                     }
                     return true;
                 }
@@ -292,7 +300,9 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             holder.mMusic.setText(mDisplayList.get(position).mMusicTitle);
             holder.mMusic.setTextColor(mTextColor);
             if (mDisplayList.get(position).mIsFavorite) {
-                Log.e("QQQQ", mDisplayList.get(position).mMusicTitle + " is favorite");
+                holder.mThumbnail.setImageResource(R.drawable.widget_favorite_true);
+            } else {
+                holder.mThumbnail.setImageResource(R.drawable.widget_favorite);
             }
             initTheme(contentView, position);
             return contentView;

@@ -231,15 +231,20 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         U2bDatabaseHelper db = PlayMusicApplication.getDataBaseHelper();
         if (db == null)
             return false;
-        Cursor c = db.query(TABLE_FAVORITE, null, U2bDatabaseHelper.COLUMN_VIDEO_ID + "='"
-                + videoId + "'", null, null, null, null);
-        boolean rtn = false;
-        if (c != null) {
-            if (c.getCount() > 0)
-                rtn = true;
-            c.close();
+        try {
+            Cursor c = db.query(TABLE_FAVORITE, null, U2bDatabaseHelper.COLUMN_VIDEO_ID + "='"
+                    + videoId.replaceAll("'", "''") + "'", null, null, null, null);
+            boolean rtn = false;
+            if (c != null) {
+                if (c.getCount() > 0)
+                    rtn = true;
+                c.close();
+                return rtn;
+            }
+        } catch (Exception e) {
+            return false;
         }
-        return rtn;
+        return false;
     }
 
     public void addIntoFavorite(PlayListInfo info) {

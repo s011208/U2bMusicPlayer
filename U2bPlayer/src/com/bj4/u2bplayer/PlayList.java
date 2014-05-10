@@ -31,6 +31,8 @@ public class PlayList {
 
     private int mPlayingAlbumId;
 
+    private String mPlayingAlbumName;
+
     private static final String SHARE_PREF_KEY = "play_list_config";
 
     private static final String SHARE_PREF_KEY_LAST_TIME_INDEX = "last_time_index";
@@ -38,7 +40,6 @@ public class PlayList {
     private PlayList(Context context) {
         mContext = context.getApplicationContext();
         mPref = mContext.getSharedPreferences(SHARE_PREF_KEY, Context.MODE_PRIVATE);
-        retrieveAllPlayList();
     }
 
     public int getPointer() {
@@ -86,26 +87,21 @@ public class PlayList {
         public void loadDone();
     }
 
-    public void retrieveLocalPlayList() {
-        resetPlayingList();
-        Cursor data = mDatabaseHelper.queryDataFromLocalData();
-        U2bDatabaseHelper.convertFromLocalMusicDataCursorToPlayList(data, mPlayingList);
-    }
-
-    public void retrieveAllPlayList() {
-        resetPlayingList();
-        Cursor data = mDatabaseHelper.query(null, U2bDatabaseHelper.COLUMN_RTSP_H + "!=''");
-        U2bDatabaseHelper.convertFromCursorToPlayList(data, mPlayingList);
-    }
-
     public void resetPlayingList() {
         mPlayingList.clear();
     }
 
+    public void reloadCurrentPlayingList() {
+        setAlbumPlayingList(mPlayingAlbumName);
+    }
+
     public void setAlbumPlayingList(String album) {
+        if (album == null)
+            return;
         resetPlayingList();
         mPlayingList.addAll(mDatabaseHelper.getPlayList(album, true));
         mPlayingAlbumId = mDatabaseHelper.getAlbumId(album);
+        mPlayingAlbumName = album;
     }
 
     public long getPlayingListAlbumId() {

@@ -6,4 +6,5 @@ void notifyPlayStateChanged(boolean isPlaying);
 void notifyPlayInfoChanged(out PlayListInfo info);
 void updateBufferingPercentage(out PlayListInfo info, int percentage);
 void updatePlayingTime(int time);
+void askToReloadDisplayList();
 }

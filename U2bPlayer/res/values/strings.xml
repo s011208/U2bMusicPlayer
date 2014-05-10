@@ -37,5 +37,7 @@
     <string name="share_string_rear">". Join me now and let us have fun together!\n"</string>
     <string name="dialog_alarm_3g_update">"Using 3g to update data?"</string>
     <string name="simple_play_widget_none_playinfo">"Let's rock now!"</string>
+    <string name="toast_add_into_favorite"> has been added into favorite list</string>
+    <string name="toast_remove_from_favorite"> has been removed from favorite list</string>
 
 </resources>

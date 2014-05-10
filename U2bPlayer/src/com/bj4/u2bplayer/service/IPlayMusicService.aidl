@@ -16,4 +16,5 @@ interface IPlayMusicService {
 	int getCurrentPosition();
 	long getDuration();
 	long getPlayingAlbumId();
+	void notifyFavoriteChanged();
 }

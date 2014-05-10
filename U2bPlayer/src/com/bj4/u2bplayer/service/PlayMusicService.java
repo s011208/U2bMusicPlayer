@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
+import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.utilities.NotificationBuilder;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 import com.bj4.u2bplayer.widget.SimplePlayWidget;
@@ -152,12 +153,28 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                         playMusic(index);
                     }
                 } else if (INTENT_SWITCH_FAVORITE.equals(action)) {
+                    switchFavorite();
                 } else if (INTENT_ACTION_PAUSE.equals(action)) {
                     pauseMusic();
                 }
             }
         }
         return Service.START_STICKY;
+    }
+
+    private void switchFavorite() {
+        PlayListInfo info = mPlayList.getCurrentPlayingListInfo();
+        if (info.mIsFavorite) {
+            Toast.makeText(this, info.mMusicTitle + getString(R.string.toast_remove_from_favorite),
+                    Toast.LENGTH_SHORT).show();
+            PlayMusicApplication.getDataBaseHelper().removeFromFavorite(info);
+        } else {
+            Toast.makeText(this, info.mMusicTitle + getString(R.string.toast_add_into_favorite),
+                    Toast.LENGTH_SHORT).show();
+            PlayMusicApplication.getDataBaseHelper().addIntoFavorite(info);
+        }
+        info.mIsFavorite = !info.mIsFavorite;
+        notifyFavoriteChange();
     }
 
     public void onDestroy() {
@@ -618,6 +635,11 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             return mPlayingAlbumId;
         }
 
+        @Override
+        public void notifyFavoriteChanged() throws RemoteException {
+            notifyFavoriteChange();
+        }
+
     };
 
     final RemoteCallbackList<IPlayMusicServiceCallback> mCallbacks = new RemoteCallbackList<IPlayMusicServiceCallback>();
@@ -636,6 +658,19 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             return;
         startForeground(NotificationBuilder.NOTIFICATION_ID,
                 NotificationBuilder.createSimpleNotification(getApplicationContext(), info));
+    }
+
+    private void notifyFavoriteChange() {
+        mPlayList.reloadCurrentPlayingList();
+        notifiWidgetsChanged(mPlayer.isPlaying());
+        final int N = mCallbacks.beginBroadcast();
+        for (int i = 0; i < N; i++) {
+            try {
+                mCallbacks.getBroadcastItem(i).askToReloadDisplayList();
+            } catch (RemoteException e) {
+            }
+        }
+        mCallbacks.finishBroadcast();
     }
 
     private void notifiWidgetsChanged(boolean isPlaying) {

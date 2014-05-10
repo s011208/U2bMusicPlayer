@@ -206,6 +206,11 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 }
             });
         }
+
+        @Override
+        public void askToReloadDisplayList() throws RemoteException {
+            getPlayListFragment().reloadDisplayList();
+        }
     };
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -505,25 +510,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                     }
                     checkWifiStatusAndScan();
                     break;
-                case MainActivityOptionDialog.ITEM_SWITCH_DATA_SOURCE_LOCAL:
-                    switchToLocalMusicData();
-                    break;
-                case MainActivityOptionDialog.ITEM_SWITCH_DATA_SOURCE_INTERNET:
-                    switchToInternetMusicData();
-                    break;
             }
         }
     };
-
-    private void switchToInternetMusicData() {
-        mPlayList.retrieveAllPlayList();
-        getPlayListFragment().changePlayIndex();
-    }
-
-    private void switchToLocalMusicData() {
-        mPlayList.retrieveLocalPlayList();
-        getPlayListFragment().changePlayIndex();
-    }
 
     private void checkWifiStatusAndScan() {
         ConnectivityManager connManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -820,6 +809,18 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             }
         }
         return 0;
+    }
+
+    public void notifyFavoriteChanged() {
+        if (mPlayMusicService != null) {
+            try {
+                mPlayMusicService.notifyFavoriteChanged();
+            } catch (RemoteException e) {
+                if (DEBUG) {
+                    Log.w(TAG, "failed to play", e);
+                }
+            }
+        }
     }
 
     public void onBackPressed() {
