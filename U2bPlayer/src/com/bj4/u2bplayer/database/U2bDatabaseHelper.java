@@ -43,6 +43,12 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
     public static final String COLUMN_RANK = "rank";
 
+    public static final String COLUMN_FAVORITE = "favorite";
+
+    public static final int COLUMN_IS_FAVORITE = 0;
+
+    public static final int COLUMN_NOT_FAVORITE = 1;
+
     public static final String TABLE_ALBUM_INFO = "album_info";
 
     public static final int ALBUM_NOT_EXISTED = -1;
@@ -188,7 +194,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                         + " TEXT NOT NULL," + COLUMN_ALBUM + " TEXT NOT NULL," + COLUMN_MUSIC
                         + " TEXT NOT NULL," + COLUMN_VIDEO_PATH + " TEXT," + COLUMN_RTSP_H
                         + " TEXT," + COLUMN_RTSP_L + " TEXT," + COLUMN_VIDEO_ID + " TEXT, "
-                        + COLUMN_RANK + " INTEGER,PRIMARY KEY(" + COLUMN_ARTIST + ", "
+                        + COLUMN_RANK + " INTEGER," + COLUMN_FAVORITE + " INTEGER default "
+                        + COLUMN_NOT_FAVORITE + " ,PRIMARY KEY(" + COLUMN_ARTIST + ", "
                         + COLUMN_ALBUM + ", " + COLUMN_MUSIC + "))");
         getDb().execSQL(
                 "CREATE TABLE IF NOT EXISTS " + TABLE_ALBUM_INFO
@@ -199,7 +206,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                         + " TEXT NOT NULL," + COLUMN_ALBUM + " TEXT NOT NULL," + COLUMN_MUSIC
                         + " TEXT NOT NULL," + COLUMN_VIDEO_PATH + " TEXT," + COLUMN_RTSP_H
                         + " TEXT," + COLUMN_RTSP_L + " TEXT," + COLUMN_VIDEO_ID + " TEXT, "
-                        + COLUMN_RANK + " INTEGER,PRIMARY KEY(" + COLUMN_ARTIST + ", "
+                        + COLUMN_RANK + " INTEGER," + COLUMN_FAVORITE + " INTEGER default "
+                        + COLUMN_NOT_FAVORITE + " ,PRIMARY KEY(" + COLUMN_ARTIST + ", "
                         + COLUMN_ALBUM + ", " + COLUMN_MUSIC + "))");
         if (DEBUG) {
             Log.d(TAG, "table created!");
@@ -219,6 +227,21 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         }).start();
     }
 
+    public static boolean isFavorite(String videoId) {
+        U2bDatabaseHelper db = PlayMusicApplication.getDataBaseHelper();
+        if (db == null)
+            return false;
+        Cursor c = db.query(TABLE_FAVORITE, null, U2bDatabaseHelper.COLUMN_VIDEO_ID + "='"
+                + videoId + "'", null, null, null, null);
+        boolean rtn = false;
+        if (c != null) {
+            if (c.getCount() > 0)
+                rtn = true;
+            c.close();
+        }
+        return rtn;
+    }
+
     public void addIntoFavorite(PlayListInfo info) {
         ContentValues cv = new ContentValues();
         cv.put(U2bDatabaseHelper.COLUMN_ARTIST, info.mArtist);
@@ -229,11 +252,20 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         cv.put(U2bDatabaseHelper.COLUMN_RTSP_L, info.mRtspLowQuility);
         cv.put(U2bDatabaseHelper.COLUMN_VIDEO_PATH, info.mHttpUri);
         cv.put(U2bDatabaseHelper.COLUMN_VIDEO_ID, info.mVideoId);
+        cv.put(U2bDatabaseHelper.COLUMN_FAVORITE, info.mIsFavorite ? COLUMN_IS_FAVORITE
+                : COLUMN_NOT_FAVORITE);
         getDb().insert(TABLE_FAVORITE, null, cv);
+        getDb().update(TABLE_MAIN_INFO, cv,
+                U2bDatabaseHelper.COLUMN_VIDEO_ID + "='" + info.mVideoId + "'", null);
     }
 
     public void removeFromFavorite(PlayListInfo info) {
         getDb().delete(TABLE_FAVORITE, COLUMN_VIDEO_ID + "='" + info.mVideoId + "'", null);
+        ContentValues cv = new ContentValues();
+        cv.put(U2bDatabaseHelper.COLUMN_FAVORITE, info.mIsFavorite ? COLUMN_IS_FAVORITE
+                : COLUMN_NOT_FAVORITE);
+        getDb().update(TABLE_MAIN_INFO, cv,
+                U2bDatabaseHelper.COLUMN_VIDEO_ID + "='" + info.mVideoId + "'", null);
     }
 
     public void removeAllFavorites() {
@@ -383,7 +415,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 String vp = c.getString(iVp);
                 String vi = c.getString(iVi);
                 rtn = new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank,
-                        PlayListInfo.IS_LOCAL_INFO);
+                        PlayListInfo.IS_LOCAL_INFO, isFavorite(vi));
             }
             c.close();
         }
@@ -411,7 +443,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 String vp = c.getString(iVp);
                 String vi = c.getString(iVi);
                 playList.add(new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank,
-                        PlayListInfo.IS_LOCAL_INFO));
+                        PlayListInfo.IS_LOCAL_INFO, isFavorite(vi)));
             }
             c.close();
         }
@@ -434,6 +466,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
             int iRl = c.getColumnIndex(U2bDatabaseHelper.COLUMN_RTSP_L);
             int iVp = c.getColumnIndex(U2bDatabaseHelper.COLUMN_VIDEO_PATH);
             int iVi = c.getColumnIndex(U2bDatabaseHelper.COLUMN_VIDEO_ID);
+            int iFa = c.getColumnIndex(U2bDatabaseHelper.COLUMN_FAVORITE);
             while (c.moveToNext()) {
                 String artist = c.getString(iArtist);
                 String album = c.getString(iAlbum);
@@ -443,7 +476,9 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 String rl = c.getString(iRl);
                 String vp = c.getString(iVp);
                 String vi = c.getString(iVi);
-                rtn = new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank);
+                int fa = c.getInt(iFa);
+                rtn = new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank,
+                        fa == U2bDatabaseHelper.COLUMN_IS_FAVORITE);
             }
             c.close();
         }
@@ -460,6 +495,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
             int iRl = c.getColumnIndex(U2bDatabaseHelper.COLUMN_RTSP_L);
             int iVp = c.getColumnIndex(U2bDatabaseHelper.COLUMN_VIDEO_PATH);
             int iVi = c.getColumnIndex(U2bDatabaseHelper.COLUMN_VIDEO_ID);
+            int iFa = c.getColumnIndex(U2bDatabaseHelper.COLUMN_FAVORITE);
             while (c.moveToNext()) {
                 String artist = c.getString(iArtist);
                 String album = c.getString(iAlbum);
@@ -469,7 +505,9 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 String rl = c.getString(iRl);
                 String vp = c.getString(iVp);
                 String vi = c.getString(iVi);
-                playList.add(new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank));
+                int fa = c.getInt(iFa);
+                playList.add(new PlayListInfo(artist, album, music, rh, rl, vp, vi, rank,
+                        fa == U2bDatabaseHelper.COLUMN_IS_FAVORITE));
             }
             c.close();
         }

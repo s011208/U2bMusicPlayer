@@ -33,12 +33,12 @@ public class PlayListInfo implements Parcelable {
     }
 
     public PlayListInfo(String artist, String albumTitle, String musicTitle, String rtspH,
-            String rtspL, String httpUri, String videoId, int rank) {
-        this(artist, albumTitle, musicTitle, rtspH, rtspL, httpUri, videoId, rank, NOT_LOCAL_INFO);
+            String rtspL, String httpUri, String videoId, int rank, boolean isFavorite) {
+        this(artist, albumTitle, musicTitle, rtspH, rtspL, httpUri, videoId, rank, NOT_LOCAL_INFO, isFavorite);
     }
 
     public PlayListInfo(String artist, String albumTitle, String musicTitle, String rtspH,
-            String rtspL, String httpUri, String videoId, int rank, int isLocal) {
+            String rtspL, String httpUri, String videoId, int rank, int isLocal, boolean isFavorite) {
         mArtist = artist;
         mMusicTitle = musicTitle;
         mRtspHighQuility = rtspH;
@@ -48,6 +48,7 @@ public class PlayListInfo implements Parcelable {
         mAlbumTitle = albumTitle;
         mRank = rank;
         mIsLocal = isLocal;
+        mIsFavorite = isFavorite;
     }
 
     public String toString() {

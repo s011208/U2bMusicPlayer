@@ -182,7 +182,7 @@ public class YoutubeDataParser implements U2bDatabaseHelper.DatabaseHelperCallba
                 String album = data.getString(columnAlbum);
                 String music = data.getString(columnMusic);
                 int rank = data.getInt(columnRank);
-                infoList.add(new PlayListInfo(artist, album, music, "", "", "", "", rank));
+                infoList.add(new PlayListInfo(artist, album, music, "", "", "", "", rank, false));
             }
             data.close();
             YoutubeDataParser.parseYoutubeData(infoList,

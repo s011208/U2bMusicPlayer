@@ -75,8 +75,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                     .getAlbumId(sDisplayAlbumName);
         }
         mDisplayList.clear();
-        mDisplayList
-                .addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(sDisplayAlbumName, true));
+        mDisplayList.addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(sDisplayAlbumName,
+                true));
     }
 
     private void initComponents() {
@@ -119,10 +119,20 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                         long id) {
                     PlayListInfo info = mDisplayList.get(position);
                     if (info != null) {
-                        Toast.makeText(mActivity,
-                                info.mMusicTitle + " has been added into favorite list",
-                                Toast.LENGTH_SHORT).show();
-                        PlayMusicApplication.getDataBaseHelper().addIntoFavorite(info.mVideoId);
+                        if (info.mIsFavorite) {
+                            Toast.makeText(mActivity,
+                                    info.mMusicTitle + " has been removed from favorite list",
+                                    Toast.LENGTH_SHORT).show();
+                            info.mIsFavorite = !info.mIsFavorite;
+                            PlayMusicApplication.getDataBaseHelper().removeFromFavorite(info);
+                        } else {
+                            Toast.makeText(mActivity,
+                                    info.mMusicTitle + " has been added into favorite list",
+                                    Toast.LENGTH_SHORT).show();
+                            info.mIsFavorite = !info.mIsFavorite;
+                            PlayMusicApplication.getDataBaseHelper().addIntoFavorite(info);
+                        }
+
                     }
                     return true;
                 }
@@ -281,6 +291,9 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             holder.mArtist.setTextColor(mTextColor);
             holder.mMusic.setText(mDisplayList.get(position).mMusicTitle);
             holder.mMusic.setTextColor(mTextColor);
+            if (mDisplayList.get(position).mIsFavorite) {
+                Log.e("QQQQ", mDisplayList.get(position).mMusicTitle + " is favorite");
+            }
             initTheme(contentView, position);
             return contentView;
         }
