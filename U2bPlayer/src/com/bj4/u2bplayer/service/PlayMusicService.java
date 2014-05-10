@@ -60,6 +60,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     private PlayList mPlayList;
 
+    private boolean mIsForeground = false;
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -103,8 +105,13 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                         nm.cancel(NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID);
                     } else if (!headsetConnected && intent.getIntExtra("state", 0) == 1) {
                         headsetConnected = true;
-                        nm.notify(null, NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID,
-                                NotificationBuilder.createHeadSetConnectedNotification(context));
+                        if (!mIsForeground) {
+                            nm.notify(null,
+                                    NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID,
+                                    NotificationBuilder.createHeadSetConnectedNotification(context));
+                        } else {
+                            nm.cancel(NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID);
+                        }
                     }
                 }
             }
@@ -662,6 +669,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             return;
         startForeground(NotificationBuilder.NOTIFICATION_ID,
                 NotificationBuilder.createSimpleNotification(getApplicationContext(), info));
+        mIsForeground = true;
     }
 
     private void notifyFavoriteChange() {
