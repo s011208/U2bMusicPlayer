@@ -5,7 +5,7 @@
     <dimen name="status_bar_height">@*android:dimen/status_bar_height</dimen>
     <dimen name="navigation_bar_height">@*android:dimen/navigation_bar_height</dimen>
     <dimen name="main_status_bar_height">40dp</dimen>
-    <dimen name="ad_view_clear_button">24dp</dimen>
+    <dimen name="ad_view_clear_button">20dp</dimen>
     <!-- action bar related -->
     <dimen name="action_bar_height">60dp</dimen>
     <dimen name="action_bar_item_size">48dp</dimen>
