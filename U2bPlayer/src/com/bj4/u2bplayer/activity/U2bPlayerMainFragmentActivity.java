@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
@@ -149,6 +150,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private VpadnInterstitialAd mVponInterstitialAd;
 
     private boolean mCanShowVponInterstitialAd = false;
+
+    private IInAppBillingService mInAppBillingService;
+
+    ServiceConnection mInAppBillingServiceConn = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mInAppBillingService = null;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name,
+                IBinder service) {
+            mInAppBillingService = IInAppBillingService.Stub.asInterface(service);
+        }
+    };
 
     private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
 
@@ -315,7 +331,40 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 Context.BIND_AUTO_CREATE);
         bindService(new Intent(this, SpiderService.class), mSpiderServiceConnection,
                 Context.BIND_AUTO_CREATE);
+        bindService(new
+                Intent("com.android.vending.billing.InAppBillingService.BIND"),
+                mInAppBillingServiceConn, Context.BIND_AUTO_CREATE);
         registerBroadcastReceiver();
+//        new Thread(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                // TODO Auto-generated method stub
+//                while (true) {
+//                    try {
+//                        Thread.sleep(3000);
+//                    } catch (InterruptedException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//                    if(mInAppBillingService != null){
+//                        ArrayList<String> skuList = new ArrayList<String> ();
+//                        skuList.add("non_ad_account ");
+//                        Bundle querySkus = new Bundle();
+//                        querySkus.putStringArrayList("non_ad_account", skuList);
+//                        try {
+//                            Bundle skuDetails = mInAppBillingService.getSkuDetails(3, 
+//                                    getPackageName(), "inapp", querySkus);
+//                            Log.e("QQQQ", "ok: " + skuDetails.getInt("RESPONSE_CODE"));
+//                        } catch (RemoteException e) {
+//                            // TODO Auto-generated catch block
+//                            e.printStackTrace();
+//                        }
+//                        
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     public void setApplicationTheme(int theme) {
@@ -467,8 +516,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         // main admob
         mAdViewParent = (FrameLayout) findViewById(R.id.ad_view_parent);
         mAdView = (AdView) findViewById(R.id.adView);
-
-        mAdView.loadAd(new AdRequest.Builder().build());
+        if (PlayMusicApplication.sAdAvailable) {
+            mAdView.loadAd(new AdRequest.Builder().build());
+        }
         mCloseAdViewBtn = (Button) findViewById(R.id.close_adview_btn);
         mCloseAdViewBtn.setOnClickListener(new OnClickListener() {
 
@@ -486,6 +536,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         mInterstitial.setAdUnitId("ca-app-pub-6081210604737939/5840186808");
         AdRequest adRequest = new AdRequest.Builder().build();
         mInterstitial.loadAd(adRequest);
+        if (PlayMusicApplication.sAdAvailable == false) {
+            mAdViewParent.setVisibility(View.GONE);
+        }
 
         // vpon
         mVponBanner = (VpadnBanner) findViewById(R.id.vpadnBannerXML);
@@ -565,6 +618,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             }
         });
         mVponInterstitialAd.loadAd(interstitialAdRequest);
+        if (PlayMusicApplication.sAdAvailable == false) {
+            mVponAdViewParent.setVisibility(View.GONE);
+        }
     }
 
     private Runnable mShowAdViewRunnable = new Runnable() {
@@ -770,6 +826,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void countInterstitial() {
+        if (PlayMusicApplication.sAdAvailable == false) {
+            return;
+        }
         ++PlayMusicApplication.sAdCount;
         if (PlayMusicApplication.sAdCount % PlayMusicApplication.AD_TIME == 0) {
             displayInterstitial();
@@ -819,6 +878,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         super.onDestroy();
         unbindService(mMusicPlayServiceConnection);
         unbindService(mSpiderServiceConnection);
+        unbindService(mInAppBillingServiceConn);
         mPlayList.removeCallback(mPlayListCallback);
         unRegisterBroadcastReceiver();
     }
@@ -1031,6 +1091,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     private void showVponAdIfNeeded() {
+        if (PlayMusicApplication.sAdAvailable == false) {
+            return;
+        }
         if (mCanShowVponInterstitialAd) {
             ++PlayMusicApplication.sAdCount;
             if (PlayMusicApplication.sAdCount % PlayMusicApplication.AD_TIME == 0) {

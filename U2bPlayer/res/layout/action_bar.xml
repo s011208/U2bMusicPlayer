@@ -56,8 +56,8 @@
             android:layout_width="@dimen/ad_view_clear_button"
             android:layout_height="@dimen/ad_view_clear_button"
             android:layout_gravity="center_vertical|right"
-            android:visibility="gone"
-            android:background="@drawable/close_ad_view_bg" />
+            android:background="@drawable/close_ad_view_bg"
+            android:visibility="gone" />
     </FrameLayout>
 
 </RelativeLayout>

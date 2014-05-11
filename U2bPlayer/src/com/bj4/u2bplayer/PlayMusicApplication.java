@@ -61,6 +61,8 @@ public class PlayMusicApplication extends Application {
 
     public static final int AD_TIME = 20;
 
+    public static boolean sAdAvailable = true;
+
     @Override
     public void onCreate() {
         super.onCreate();
