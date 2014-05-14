@@ -155,13 +155,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private boolean mCanShowVponInterstitialAd = false;
 
-    private IInAppBillingService mInAppBillingService;
-
     private IabHelper mIaHelper;
 
     private boolean mHasIaHelperSetUp = false;
-
-    private static final String BASE64_ENCODE_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnAtoFuxuls3j3X7K4yhx024IpmOS2+UEFOllZ3sIo0QdmU2SDQUpteLdi6yR+XNyZtlmwLBRzsSZia0YmNM8P1VYst8n9IBZNSxwqkoFti9VZrT5Egs9YSw0C2yazwu/jokY2qCP7k15tOdIz7rVywIzkMu0j9tx1K1h15QaxSkWQtdRNsbKe2N/Goyyk8icR9/OLIU7d0q4cEYpvHb+qpbkAweFsg5Yf0FMnskYVNS3aY0H3Wv9+hlRCTkOpSuUjDO3srwaTK8bUxRtTboeWmi170Z4slDhXD4wSNTpk7gTqj46HgKdfK/mUxldG82zSf6CMSfHvetdy3XEcqGcywIDAQAB";
 
     private static final String SKU_NO_ADS = "non_ad_account";
 
@@ -170,18 +166,6 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private static final boolean DEBUG_BILL = true && PlayMusicApplication.OVERALL_DEBUG;
 
     private static final String TAG_BILL = "DEBUG_BILL";
-
-    private ServiceConnection mInAppBillingServiceConn = new ServiceConnection() {
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mInAppBillingService = null;
-        }
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mInAppBillingService = IInAppBillingService.Stub.asInterface(service);
-        }
-    };
 
     private PlayList.PlayListLoaderCallback mPlayListCallback = new PlayList.PlayListLoaderCallback() {
 
@@ -337,23 +321,31 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     private void createBillingComponents() {
-        mIaHelper = new IabHelper(this, BASE64_ENCODE_PUBLIC_KEY);
-        mIaHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            public void onIabSetupFinished(IabResult result) {
-                if (!result.isSuccess()) {
-                    // Oh noes, there was a problem.
-                    if (DEBUG_BILL)
-                        Log.e(TAG_BILL, "Problem setting up In-app Billing: " + result);
-                } else {
-                    if (DEBUG_BILL)
-                        Log.e(TAG_BILL, "fully set up");
-                    mHasIaHelperSetUp = true;
+        mIaHelper = PlayMusicApplication.getIaHelper(this);
+        if (PlayMusicApplication.sHasIabSetUp == false) {
+            PlayMusicApplication.sHasIabSetUp = true;
+            mIaHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+                public void onIabSetupFinished(IabResult result) {
+                    try {
+                        if (!result.isSuccess()) {
+                            // Oh noes, there was a problem.
+                            if (DEBUG_BILL)
+                                Log.e(TAG_BILL, "Problem setting up In-app Billing: " + result);
+                        } else {
+                            if (DEBUG_BILL)
+                                Log.e(TAG_BILL, "fully set up");
+                            mHasIaHelperSetUp = true;
+                        }
+                        if (mIaHelper != null) {
+                            mIaHelper.flagEndAsync();
+                            mIaHelper.queryInventoryAsync(mGotInventoryListener);
+                        }
+                    } catch (Exception e) {
+                        Log.w(TAG_BILL, "onIabSetupFinished", e);
+                    }
                 }
-                // Hooray, IAB is fully set up!
-                mIaHelper.flagEndAsync();
-                mIaHelper.queryInventoryAsync(mGotInventoryListener);
-            }
-        });
+            });
+        }
     }
 
     public void purchaseNoAds() {
@@ -375,40 +367,55 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
-            if (result.isFailure()) {
-                if (DEBUG_BILL)
-                    Log.e(TAG_BILL,
-                            "Problem mGotInventoryListener In-app Billing: " + result.isFailure());
-            } else {
-                PlayMusicApplication.sAdAvailable = !inventory.hasPurchase(SKU_NO_ADS);
-                PlayMusicApplication.setAds(getApplicationContext(),
-                        PlayMusicApplication.sAdAvailable);
-                if (PlayMusicApplication.sAdAvailable) {
-                    closeAllAds();
+            try {
+                if (result.isFailure()) {
+                    if (DEBUG_BILL)
+                        Log.e(TAG_BILL,
+                                "Problem mGotInventoryListener In-app Billing: "
+                                        + result.isFailure());
+                } else {
+                    PlayMusicApplication.sAdAvailable = !inventory.hasPurchase(SKU_NO_ADS);
+                    PlayMusicApplication.setAds(getApplicationContext(),
+                            PlayMusicApplication.sAdAvailable);
+                    if (PlayMusicApplication.sAdAvailable) {
+                        closeAllAds();
+                    }
+                    if (DEBUG_BILL)
+                        Log.e(TAG_BILL, "sAdAvailable: " + PlayMusicApplication.sAdAvailable);
                 }
-                if (DEBUG_BILL)
-                    Log.e(TAG_BILL, "sAdAvailable: " + PlayMusicApplication.sAdAvailable);
+                if (mIaHelper != null) {
+                    mIaHelper.flagEndAsync();
+                }
+            } catch (Exception e) {
+                Log.w(TAG_BILL, "query failed", e);
             }
-            mIaHelper.flagEndAsync();
         }
     };
 
     private IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
-            if (result.isFailure()) {
-                if (DEBUG_BILL)
-                    Log.e(TAG_BILL, "Error purchasing: " + result);
-                if (result.getResponse() == 7) {
-                    mIaHelper.flagEndAsync();
-                    mIaHelper.queryInventoryAsync(mGotInventoryListener);
-                    return;
+            try {
+                if (result.isFailure()) {
+                    if (DEBUG_BILL)
+                        Log.e(TAG_BILL, "Error purchasing: " + result);
+                    if (result.getResponse() == 7) {
+                        if (mIaHelper != null) {
+                            mIaHelper.flagEndAsync();
+                            mIaHelper.queryInventoryAsync(mGotInventoryListener);
+                        }
+                        return;
+                    }
+                } else if (purchase.getSku().equals(SKU_NO_ADS)) {
+                    // give user access to premium content and update the UI
                 }
-            } else if (purchase.getSku().equals(SKU_NO_ADS)) {
-                // give user access to premium content and update the UI
+                if (DEBUG_BILL)
+                    Log.e(TAG_BILL, "purchase.getSku(): " + purchase.getSku());
+                if (mIaHelper != null) {
+                    mIaHelper.flagEndAsync();
+                }
+            } catch (Exception e) {
+                Log.w(TAG_BILL, "mPurchaseFinishedListener failed", e);
             }
-            if (DEBUG_BILL)
-                Log.e(TAG_BILL, "purchase.getSku(): " + purchase.getSku());
-            mIaHelper.flagEndAsync();
         }
     };
 
@@ -425,8 +432,6 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 Context.BIND_AUTO_CREATE);
         bindService(new Intent(this, SpiderService.class), mSpiderServiceConnection,
                 Context.BIND_AUTO_CREATE);
-        bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"),
-                mInAppBillingServiceConn, Context.BIND_AUTO_CREATE);
         registerBroadcastReceiver();
     }
 
@@ -978,12 +983,10 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             mVponInterstitialAd.destroy();
         super.onDestroy();
         if (mIaHelper != null) {
-            mIaHelper.dispose();
             mIaHelper = null;
         }
         unbindService(mMusicPlayServiceConnection);
         unbindService(mSpiderServiceConnection);
-        unbindService(mInAppBillingServiceConn);
         mPlayList.removeCallback(mPlayListCallback);
         unRegisterBroadcastReceiver();
     }

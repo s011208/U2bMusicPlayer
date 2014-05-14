@@ -3,6 +3,7 @@ package com.bj4.u2bplayer;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import com.android.vending.billing.util.IabHelper;
 import com.bj4.u2bplayer.activity.UnCaughtExceptionHandlerActivity;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
 import com.bj4.u2bplayer.scanner.PlayScanner;
@@ -66,6 +67,20 @@ public class PlayMusicApplication extends Application {
     public static final int AD_TIME = 20;
 
     public static boolean sAdAvailable = true;
+
+    private static final String BASE64_ENCODE_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnAtoFuxuls3j3X7K4yhx024IpmOS2+UEFOllZ3sIo0QdmU2SDQUpteLdi6yR+XNyZtlmwLBRzsSZia0YmNM8P1VYst8n9IBZNSxwqkoFti9VZrT5Egs9YSw0C2yazwu/jokY2qCP7k15tOdIz7rVywIzkMu0j9tx1K1h15QaxSkWQtdRNsbKe2N/Goyyk8icR9/OLIU7d0q4cEYpvHb+qpbkAweFsg5Yf0FMnskYVNS3aY0H3Wv9+hlRCTkOpSuUjDO3srwaTK8bUxRtTboeWmi170Z4slDhXD4wSNTpk7gTqj46HgKdfK/mUxldG82zSf6CMSfHvetdy3XEcqGcywIDAQAB";
+
+    private static IabHelper sIaHelper;
+
+    public static boolean sHasIabSetUp = false;
+
+    public static synchronized IabHelper getIaHelper(Context context) {
+        if (sIaHelper == null) {
+            sIaHelper = new IabHelper(context.getApplicationContext(), BASE64_ENCODE_PUBLIC_KEY);
+            sIaHelper.enableDebugLogging(false);
+        }
+        return sIaHelper;
+    }
 
     @Override
     public void onCreate() {
@@ -142,6 +157,7 @@ public class PlayMusicApplication extends Application {
     public void onTerminate() {
         super.onTerminate();
         sDatabase.close();
+        getIaHelper(this).dispose();
     }
 
     private void setUncaughtExceptionHandlerIfAllowed() {
