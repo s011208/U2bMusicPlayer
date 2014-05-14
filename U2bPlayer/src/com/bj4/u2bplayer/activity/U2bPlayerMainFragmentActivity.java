@@ -167,9 +167,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private static final int REQUEST_PURCHASE = 10001;
 
-    private static final boolean DEBUG_BILL = true;
+    private static final boolean DEBUG_BILL = true && PlayMusicApplication.OVERALL_DEBUG;
 
-    private static final String TAG_BILL = "QQQQ";
+    private static final String TAG_BILL = "DEBUG_BILL";
 
     private ServiceConnection mInAppBillingServiceConn = new ServiceConnection() {
         @Override

@@ -251,6 +251,8 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            if (c != null)
+                c.close();
         }
     }
 

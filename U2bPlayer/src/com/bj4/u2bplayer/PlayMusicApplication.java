@@ -15,7 +15,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 public class PlayMusicApplication extends Application {
-    public static final boolean ENABLE_UNCAUGHT_EXCEPTION = true;
+    public static final boolean ENABLE_UNCAUGHT_EXCEPTION = false;
 
     private static final String TAG = "PlayMusicApplication";
 
