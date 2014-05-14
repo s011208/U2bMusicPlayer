@@ -38,7 +38,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
 
     private Fragment mU2bPlayListFragment = new U2bPlayListFragment();
 
-    private PlayList mPlayList = PlayList.getInstance(mActivity);
+    private PlayList mPlayList;
 
     private final ArrayList<PlayListInfo> mPlayingList = new ArrayList<PlayListInfo>();
 
@@ -59,6 +59,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPlayList = PlayList.getInstance(getActivity());
     }
 
     @Override
