@@ -4,6 +4,7 @@ package com.bj4.u2bplayer.dialogs;
 import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayList;
+import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
@@ -31,13 +32,9 @@ public class MainActivityOptionDialog extends DialogFragment {
 
     private static final boolean DEBUG = false;
 
-    private static final boolean DEBUG_SWITHER = false;
-
     public static final int ITEM_DOWNLOAD_DATA = 0;
 
-    public static final int ITEM_SWITCH_DATA_SOURCE_LOCAL = 1;
-
-    public static final int ITEM_SWITCH_DATA_SOURCE_INTERNET = 2;
+    public static final int ITEM_NON_ADS = 1;
 
     public interface MainActivityOptionDialogCallback {
         public void onSelected(int option);
@@ -71,13 +68,10 @@ public class MainActivityOptionDialog extends DialogFragment {
         options.add(settings);
         final String share = mContext.getString(R.string.option_share);
         options.add(share);
-        final String switchDataLocal = mContext.getString(R.string.option_switch_data_source_local);
-        final String switchDataInternet = mContext
-                .getString(R.string.option_switch_data_source_internet);
-        if (DEBUG_SWITHER) {
-            options.add(switchDataLocal);
-            options.add(switchDataInternet);
-        }
+        final String noAds = mContext.getString(R.string.option_no_ads);
+        if (PlayMusicApplication.sAdAvailable == true)
+            options.add(noAds);
+
         CharSequence[] optionsContent = new CharSequence[options.size()];
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setItems(options.toArray(optionsContent), new DialogInterface.OnClickListener() {
@@ -87,14 +81,6 @@ public class MainActivityOptionDialog extends DialogFragment {
                 if (selectedItem.equals(sync)) {
                     if (mCallback != null) {
                         mCallback.onSelected(ITEM_DOWNLOAD_DATA);
-                    }
-                } else if (selectedItem.equals(switchDataLocal)) {
-                    if (mCallback != null) {
-                        mCallback.onSelected(ITEM_SWITCH_DATA_SOURCE_LOCAL);
-                    }
-                } else if (selectedItem.equals(switchDataInternet)) {
-                    if (mCallback != null) {
-                        mCallback.onSelected(ITEM_SWITCH_DATA_SOURCE_INTERNET);
                     }
                 } else if (selectedItem.equals(theme)) {
                     ThemeSelectDialog ts = new ThemeSelectDialog();
@@ -117,6 +103,10 @@ public class MainActivityOptionDialog extends DialogFragment {
                         sendIntent.setType("text/plain");
                         startActivity(Intent.createChooser(sendIntent,
                                 getResources().getText(R.string.share_chooser_title)));
+                    }
+                } else if (selectedItem.equals(noAds)) {
+                    if (mCallback != null) {
+                        mCallback.onSelected(ITEM_NON_ADS);
                     }
                 }
             }

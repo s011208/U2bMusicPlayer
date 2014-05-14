@@ -39,6 +39,8 @@ public class PlayMusicApplication extends Application {
 
     private static final String PREF_SHOW_NOTIFICATION_WHEN_HEADSET_ON = "pref_show_notification_when_headset_on";
 
+    private static final String PREF_HAS_ADS = "pref_has_ads";
+
     private static U2bDatabaseHelper sDatabase;
 
     private static YoutubeDataParser sU2bParser;
@@ -54,6 +56,8 @@ public class PlayMusicApplication extends Application {
     public static boolean sAllow3GUpdate = true;
 
     public static boolean sShowNotificationWhenHeadsetOn = true;
+
+    public static boolean sHasAds = true;
 
     private static SharedPreferences sPref;
 
@@ -77,6 +81,7 @@ public class PlayMusicApplication extends Application {
         sShowNotificationWhenHeadsetOn = getPref(this).getBoolean(
                 PREF_SHOW_NOTIFICATION_WHEN_HEADSET_ON, true);
         // this.getSharedPreferences(name, mode)
+        sHasAds = getPref(this).getBoolean(PREF_HAS_ADS, true);
     }
 
     public static SharedPreferences getPref(Context context) {
@@ -90,6 +95,11 @@ public class PlayMusicApplication extends Application {
     public static void setShowNotificationWhenHeadsetOn(Context context, boolean show) {
         sShowNotificationWhenHeadsetOn = show;
         getPref(context).edit().putBoolean(PREF_SHOW_NOTIFICATION_WHEN_HEADSET_ON, show).commit();
+    }
+
+    public static void setAds(Context context, boolean hasAds) {
+        sHasAds = hasAds;
+        getPref(context).edit().putBoolean(PREF_HAS_ADS, hasAds).commit();
     }
 
     public static void setAllow3gUpdate(Context context, boolean allow) {

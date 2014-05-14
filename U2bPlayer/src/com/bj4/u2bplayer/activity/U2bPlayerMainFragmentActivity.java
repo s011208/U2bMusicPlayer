@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.android.vending.billing.util.IabHelper;
+import com.android.vending.billing.util.IabResult;
+import com.android.vending.billing.util.Inventory;
+import com.android.vending.billing.util.Purchase;
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
@@ -153,15 +157,28 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     private IInAppBillingService mInAppBillingService;
 
-    ServiceConnection mInAppBillingServiceConn = new ServiceConnection() {
+    private IabHelper mIaHelper;
+
+    private boolean mHasIaHelperSetUp = false;
+
+    private static final String BASE64_ENCODE_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnAtoFuxuls3j3X7K4yhx024IpmOS2+UEFOllZ3sIo0QdmU2SDQUpteLdi6yR+XNyZtlmwLBRzsSZia0YmNM8P1VYst8n9IBZNSxwqkoFti9VZrT5Egs9YSw0C2yazwu/jokY2qCP7k15tOdIz7rVywIzkMu0j9tx1K1h15QaxSkWQtdRNsbKe2N/Goyyk8icR9/OLIU7d0q4cEYpvHb+qpbkAweFsg5Yf0FMnskYVNS3aY0H3Wv9+hlRCTkOpSuUjDO3srwaTK8bUxRtTboeWmi170Z4slDhXD4wSNTpk7gTqj46HgKdfK/mUxldG82zSf6CMSfHvetdy3XEcqGcywIDAQAB";
+
+    private static final String SKU_NO_ADS = "non_ad_account";
+
+    private static final int REQUEST_PURCHASE = 10001;
+
+    private static final boolean DEBUG_BILL = true;
+
+    private static final String TAG_BILL = "QQQQ";
+
+    private ServiceConnection mInAppBillingServiceConn = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mInAppBillingService = null;
         }
 
         @Override
-        public void onServiceConnected(ComponentName name,
-                IBinder service) {
+        public void onServiceConnected(ComponentName name, IBinder service) {
             mInAppBillingService = IInAppBillingService.Stub.asInterface(service);
         }
     };
@@ -319,10 +336,87 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     }
 
+    private void createBillingComponents() {
+        mIaHelper = new IabHelper(this, BASE64_ENCODE_PUBLIC_KEY);
+        mIaHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    // Oh noes, there was a problem.
+                    if (DEBUG_BILL)
+                        Log.e(TAG_BILL, "Problem setting up In-app Billing: " + result);
+                } else {
+                    if (DEBUG_BILL)
+                        Log.e(TAG_BILL, "fully set up");
+                    mHasIaHelperSetUp = true;
+                }
+                // Hooray, IAB is fully set up!
+                mIaHelper.flagEndAsync();
+                mIaHelper.queryInventoryAsync(mGotInventoryListener);
+            }
+        });
+    }
+
+    public void purchaseNoAds() {
+        if (mIaHelper != null) {
+            mIaHelper.flagEndAsync();
+            mIaHelper.launchPurchaseFlow(this, SKU_NO_ADS, REQUEST_PURCHASE,
+                    mPurchaseFinishedListener);
+        }
+    }
+
+    private void closeAllAds() {
+        if (mAdViewParent != null) {
+            mAdViewParent.setVisibility(View.GONE);
+        }
+        if (mVponAdViewParent != null) {
+            mVponAdViewParent.setVisibility(View.GONE);
+        }
+    }
+
+    private IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+        public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
+            if (result.isFailure()) {
+                if (DEBUG_BILL)
+                    Log.e(TAG_BILL,
+                            "Problem mGotInventoryListener In-app Billing: " + result.isFailure());
+            } else {
+                PlayMusicApplication.sAdAvailable = !inventory.hasPurchase(SKU_NO_ADS);
+                PlayMusicApplication.setAds(getApplicationContext(),
+                        PlayMusicApplication.sAdAvailable);
+                if (PlayMusicApplication.sAdAvailable) {
+                    closeAllAds();
+                }
+                if (DEBUG_BILL)
+                    Log.e(TAG_BILL, "sAdAvailable: " + PlayMusicApplication.sAdAvailable);
+            }
+            mIaHelper.flagEndAsync();
+        }
+    };
+
+    private IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+            if (result.isFailure()) {
+                if (DEBUG_BILL)
+                    Log.e(TAG_BILL, "Error purchasing: " + result);
+                if (result.getResponse() == 7) {
+                    mIaHelper.flagEndAsync();
+                    mIaHelper.queryInventoryAsync(mGotInventoryListener);
+                    return;
+                }
+            } else if (purchase.getSku().equals(SKU_NO_ADS)) {
+                // give user access to premium content and update the UI
+            }
+            if (DEBUG_BILL)
+                Log.e(TAG_BILL, "purchase.getSku(): " + purchase.getSku());
+            mIaHelper.flagEndAsync();
+        }
+    };
+
     protected void onCreate(Bundle savedInstanceState) {
         runStrictModeIfNeeded();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.u2b_main_activity);
+        createBillingComponents();
         initComponents();
         themeSwitcher();
         switchFragment(sCurrentFragment);
@@ -331,40 +425,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                 Context.BIND_AUTO_CREATE);
         bindService(new Intent(this, SpiderService.class), mSpiderServiceConnection,
                 Context.BIND_AUTO_CREATE);
-        bindService(new
-                Intent("com.android.vending.billing.InAppBillingService.BIND"),
+        bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"),
                 mInAppBillingServiceConn, Context.BIND_AUTO_CREATE);
         registerBroadcastReceiver();
-//        new Thread(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                // TODO Auto-generated method stub
-//                while (true) {
-//                    try {
-//                        Thread.sleep(3000);
-//                    } catch (InterruptedException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    }
-//                    if(mInAppBillingService != null){
-//                        ArrayList<String> skuList = new ArrayList<String> ();
-//                        skuList.add("non_ad_account ");
-//                        Bundle querySkus = new Bundle();
-//                        querySkus.putStringArrayList("non_ad_account", skuList);
-//                        try {
-//                            Bundle skuDetails = mInAppBillingService.getSkuDetails(3, 
-//                                    getPackageName(), "inapp", querySkus);
-//                            Log.e("QQQQ", "ok: " + skuDetails.getInt("RESPONSE_CODE"));
-//                        } catch (RemoteException e) {
-//                            // TODO Auto-generated catch block
-//                            e.printStackTrace();
-//                        }
-//                        
-//                    }
-//                }
-//            }
-//        }).start();
     }
 
     public void setApplicationTheme(int theme) {
@@ -456,7 +519,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             Object windowManagerService = m.invoke(null, new Object[] {});
             c = windowManagerService.getClass();
             m = c.getDeclaredMethod("hasNavigationBar", new Class<?>[] {});
-            hasNavigationBar = (Boolean) m.invoke(windowManagerService, new Object[] {});
+            hasNavigationBar = (Boolean)m.invoke(windowManagerService, new Object[] {});
             if (DEBUG)
                 Log.d(TAG, "hasNavigationBar: " + hasNavigationBar);
         } catch (Exception e) {
@@ -466,8 +529,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // TODO do something about transparent navigation bar
-            int statusBarHeight = (int) getResources().getDimension(R.dimen.status_bar_height);
-            int navigationBarHeight = hasNavigationBar ? (int) getResources().getDimension(
+            int statusBarHeight = (int)getResources().getDimension(R.dimen.status_bar_height);
+            int navigationBarHeight = hasNavigationBar ? (int)getResources().getDimension(
                     R.dimen.navigation_bar_height) : 0;
             // mMainLayout.setPadding(mMainLayout.getPaddingLeft(),
             // statusBarHeight,
@@ -481,7 +544,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             @Override
             public void run() {
                 try {
-                    HashSet<String> set = (HashSet<String>) mPref.getStringSet(
+                    HashSet<String> set = (HashSet<String>)mPref.getStringSet(
                             SHARE_PREF_KEY_SOURCE_LIST, new HashSet<String>());
                     if (set.size() == 0) {
                         // put default
@@ -501,125 +564,137 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         checkSourceListInAdvance();
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(mPlayListCallback);
-        mMainLayout = (RelativeLayout) findViewById(R.id.u2b_main_activity_main_layout);
-        mActionBar = (RelativeLayout) findViewById(R.id.action_bar_parent);
-        mOptionBtn = (ImageButton) findViewById(R.id.menu);
-        mActionBarTitle = (TextView) findViewById(R.id.action_bar_music_info);
-        mMainContentFragment = (LinearLayout) findViewById(R.id.main_fragment_container);
-        mStatusBar = (RelativeLayout) findViewById(R.id.main_status_bar);
-        mStatusBarInfo = (TextView) findViewById(R.id.main_status_bar_info);
+        mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
+        mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
+        mOptionBtn = (ImageButton)findViewById(R.id.menu);
+        mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
+        mMainContentFragment = (LinearLayout)findViewById(R.id.main_fragment_container);
+        mStatusBar = (RelativeLayout)findViewById(R.id.main_status_bar);
+        mStatusBarInfo = (TextView)findViewById(R.id.main_status_bar_info);
 
         notifyStatusBarVisibilityChanged();
         initMainLayout();
         initActionBarComponents();
 
         // main admob
-        mAdViewParent = (FrameLayout) findViewById(R.id.ad_view_parent);
-        mAdView = (AdView) findViewById(R.id.adView);
+        mAdViewParent = (FrameLayout)findViewById(R.id.ad_view_parent);
+        mAdView = (AdView)findViewById(R.id.adView);
         if (PlayMusicApplication.sAdAvailable) {
             mAdView.loadAd(new AdRequest.Builder().build());
         }
-        mCloseAdViewBtn = (Button) findViewById(R.id.close_adview_btn);
-        mCloseAdViewBtn.setOnClickListener(new OnClickListener() {
+        if (PlayMusicApplication.sAdAvailable == true) {
+            mCloseAdViewBtn = (Button)findViewById(R.id.close_adview_btn);
+            mCloseAdViewBtn.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
+                    mAdViewParent.setVisibility(View.GONE);
+                }
+            });
+            mAdView.setAdListener(new AdListener() {
+                public void onAdLoaded() {
+                    if (PlayMusicApplication.sAdAvailable == false) {
+                        mAdViewParent.setVisibility(View.GONE);
+                    } else {
+                        mCloseAdViewBtn.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+            mInterstitial = new InterstitialAd(this);
+            mInterstitial.setAdUnitId("ca-app-pub-6081210604737939/5840186808");
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mInterstitial.loadAd(adRequest);
+            if (PlayMusicApplication.sAdAvailable == false) {
                 mAdViewParent.setVisibility(View.GONE);
             }
-        });
-        mAdView.setAdListener(new AdListener() {
-            public void onAdLoaded() {
-                mCloseAdViewBtn.setVisibility(View.VISIBLE);
-            }
-        });
-        mInterstitial = new InterstitialAd(this);
-        mInterstitial.setAdUnitId("ca-app-pub-6081210604737939/5840186808");
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mInterstitial.loadAd(adRequest);
-        if (PlayMusicApplication.sAdAvailable == false) {
-            mAdViewParent.setVisibility(View.GONE);
-        }
 
-        // vpon
-        mVponBanner = (VpadnBanner) findViewById(R.id.vpadnBannerXML);
-        mCloseVponAdViewBtn = (Button) findViewById(R.id.close_vpon_adview_btn);
-        mVponAdViewParent = (FrameLayout) findViewById(R.id.vpon_ad_view_parent);
-        mCloseVponAdViewBtn.setOnClickListener(new OnClickListener() {
+            // vpon
+            mVponBanner = (VpadnBanner)findViewById(R.id.vpadnBannerXML);
+            mCloseVponAdViewBtn = (Button)findViewById(R.id.close_vpon_adview_btn);
+            mVponAdViewParent = (FrameLayout)findViewById(R.id.vpon_ad_view_parent);
+            mCloseVponAdViewBtn.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
+                    mVponAdViewParent.setVisibility(View.GONE);
+                }
+            });
+            mVponBanner.setAdListener(new VpadnAdListener() {
+
+                @Override
+                public void onVpadnDismissScreen(VpadnAd arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onVpadnFailedToReceiveAd(VpadnAd arg0, VpadnErrorCode arg1) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onVpadnLeaveApplication(VpadnAd arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onVpadnPresentScreen(VpadnAd arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onVpadnReceiveAd(VpadnAd arg0) {
+                    // TODO Auto-generated method stub
+                    if (PlayMusicApplication.sAdAvailable == false) {
+                        mCloseVponAdViewBtn.setVisibility(View.GONE);
+                    } else {
+                        mCloseVponAdViewBtn.setVisibility(View.VISIBLE);
+                    }
+
+                }
+            });
+            mVponInterstitialAd = new VpadnInterstitialAd(this, "8a80818245da428c0145e72982a9070e",
+                    "TW");
+            VpadnAdRequest interstitialAdRequest = new VpadnAdRequest();
+            mVponInterstitialAd.setAdListener(new VpadnAdListener() {
+
+                @Override
+                public void onVpadnDismissScreen(VpadnAd arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onVpadnFailedToReceiveAd(VpadnAd arg0, VpadnErrorCode arg1) {
+                    mCanShowVponInterstitialAd = false;
+                }
+
+                @Override
+                public void onVpadnLeaveApplication(VpadnAd arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onVpadnPresentScreen(VpadnAd arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onVpadnReceiveAd(VpadnAd arg0) {
+                    if (PlayMusicApplication.sAdAvailable == true) {
+                        mCanShowVponInterstitialAd = true;
+                    }
+                }
+            });
+            mVponInterstitialAd.loadAd(interstitialAdRequest);
+            if (PlayMusicApplication.sAdAvailable == false) {
                 mVponAdViewParent.setVisibility(View.GONE);
             }
-        });
-        mVponBanner.setAdListener(new VpadnAdListener() {
-
-            @Override
-            public void onVpadnDismissScreen(VpadnAd arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onVpadnFailedToReceiveAd(VpadnAd arg0, VpadnErrorCode arg1) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onVpadnLeaveApplication(VpadnAd arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onVpadnPresentScreen(VpadnAd arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onVpadnReceiveAd(VpadnAd arg0) {
-                // TODO Auto-generated method stub
-                mCloseVponAdViewBtn.setVisibility(View.VISIBLE);
-
-            }
-        });
-        mVponInterstitialAd = new VpadnInterstitialAd(this, "8a80818245da428c0145e72982a9070e",
-                "TW");
-        VpadnAdRequest interstitialAdRequest = new VpadnAdRequest();
-        mVponInterstitialAd.setAdListener(new VpadnAdListener() {
-
-            @Override
-            public void onVpadnDismissScreen(VpadnAd arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onVpadnFailedToReceiveAd(VpadnAd arg0, VpadnErrorCode arg1) {
-                mCanShowVponInterstitialAd = false;
-            }
-
-            @Override
-            public void onVpadnLeaveApplication(VpadnAd arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onVpadnPresentScreen(VpadnAd arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onVpadnReceiveAd(VpadnAd arg0) {
-                mCanShowVponInterstitialAd = true;
-            }
-        });
-        mVponInterstitialAd.loadAd(interstitialAdRequest);
-        if (PlayMusicApplication.sAdAvailable == false) {
-            mVponAdViewParent.setVisibility(View.GONE);
         }
     }
 
@@ -627,7 +702,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
         @Override
         public void run() {
-            if (mAdViewParent != null) {
+            if (mAdViewParent != null && PlayMusicApplication.sAdAvailable) {
                 mAdViewParent.setVisibility(View.VISIBLE);
             }
         }
@@ -637,21 +712,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (mU2bMainFragment == null) {
             mU2bMainFragment = new U2bMainFragment();
         }
-        return (U2bMainFragment) mU2bMainFragment;
+        return (U2bMainFragment)mU2bMainFragment;
     }
 
     private synchronized U2bPlayListFragment getPlayListFragment() {
         if (mU2bPlayListFragment == null) {
             mU2bPlayListFragment = new U2bPlayListFragment();
         }
-        return (U2bPlayListFragment) mU2bPlayListFragment;
+        return (U2bPlayListFragment)mU2bPlayListFragment;
     }
 
     private synchronized U2bPlayInfoFragment getPlayInfoFragment() {
         if (mU2bPlayInfoFragment == null) {
             mU2bPlayInfoFragment = new U2bPlayInfoFragment();
         }
-        return (U2bPlayInfoFragment) mU2bPlayInfoFragment;
+        return (U2bPlayInfoFragment)mU2bPlayInfoFragment;
     }
 
     public void initActionBarComponents() {
@@ -704,16 +779,22 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             switch (option) {
                 case MainActivityOptionDialog.ITEM_DOWNLOAD_DATA:
                     if (DEBUG) {
-                        Log.d(TAG, "action bar -- sync pressed");
+                        Log.d(TAG, "action bar -- ITEM_DOWNLOAD_DATA");
                     }
                     checkWifiStatusAndScan();
+                    break;
+                case MainActivityOptionDialog.ITEM_NON_ADS:
+                    if (DEBUG) {
+                        Log.d(TAG, "action bar -- ITEM_NON_ADS");
+                    }
+                    purchaseNoAds();
                     break;
             }
         }
     };
 
     private void checkWifiStatusAndScan() {
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         final boolean isWifiConnected = mWifi.isConnected();
         final boolean is3GAllowed = PlayMusicApplication.sAllow3GUpdate;
@@ -816,13 +897,27 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public void onResume() {
         super.onResume();
-        mAdView.resume();
+        if (mAdView != null)
+            mAdView.resume();
         if (sCurrentFragment == FRAGMENT_TYPE_PLAYLIST) {
             getPlayListFragment().changePlayIndex();
         }
         mHandler.removeCallbacks(mShowAdViewRunnable);
-        mHandler.post(mShowAdViewRunnable);
-        countInterstitial();
+        if (PlayMusicApplication.sAdAvailable) {
+            if (mAdViewParent != null && mAdViewParent.getVisibility() != View.VISIBLE) {
+                mHandler.postDelayed(mShowAdViewRunnable, 3000);
+            }
+            countInterstitial();
+        }
+        try {
+            if (mHasIaHelperSetUp) {
+                mIaHelper.flagEndAsync();
+                mIaHelper.queryInventoryAsync(mGotInventoryListener);
+            }
+        } catch (Exception e) {
+            if (DEBUG_BILL)
+                Log.w(TAG_BILL, "failed", e);
+        }
     }
 
     public void countInterstitial() {
@@ -842,7 +937,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     }
 
-    public void displayInterstitial() {
+    private void displayInterstitial() {
+        if (mInterstitial == null)
+            return;
         if (mInterstitial.isLoaded()) {
             mInterstitial.show();
             mCanLoadNextAd = true;
@@ -867,15 +964,23 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     public void onPause() {
-        mAdView.pause();
+        if (mAdView != null)
+            mAdView.pause();
         super.onPause();
     }
 
     public void onDestroy() {
-        mAdView.destroy();
-        mVponBanner.destroy();
-        mVponInterstitialAd.destroy();
+        if (mAdView != null)
+            mAdView.destroy();
+        if (mVponBanner != null)
+            mVponBanner.destroy();
+        if (mVponInterstitialAd != null)
+            mVponInterstitialAd.destroy();
         super.onDestroy();
+        if (mIaHelper != null) {
+            mIaHelper.dispose();
+            mIaHelper = null;
+        }
         unbindService(mMusicPlayServiceConnection);
         unbindService(mSpiderServiceConnection);
         unbindService(mInAppBillingServiceConn);
@@ -1096,7 +1201,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
         if (mCanShowVponInterstitialAd) {
             ++PlayMusicApplication.sAdCount;
-            if (PlayMusicApplication.sAdCount % PlayMusicApplication.AD_TIME == 0) {
+            if (PlayMusicApplication.sAdCount % PlayMusicApplication.AD_TIME == 0
+                    && mVponInterstitialAd != null) {
                 mVponInterstitialAd.show();
             }
         }
@@ -1122,7 +1228,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void reloadTheme() {
         Fragment fag = getCurrentFragment();
         if (fag != null && fag instanceof ThemeReloader) {
-            ((ThemeReloader) fag).reloadTheme();
+            ((ThemeReloader)fag).reloadTheme();
         }
     }
 
