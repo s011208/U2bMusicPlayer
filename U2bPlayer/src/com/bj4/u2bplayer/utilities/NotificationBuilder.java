@@ -2,23 +2,16 @@
 package com.bj4.u2bplayer.utilities;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.bj4.u2bplayer.R;
-import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
-import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity.MainFragmentCallback;
-import com.bj4.u2bplayer.activity.fragments.U2bPlayListFragment;
 import com.bj4.u2bplayer.service.PlayMusicService;
 import com.bj4.u2bplayer.widget.SimplePlayWidget;
 
@@ -99,7 +92,7 @@ public class NotificationBuilder{
         return PendingIntent.getBroadcast(context, 0, intent.putExtra(PlayMusicService.INTENT_ACTION, action), 0);
     }
 
-    /* 會用到嗎?
+    /* 
     public void handleSimpleNotification(final Context context, final PlayListInfo info) {
         try {
             NotificationManager nm = (NotificationManager) context

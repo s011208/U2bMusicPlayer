@@ -315,7 +315,7 @@ public class PlayScanner {
             if (sArtist != null && sSongs != null && sMonth != null) {
                 contentSouce = new ContentValues();
                 contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + sMonth[1] + "¤ëKKbox Top100");
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + "ºë¿ï");
                 contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0]);
                 contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++sRank);
                 MasterlistSource.add(contentSouce);
