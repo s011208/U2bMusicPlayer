@@ -329,9 +329,11 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         return getDb().delete(TABLE_ALBUM_INFO, COLUMN_ALBUM + "='" + albumName + "'", null);
     }
 
-    public boolean isAlbumExisted(String albumName) {
-        Cursor result = query("select _id from " + TABLE_ALBUM_INFO + " where " + COLUMN_ALBUM
-                + "='" + albumName + "'");
+    public boolean isMusicExisted(String misic, String rank) {
+        Cursor result = query("select * "
+                              + "from " + TABLE_MAIN_INFO 
+                            + " where " + COLUMN_MUSIC + "='" + misic + "' "
+                              + " and " + COLUMN_RANK + "='" + rank + "' ");
         if (result != null && result.getCount() > 0) {
             result.close();
             return true;
