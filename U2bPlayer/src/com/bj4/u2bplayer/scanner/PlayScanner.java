@@ -67,7 +67,7 @@ public class PlayScanner {
     private static String[] sMonth = null;
 
     private static String sStr = null;
-
+    
     private static int sRank;
 
     public void scan() {
@@ -179,19 +179,20 @@ public class PlayScanner {
     private void insertU2bDB(ArrayList<ContentValues> listSource) {
         U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
         if (databaseHelper != null) {
-            if(!isDataExsit(listSource)){
-             // using bulk insert
+            if (!isDataExsit(listSource)) {
+                // using bulk insert
                 databaseHelper.insert(listSource, true);
                 dumpDbData();
             }
         }
     }
-    
+
     /**
      * 資料是否已存在
+     * 
      * @param listSource
      */
-    private boolean isDataExsit(ArrayList<ContentValues> listSource){
+    private boolean isDataExsit(ArrayList<ContentValues> listSource) {
         try {
             U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
             ContentValues contentSouce = listSource.get(0);
@@ -249,9 +250,10 @@ public class PlayScanner {
             MasterlistSource.clear();
         }
         sRank = 0;
-        
-        //HitFM Top100分兩頁 所以分兩次insert
-        if(last) sRank = 50;
+
+        // HitFM Top100分兩頁 所以分兩次insert
+        if (last)
+            sRank = 50;
 
         try {
             // 取得網頁內容 轉成文字檔
@@ -296,12 +298,14 @@ public class PlayScanner {
             if (sStr.contains("<h4><a href=")) {
                 sSongs = sStr.split("title=\"");
                 sSongs = sSongs[1].split("\">");
+                sSongs = convertString(sSongs);
             }
 
             // 歌手
             if (sStr.contains("<h5 class=")) {
                 sArtist = sStr.split("title=\"");
                 sArtist = sArtist[1].split("\">");
+                sArtist = convertString(sArtist);
             }
 
             // 取得的月份 為當月排行榜月份
@@ -314,9 +318,9 @@ public class PlayScanner {
             // 每取得歌曲及歌手 便加入list然後清空
             if (sArtist != null && sSongs != null && sMonth != null) {
                 contentSouce = new ContentValues();
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0]);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0].trim());
                 contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + "精選");
-                contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0]);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0].trim());
                 contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++sRank);
                 MasterlistSource.add(contentSouce);
 
@@ -334,8 +338,7 @@ public class PlayScanner {
      * @param language
      */
     private void searchHitFMData(String language) {
-        
-            
+
         try {
             // 歌曲
             if (sStr.contains("<td width=\"200\">") && sSongs == null) {
@@ -359,10 +362,10 @@ public class PlayScanner {
             if (sSongs != null && sAlbum != null && sArtist != null) {
                 contentSouce = new ContentValues();
                 contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, sAlbum[0]+"HitFM年度單曲");
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, sAlbum[0] + "HitFM年度單曲");
                 contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0]);
                 contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++sRank);
-                MasterlistSource.add(contentSouce);
+//                MasterlistSource.add(contentSouce);
 
                 sSongs = null;
                 sArtist = null;
@@ -372,6 +375,34 @@ public class PlayScanner {
         }
     }
 
+    
+    private String[] convertString(String[] sourse){
+        
+        if (sourse[0].contains("（")) {
+            sourse = sourse[0].split("（");
+        } else if (sourse[0].contains("(")) {
+            sourse = sourse[0].split("\\(");
+        } else if (sourse[0].contains("【")) {
+            sourse = sourse[0].split("\\【");
+        } else if (sourse[0].contains("《")) {
+            sourse = sourse[0].split("\\《");
+        } else if (sourse[0].contains("-")) {
+            Log.d(TAG, sourse[0].toString());
+            sourse = sourse[0].split("\\-");
+            Log.d(TAG, sourse[0].toString());
+        } else if (sourse[0].contains("<")) {
+            sourse = sourse[0].split("\\<");
+        } else if (sourse[0].contains("－")) {
+            Log.d(TAG, sourse[0].toString());
+            sourse = sourse[0].split("\\－");
+            Log.d(TAG, sourse[0].toString());
+        } else if (sourse[0].contains("Various Artists")){
+            sourse = new String[]{""};
+        }
+        
+        return sourse;
+    }
+    
     /**
      * 列印測試
      */
