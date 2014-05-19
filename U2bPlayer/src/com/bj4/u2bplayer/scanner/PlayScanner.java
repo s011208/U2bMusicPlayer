@@ -342,14 +342,14 @@ public class PlayScanner {
             if (sStr.contains("<h4><a href=")) {
                 sSongs = sStr.split("title=\"");
                 sSongs = sSongs[1].split("\">");
-                sSongs = convertString(sSongs);
+                sSongs = convertString(sSongs, true);
             }
 
             // 歌手
             if (sStr.contains("<h5 class=")) {
                 sArtist = sStr.split("title=\"");
                 sArtist = sArtist[1].split("\">");
-                sArtist = convertString(sArtist);
+                sArtist = convertString(sArtist, false);
             }
 
             // 取得的月份 為當月排行榜月份
@@ -424,7 +424,7 @@ public class PlayScanner {
      * @param source
      * @return
      */
-    private String[] convertString(String[] source) {
+    private String[] convertString(String[] source, boolean song) {
 
         if (source[0].contains("（")) {
             source = source[0].split("（");
@@ -436,6 +436,10 @@ public class PlayScanner {
             source = source[0].split("\\《");
         } else if (source[0].contains("<")) {
             source = source[0].split("\\<");
+        } else if (source[0].contains("-") && song) {
+            source = source[0].split("\\-");
+        } else if (source[0].contains("－") && song) {
+            source = source[0].split("\\－");
         } else if (source[0].contains("Various Artists")) {
             source = new String[] {
                 ""

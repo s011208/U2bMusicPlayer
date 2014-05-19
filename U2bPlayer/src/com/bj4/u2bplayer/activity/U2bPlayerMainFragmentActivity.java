@@ -4,23 +4,7 @@ package com.bj4.u2bplayer.activity;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
-
-import com.android.vending.billing.IInAppBillingService;
-import com.android.vending.billing.util.IabHelper;
-import com.android.vending.billing.util.IabResult;
-import com.android.vending.billing.util.Inventory;
-import com.android.vending.billing.util.Purchase;
-import com.bj4.u2bplayer.PlayList;
-import com.bj4.u2bplayer.PlayMusicApplication;
-import com.bj4.u2bplayer.R;
-import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
-import com.bj4.u2bplayer.service.IPlayMusicService;
-import com.bj4.u2bplayer.service.IPlayMusicServiceCallback;
-import com.bj4.u2bplayer.service.ISpiderService;
-import com.bj4.u2bplayer.service.PlayMusicService;
-import com.bj4.u2bplayer.service.SpiderService;
-import com.bj4.u2bplayer.utilities.PlayListInfo;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -31,7 +15,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -46,7 +29,6 @@ import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
@@ -57,16 +39,33 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.bj4.u2bplayer.activity.fragments.*;
-import com.google.android.gms.ads.*;
+import com.android.vending.billing.util.IabHelper;
+import com.android.vending.billing.util.IabResult;
+import com.android.vending.billing.util.Inventory;
+import com.android.vending.billing.util.Purchase;
+import com.bj4.u2bplayer.PlayList;
+import com.bj4.u2bplayer.PlayMusicApplication;
+import com.bj4.u2bplayer.R;
+import com.bj4.u2bplayer.activity.fragments.U2bMainFragment;
+import com.bj4.u2bplayer.activity.fragments.U2bPlayInfoFragment;
+import com.bj4.u2bplayer.activity.fragments.U2bPlayListFragment;
+import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
+import com.bj4.u2bplayer.service.IPlayMusicService;
+import com.bj4.u2bplayer.service.IPlayMusicServiceCallback;
+import com.bj4.u2bplayer.service.ISpiderService;
+import com.bj4.u2bplayer.service.PlayMusicService;
+import com.bj4.u2bplayer.service.SpiderService;
+import com.bj4.u2bplayer.utilities.PlayListInfo;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.vpadn.ads.VpadnAd;
 import com.vpadn.ads.VpadnAdListener;
 import com.vpadn.ads.VpadnAdRequest;
 import com.vpadn.ads.VpadnAdRequest.VpadnErrorCode;
-import com.vpadn.ads.VpadnAdSize;
 import com.vpadn.ads.VpadnBanner;
 import com.vpadn.ads.VpadnInterstitialAd;
 
@@ -286,7 +285,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     private void notifySourceListChanged() {
-        // TODO source list changed implements here
+        HashSet<String> mSet = (HashSet<String>)mPref.getStringSet(SHARE_PREF_KEY_SOURCE_LIST,
+                new HashSet<String>());
+        getMainFragment().SourceListChanged(mSet);
     }
 
     private void unRegisterBroadcastReceiver() {
