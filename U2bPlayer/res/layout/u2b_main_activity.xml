@@ -52,7 +52,7 @@
             android:id="@+id/vpadnBannerXML"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            vpadn:adSize="SMART_BANNER"
+            vpadn:adSize="BANNER"
             vpadn:autoFresh="true"
             vpadn:bannerId="8a80818245da428c0145e71393d00709"
             vpadn:loadAdOnCreate="true"

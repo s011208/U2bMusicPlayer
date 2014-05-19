@@ -25,7 +25,7 @@ public class PlayScanner {
     public static final String WEB_TYPE_HITFM = "HITFM";
 
     public static final String KKBOX_MUSIC_RYTHM_CHINESE_URL = "http://www.kkbox.com/tw/tc/charts/chinese-monthly-song-latest.html";
-
+ 
     public static final String KKBOX_MUSIC_RYTHM_WESTERN_URL = "http://www.kkbox.com/tw/tc/charts/western-daily-song-latest.html";
 
     public static final String KKBOX_MUSIC_RYTHM_JAPANESE_URL = "http://www.kkbox.com/tw/tc/charts/japanese-daily-song-latest.html";
@@ -51,6 +51,8 @@ public class PlayScanner {
     public static final String MUSIC_TYPE_HOKKIEN = "台語";
 
     public static final String MUSIC_TYPE_CANTONESE = "粵語";
+    
+    public static final String MUSIC_TYPE_CHOISE = "精選";   
 
     private static final String TAG = "PlayScanner";
 
@@ -67,7 +69,7 @@ public class PlayScanner {
     private static String[] sMonth = null;
 
     private static String sStr = null;
-
+    
     private static int sRank;
 
     public void scan() {
@@ -172,63 +174,106 @@ public class PlayScanner {
     };
 
     /**
-     * 新增至資料庫
+     * 新增至資料庫 如專輯中前五首歌曲不同 及更新資料
      * 
      * @param listSource
      */
     private void insertU2bDB(ArrayList<ContentValues> listSource) {
         U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
+        Log.d(TAG, "databaseHelper!=null: " + String.valueOf(databaseHelper != null));
         if (databaseHelper != null) {
-            if(!isDataExsit(listSource)){
-             // using bulk insert
+            Log.d(TAG, "!isDataExsit(listSource): " + String.valueOf(isDataExsit(listSource)));
+            if (!isDataExsit(listSource)) {
                 databaseHelper.insert(listSource, true);
-                dumpDbData();
             }
         }
     }
-    
+
     /**
-     * 資料是否已存在
+     * 判斷專輯中前五首歌曲是否相同
+     * 
      * @param listSource
      */
-    private boolean isDataExsit(ArrayList<ContentValues> listSource){
+    private boolean isDataExsit(ArrayList<ContentValues> listSource) {
         try {
+
             U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
-            ContentValues contentSouce = listSource.get(0);
-            String COLUMN_ALBUM = contentSouce.getAsString(U2bDatabaseHelper.COLUMN_ALBUM);
-            boolean isAlbumExisted = databaseHelper.isAlbumExisted(COLUMN_ALBUM);
-            if (DEBUG) {
-                Log.d(TAG, "isAlbumExisted: " + isAlbumExisted + ", COLUMN_ALBUM: " + COLUMN_ALBUM);
+            ContentValues contentSouce = new ContentValues();
+            String COLUMN_ARTIST = "";
+            String COLUMN_ALBUM = "";
+            String COLUMN_MUSIC = "";
+            String COLUMN_RANK = "";
+            boolean isMusicExisted = false;
+
+            Log.d(TAG, "listSource.size(): " + listSource.size());
+
+            for (int i = 0; i < listSource.size(); i++) {
+                if (i == 5) {
+                    return true;
+                }
+                contentSouce = listSource.get(i);
+                COLUMN_ARTIST = contentSouce.getAsString(U2bDatabaseHelper.COLUMN_ARTIST);
+                COLUMN_ALBUM = contentSouce.getAsString(U2bDatabaseHelper.COLUMN_ALBUM);
+                COLUMN_MUSIC = contentSouce.getAsString(U2bDatabaseHelper.COLUMN_MUSIC);
+                COLUMN_RANK = contentSouce.getAsString(U2bDatabaseHelper.COLUMN_RANK);
+
+                isMusicExisted = databaseHelper.isMusicExisted(COLUMN_MUSIC, COLUMN_RANK);
+
+                if (DEBUG) {
+                    Log.d(TAG, "isMusicExisted: " + isMusicExisted + "-" + COLUMN_ARTIST + ","
+                            + COLUMN_ALBUM + "," + COLUMN_MUSIC + "," + COLUMN_RANK);
+                }
+
+                if (!isMusicExisted) {
+                    databaseHelper.removeAlbum(COLUMN_ALBUM, true);
+                    return isMusicExisted;
+                }
             }
-            if (isAlbumExisted) {
-                return true;
-            } else {
-                databaseHelper.addNewAlbum(COLUMN_ALBUM);
-            }
+
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-        return false;
+        return true;
     }
+    
+//    private boolean isDataUpdate(ArrayList<ContentValues> listSource) {
+//        try {
+//            U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
+//            ContentValues contentSouce = listSource.get(0);
+//            String COLUMN_ALBUM = contentSouce.getAsString(U2bDatabaseHelper.COLUMN_ALBUM);
+//            boolean isAlbumExisted = databaseHelper.isAlbumExisted(COLUMN_ALBUM);
+//            if (DEBUG) {
+//                Log.d(TAG, "isAlbumExisted: " + isAlbumExisted + ", COLUMN_ALBUM: " + COLUMN_ALBUM);
+//            }
+//            if (isAlbumExisted) {
+//                return true;
+//            } else {
+//                databaseHelper.addNewAlbum(COLUMN_ALBUM);
+//            }
+//        } catch (Exception e) {
+//            Log.e(TAG, e.getMessage());
+//        }
+//        return false;
+//    }
 
-    private void dumpDbData() {
-        if (DEBUG) {
-            U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
-            Cursor c = databaseHelper.query(null, null);
-            // print
-            if (c != null) {
-                while (c.moveToNext()) {
-                    String artist = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST));
-                    String album = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
-                    String music = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC));
-                    String rank = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK));
-                    Log.d(TAG, "PRINT " + artist + ", " + album + ", " + music + ", " + rank);
-                }
-                c.close();
-            }
-            databaseHelper.clearTableContent();
-        }
-    }
+//    private void dumpDbData() {
+//        if (DEBUG) {
+//            U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
+//            Cursor c = databaseHelper.query(null, null);
+//            // print
+//            if (c != null) {
+//                while (c.moveToNext()) {
+//                    String artist = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ARTIST));
+//                    String album = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
+//                    String music = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_MUSIC));
+//                    String rank = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_RANK));
+//                    Log.d(TAG, "PRINT " + artist + ", " + album + ", " + music + ", " + rank);
+//                }
+//                c.close();
+//            }
+//            databaseHelper.clearTableContent();
+//        }
+//    }
 
     /**
      * 網頁轉換
@@ -249,9 +294,10 @@ public class PlayScanner {
             MasterlistSource.clear();
         }
         sRank = 0;
-        
-        //HitFM Top100分兩頁 所以分兩次insert
-        if(last) sRank = 50;
+
+        // HitFM Top100分兩頁 所以分兩次insert
+        if (last)
+            sRank = 50;
 
         try {
             // 取得網頁內容 轉成文字檔
@@ -296,12 +342,14 @@ public class PlayScanner {
             if (sStr.contains("<h4><a href=")) {
                 sSongs = sStr.split("title=\"");
                 sSongs = sSongs[1].split("\">");
+                sSongs = convertString(sSongs);
             }
 
             // 歌手
             if (sStr.contains("<h5 class=")) {
                 sArtist = sStr.split("title=\"");
                 sArtist = sArtist[1].split("\">");
+                sArtist = convertString(sArtist);
             }
 
             // 取得的月份 為當月排行榜月份
@@ -314,9 +362,9 @@ public class PlayScanner {
             // 每取得歌曲及歌手 便加入list然後清空
             if (sArtist != null && sSongs != null && sMonth != null) {
                 contentSouce = new ContentValues();
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + sMonth[1] + "月KKbox Top100");
-                contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0]);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0].trim());
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, language + MUSIC_TYPE_CHOISE);
+                contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0].trim());
                 contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++sRank);
                 MasterlistSource.add(contentSouce);
 
@@ -334,8 +382,7 @@ public class PlayScanner {
      * @param language
      */
     private void searchHitFMData(String language) {
-        
-            
+
         try {
             // 歌曲
             if (sStr.contains("<td width=\"200\">") && sSongs == null) {
@@ -359,10 +406,10 @@ public class PlayScanner {
             if (sSongs != null && sAlbum != null && sArtist != null) {
                 contentSouce = new ContentValues();
                 contentSouce.put(U2bDatabaseHelper.COLUMN_ARTIST, sArtist[0]);
-                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, sAlbum[0]+"HitFM年度單曲");
+                contentSouce.put(U2bDatabaseHelper.COLUMN_ALBUM, sAlbum[0] + "HitFM年度單曲");
                 contentSouce.put(U2bDatabaseHelper.COLUMN_MUSIC, sSongs[0]);
                 contentSouce.put(U2bDatabaseHelper.COLUMN_RANK, ++sRank);
-                MasterlistSource.add(contentSouce);
+//                MasterlistSource.add(contentSouce);
 
                 sSongs = null;
                 sArtist = null;
@@ -372,6 +419,32 @@ public class PlayScanner {
         }
     }
 
+    /**
+     * 移除歌手或歌曲多餘的字串
+     * @param source
+     * @return
+     */
+    private String[] convertString(String[] source) {
+
+        if (source[0].contains("（")) {
+            source = source[0].split("（");
+        } else if (source[0].contains("(")) {
+            source = source[0].split("\\(");
+        } else if (source[0].contains("【")) {
+            source = source[0].split("\\【");
+        } else if (source[0].contains("《")) {
+            source = source[0].split("\\《");
+        } else if (source[0].contains("<")) {
+            source = source[0].split("\\<");
+        } else if (source[0].contains("Various Artists")) {
+            source = new String[] {
+                ""
+            };
+        }
+
+        return source;
+    }
+    
     /**
      * 列印測試
      */
@@ -390,7 +463,7 @@ public class PlayScanner {
             strAlbum = content.getAsString(U2bDatabaseHelper.COLUMN_ALBUM);
             strMusic = content.getAsString(U2bDatabaseHelper.COLUMN_MUSIC);
             strRank = content.getAsString(U2bDatabaseHelper.COLUMN_RANK);
-            Log.d(TAG, "printTest: " + strArtist + ", " + strAlbum + ", " + strMusic + ", "
+            Log.d(TAG, "@@printTest: " + strArtist + ", " + strAlbum + ", " + strMusic + ", "
                     + strRank);
         }
     }

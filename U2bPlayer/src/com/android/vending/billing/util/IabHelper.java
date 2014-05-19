@@ -627,7 +627,10 @@ public class IabHelper {
                 if (!mDisposed && listener != null) {
                     handler.post(new Runnable() {
                         public void run() {
-                            listener.onQueryInventoryFinished(result_f, inv_f);
+                            try {
+                                listener.onQueryInventoryFinished(result_f, inv_f);
+                            } catch (Exception e) {
+                            }
                         }
                     });
                 }

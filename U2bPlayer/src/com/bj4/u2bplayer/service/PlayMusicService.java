@@ -534,6 +534,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             mCurrentMediaPlayer.start();
             notifyPlayStateChanged(true);
             notifiWidgetsChanged(true);
+            notifyNotificationChanged(true);
         }
 
         public void stop() {
@@ -541,6 +542,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             mIsInitialized = false;
             notifyPlayStateChanged(false);
             notifiWidgetsChanged(false);
+            notifyNotificationChanged(false);
         }
 
         public void release() {
@@ -548,12 +550,14 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             mCurrentMediaPlayer.release();
             notifyPlayStateChanged(false);
             notifiWidgetsChanged(false);
+            notifyNotificationChanged(false);
         }
 
         public void pause() {
             mCurrentMediaPlayer.pause();
             notifyPlayStateChanged(false);
             notifiWidgetsChanged(false);
+            notifyNotificationChanged(false);
         }
 
         public void setHandler(Handler handler) {
@@ -706,16 +710,16 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         notifyIndexChanged();
         notifyPlayStateChanged(mPlayer.isPlaying());
         notifyPlayInfoChanged();
-        notifyNotificationChanged();
+        notifyNotificationChanged(mPlayer.isPlaying());
         notifiWidgetsChanged(mPlayer.isPlaying());
     }
 
-    private void notifyNotificationChanged() {
+    private void notifyNotificationChanged(boolean isPlaying) {
         final PlayListInfo info = mPlayList.getCurrentPlayingListInfo();
         if (info == null)
             return;
         startForeground(NotificationBuilder.NOTIFICATION_ID,
-                NotificationBuilder.createSimpleNotification(getApplicationContext(), info));
+                NotificationBuilder.createSimpleNotification(getApplicationContext(), info, isPlaying));
         mIsForeground = true;
     }
 
