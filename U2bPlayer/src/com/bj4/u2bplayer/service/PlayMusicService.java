@@ -189,27 +189,25 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         super.onStartCommand(intent, flags, startId);
         if (DEBUG)
             Log.d(TAG, "onStartCommand");
-        if (intent != null) {
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                String action = extras.getString(INTENT_ACTION);
-                if (action != null) {
-                    if (INTENT_ACTION_PLAY.equals(action)) {
-                        int index = extras.getInt(INTENT_PLAY_INDEX);
-                        if (index >= 0) {
-                            if (mPlayer.isInitialized()) {
-                                mPlayer.start();
-                            } else {
-                                playMusic(index);
-                            }
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            String action = extras.getString(INTENT_ACTION);
+            if (action != null) {
+                if (INTENT_ACTION_PLAY.equals(action)) {
+                    int index = extras.getInt(INTENT_PLAY_INDEX);
+                    if (index >= 0) {
+                        if (mPlayer.isInitialized()) {
+                            mPlayer.start();
                         } else {
                             playMusic(index);
                         }
-                    } else if (INTENT_SWITCH_FAVORITE.equals(action)) {
-                        switchFavorite();
-                    } else if (INTENT_ACTION_PAUSE.equals(action)) {
-                        pauseMusic();
+                    } else {
+                        playMusic(index);
                     }
+                } else if (INTENT_SWITCH_FAVORITE.equals(action)) {
+                    switchFavorite();
+                } else if (INTENT_ACTION_PAUSE.equals(action)) {
+                    pauseMusic();
                 }
             }
         }
