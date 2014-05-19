@@ -421,28 +421,28 @@ public class PlayScanner {
 
     /**
      * 移除歌手或歌曲多餘的字串
-     * @param sourse
+     * @param source
      * @return
      */
-    private String[] convertString(String[] sourse) {
+    private String[] convertString(String[] source) {
 
-        if (sourse[0].contains("（")) {
-            sourse = sourse[0].split("（");
-        } else if (sourse[0].contains("(")) {
-            sourse = sourse[0].split("\\(");
-        } else if (sourse[0].contains("【")) {
-            sourse = sourse[0].split("\\【");
-        } else if (sourse[0].contains("《")) {
-            sourse = sourse[0].split("\\《");
-        } else if (sourse[0].contains("<")) {
-            sourse = sourse[0].split("\\<");
-        } else if (sourse[0].contains("Various Artists")) {
-            sourse = new String[] {
+        if (source[0].contains("（")) {
+            source = source[0].split("（");
+        } else if (source[0].contains("(")) {
+            source = source[0].split("\\(");
+        } else if (source[0].contains("【")) {
+            source = source[0].split("\\【");
+        } else if (source[0].contains("《")) {
+            source = source[0].split("\\《");
+        } else if (source[0].contains("<")) {
+            source = source[0].split("\\<");
+        } else if (source[0].contains("Various Artists")) {
+            source = new String[] {
                 ""
             };
         }
 
-        return sourse;
+        return source;
     }
     
     /**

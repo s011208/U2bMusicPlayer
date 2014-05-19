@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
+import com.bj4.u2bplayer.dialogs.DataSourceDialog;
 
 public class U2bMainFragment extends Fragment implements ThemeReloader {
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
@@ -62,6 +64,8 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
 
     private TextView mTextView;
     
+//    private LayoutInflater mLayoutInflater;
+    
     private ArrayList<Map<String, String>> mAlbumList = new ArrayList<Map<String, String>>();
 
     private Map<String, String> albumMap = new HashMap<String, String>();
@@ -84,7 +88,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     private void initComponents() {
 
         //根據所選取的來源 加入專輯
-        addAlbumSouse(new String[]{"1"});//TODO 暫定來源1為kkbox
+        addAlbumSource("0");//TODO 暫定來源0為kkbox
         // //本機音樂
         localQueryDbData();
         localAddAlbumButton();
@@ -130,16 +134,16 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     
     /**
      * 根據來源 加入專輯
-     * @param sourseType
+     * @param sourceType
      */
-    private void addAlbumSouse(String[] sourse){
+    public void addAlbumSource(String source){
         mActivity = (U2bPlayerMainFragmentActivity)getActivity();
         mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
         
-        for(int i=0; i<sourse.length; i++){
-            mHouLinearLayout = new LinearLayout(mActivity);
-            mHouLinearLayout.setGravity(Gravity.CENTER);
-            if("1".equals(sourse[i])){
+        mHouLinearLayout = new LinearLayout(mActivity);
+        mHouLinearLayout.setGravity(Gravity.CENTER);
+        try {
+            if("0".equals(source)){
                 addAlbum(MUSIC_TYPE_CHINESE + MUSIC_TYPE_CHOISE, R.drawable.kkbox);
                 addAlbum(MUSIC_TYPE_WESTERN + MUSIC_TYPE_CHOISE, R.drawable.kkboxw);
                 addAlbum(MUSIC_TYPE_JAPANESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxj);
@@ -147,9 +151,21 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 addAlbum(MUSIC_TYPE_HOKKIEN + MUSIC_TYPE_CHOISE, R.drawable.kkboxh);
                 addAlbum(MUSIC_TYPE_CANTONESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxc);
             }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        
     }
+    
+//    public void removeAlbumSource(ViewGroup parent){
+//        Log.d(TAG, "REMOVE ALL");
+//
+//        mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
+//        mVerLinearLayout.removeAllViews();
+////        //本機音樂
+////        localQueryDbData();
+////        localAddAlbumButton();
+//    }
     
     /**
      * 進入畫面即產生專輯可點選
@@ -179,7 +195,10 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mTextView.setBackgroundColor(Color.BLACK);
             mTextView.setSingleLine(true);
             mTextView.setEllipsize(TruncateAt.END);
-            mTextView.setWidth(10);
+            mTextView.setMinimumHeight(4);
+            mTextView.setMinimumWidth(4);
+            mTextView.setMaxHeight(8);
+            mTextView.setMaxWidth(8);
             mTextView.setShadowLayer(10f,   //float radius
                                         5f,  //float dx
                                         5f,  //float dy 
@@ -203,73 +222,78 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     }
 
     private void localAddAlbumButton() {
-        //分割線
-        mTextView = new TextView(mActivity);
-        mTextView.setBackgroundColor(Color.WHITE);
-        mTextView.getBackground().setAlpha(190);
-        mTextView.setGravity(Gravity.BOTTOM);
-        mTextView.setMinimumHeight(10);
-        mTextView.setMinimumWidth(10);
-        mTextView.setMaxHeight(10);
-        mTextView.setMaxWidth(10);
-        mVerLinearLayout.addView(mTextView);
-
-        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-        mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
-        mHouLinearLayout = new LinearLayout(mActivity);
-
-        Button button = new Button(mActivity);
-        Log.d(TAG, String.valueOf(mAlbumList.size()));
-
-        for (int i = 0; i < mAlbumList.size(); i++) {
-            mFrameLayout = new FrameLayout(mActivity);
-            mAlbumViewButton = new ImageView(mActivity);
+        try {
+            //分割線
             mTextView = new TextView(mActivity);
-            
-            albumMap = new HashMap<String, String>();
+            mTextView.setBackgroundColor(Color.WHITE);
+            mTextView.getBackground().setAlpha(190);
+            mTextView.setGravity(Gravity.BOTTOM);
+            mTextView.setMinimumHeight(5);
+            mTextView.setMinimumWidth(5);
+            mTextView.setMaxHeight(8);
+            mTextView.setMaxWidth(8);
+            mVerLinearLayout.addView(mTextView);
 
-            if (i % 2 == 0) {
-                mHouLinearLayout = new LinearLayout(mActivity);
-                mHouLinearLayout.setGravity(Gravity.CENTER);
+            mActivity = (U2bPlayerMainFragmentActivity)getActivity();
+            mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
+            mHouLinearLayout = new LinearLayout(mActivity);
+
+            Button button = new Button(mActivity);
+            Log.d(TAG, String.valueOf(mAlbumList.size()));
+
+            for (int i = 0; i < mAlbumList.size(); i++) {
+                mFrameLayout = new FrameLayout(mActivity);
+                mAlbumViewButton = new ImageView(mActivity);
+                mTextView = new TextView(mActivity);
+                
+                albumMap = new HashMap<String, String>();
+
+                if (i % 2 == 0) {
+                    mHouLinearLayout = new LinearLayout(mActivity);
+                    mHouLinearLayout.setGravity(Gravity.CENTER);
+                }
+
+                albumMap = mAlbumList.get(i);
+
+                mStrAlbum = String.valueOf(albumMap.get("ALBUM"));
+                button = (Button)mVerLinearLayout.findViewWithTag(mStrAlbum);
+                Log.d(TAG, mStrAlbum + " 是否為空:" + String.valueOf(button == null));
+
+              //圖案
+                mAlbumViewButton.setBackgroundColor(Color.BLACK);
+                mAlbumViewButton.setBackgroundResource(R.drawable.local);
+                mAlbumViewButton.setTag(mStrAlbum);
+                mAlbumViewButton.getBackground().setAlpha(180);
+                mAlbumViewButton.setOnClickListener(localclickHandler);
+                            
+                //文字
+                mTextView.setText(mStrAlbum);
+                mTextView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
+                mTextView.setTextColor(Color.WHITE);
+                mTextView.setBackgroundColor(Color.BLACK);
+                mTextView.setSingleLine(true);
+                mTextView.setEllipsize(TruncateAt.END);
+                mTextView.setWidth(10);
+                mTextView.setShadowLayer(10f,   //float radius
+                                            5f,  //float dx
+                                            5f,  //float dy 
+                                            Color.BLACK //int color
+                                            );
+                mTextView.getBackground().setAlpha(0);
+                
+                //圖文重疊
+                mFrameLayout.addView(mAlbumViewButton);
+                mFrameLayout.addView(mTextView);
+                
+                
+                mHouLinearLayout.addView(mFrameLayout);
+                if (i % 2 == 0) {
+                    mVerLinearLayout.addView(mHouLinearLayout);
+                }
             }
-
-            albumMap = mAlbumList.get(i);
-
-            mStrAlbum = String.valueOf(albumMap.get("ALBUM"));
-            button = (Button)mVerLinearLayout.findViewWithTag(mStrAlbum);
-            Log.d(TAG, mStrAlbum + " 是否為空:" + String.valueOf(button == null));
-
-          //圖案
-            mAlbumViewButton.setBackgroundColor(Color.BLACK);
-            mAlbumViewButton.setBackgroundResource(R.drawable.local);
-            mAlbumViewButton.setTag(mStrAlbum);
-            mAlbumViewButton.getBackground().setAlpha(180);
-            mAlbumViewButton.setOnClickListener(localclickHandler);
-                        
-            //文字
-            mTextView.setText(mStrAlbum);
-            mTextView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
-            mTextView.setTextColor(Color.WHITE);
-            mTextView.setBackgroundColor(Color.BLACK);
-            mTextView.setSingleLine(true);
-            mTextView.setEllipsize(TruncateAt.END);
-            mTextView.setWidth(10);
-            mTextView.setShadowLayer(10f,   //float radius
-                                        5f,  //float dx
-                                        5f,  //float dy 
-                                        Color.BLACK //int color
-                                        );
-            mTextView.getBackground().setAlpha(0);
-            
-            //圖文重疊
-            mFrameLayout.addView(mAlbumViewButton);
-            mFrameLayout.addView(mTextView);
-            
-            
-            mHouLinearLayout.addView(mFrameLayout);
-            if (i % 2 == 0) {
-                mVerLinearLayout.addView(mHouLinearLayout);
-            }
+        } catch (NotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
     
