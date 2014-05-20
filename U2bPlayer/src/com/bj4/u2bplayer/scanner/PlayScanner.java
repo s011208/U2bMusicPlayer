@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
@@ -194,7 +195,7 @@ public class PlayScanner {
      * 
      * @param listSource
      */
-    private boolean isDataExsit(ArrayList<ContentValues> listSource) {
+    public boolean isDataExsit(ArrayList<ContentValues> listSource) {
         try {
 
             U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();

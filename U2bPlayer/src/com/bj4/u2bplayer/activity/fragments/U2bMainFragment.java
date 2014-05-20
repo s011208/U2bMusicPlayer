@@ -19,17 +19,20 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
+import com.bj4.u2bplayer.scanner.PlayScanner;
 
 public class U2bMainFragment extends Fragment implements ThemeReloader {
     private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
@@ -51,6 +54,8 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     public static final String MUSIC_TYPE_CHOISE = "精選";    
     
     public static final String SHARE_PREF_KEY_SOURCE_LIST = "source_list";
+    
+    public static final String WEB_TYPE_KKBOX = "KKBOX";
     
     private U2bPlayerMainFragmentActivity mActivity;
 
@@ -168,7 +173,6 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
      * 進入畫面即產生專輯可點選
      */
     private void addAlbum(String nameAlbum, int picAlbum) {
-        
         mActivity = (U2bPlayerMainFragmentActivity)getActivity();
         if (mHouLinearLayout.getChildCount() % 2 == 0) {
             mHouLinearLayout = new LinearLayout(mActivity);
@@ -185,6 +189,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mAlbumViewButton.setTag(nameAlbum);
             mAlbumViewButton.getBackground().setAlpha(180);
             mAlbumViewButton.setOnClickListener(default_clickHandler);
+            mAlbumViewButton.setOnLongClickListener(default_longClickHandler);
             
             //文字
             mTextView.setText(nameAlbum);
@@ -253,7 +258,8 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 mAlbumViewButton.setTag(mStrAlbum);
                 mAlbumViewButton.getBackground().setAlpha(180);
                 mAlbumViewButton.setOnClickListener(localclickHandler);
-                            
+                
+                
                 //文字
                 mTextView.setText(mStrAlbum);
                 mTextView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
@@ -295,6 +301,25 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             toPlayList(String.valueOf(AlbumView.getTag()));
         }
     };
+    
+    /**
+     * 長按即更新專輯
+     */
+    private OnLongClickListener default_longClickHandler = new OnLongClickListener() {
+        public boolean onLongClick(View v) {
+            mActivity = (U2bPlayerMainFragmentActivity)getActivity();
+            PlayScanner playScanner = new PlayScanner();
+            ImageView AlbumView = (ImageView)v;
+            Log.d(TAG, AlbumView.getTag().toString());
+            playScanner.scan(WEB_TYPE_KKBOX, AlbumView.getTag().toString().substring(0, 2), null);
+            Toast.makeText(mActivity, "start scan process: " + AlbumView.getTag().toString(),
+                    Toast.LENGTH_LONG).show();
+
+            return true;
+        }
+    };
+    
+    
 
     /**
      * 本機-點下專輯進入清單
