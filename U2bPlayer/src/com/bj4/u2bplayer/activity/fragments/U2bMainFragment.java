@@ -17,9 +17,11 @@ import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -179,41 +181,48 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mHouLinearLayout.setGravity(Gravity.CENTER);
         }
         
-        FrameLayout mFrameLayout = new FrameLayout(mActivity);  
-        ImageView mAlbumViewButton = new ImageView(mActivity);
-        TextView mTextView = new TextView(mActivity);
+        FrameLayout frameLayout = new FrameLayout(mActivity);  
+        ImageView albumViewBG = new ImageView(mActivity);
+        ImageView albumViewButton = new ImageView(mActivity);
+        TextView textView = new TextView(mActivity);
         
         try {
+            //底圖
+            albumViewBG.setBackgroundColor(Color.WHITE);
+            albumViewBG.getBackground().setAlpha(100);
+            
             //圖案
-            mAlbumViewButton.setBackgroundResource(picAlbum);
-            mAlbumViewButton.setTag(nameAlbum);
-            mAlbumViewButton.getBackground().setAlpha(180);
-            mAlbumViewButton.setOnClickListener(default_clickHandler);
-            mAlbumViewButton.setOnLongClickListener(default_longClickHandler);
+            albumViewButton.setBackgroundResource(picAlbum);
+            albumViewButton.setTag(nameAlbum);
+            albumViewButton.getBackground().setAlpha(150);
+            albumViewButton.setOnClickListener(default_clickHandler);
+            albumViewButton.setOnLongClickListener(default_longClickHandler);
+            albumViewButton.setOnTouchListener(default_touchHandler);
             
             //文字
-            mTextView.setText(nameAlbum);
-            mTextView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
-            mTextView.setTextColor(Color.WHITE);
-            mTextView.setBackgroundColor(Color.BLACK);
-            mTextView.setSingleLine(true);
-            mTextView.setEllipsize(TruncateAt.END);
-            mTextView.setWidth(4);
-            mTextView.setShadowLayer(10f,   //float radius
+            textView.setText(nameAlbum);
+            textView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
+            textView.setTextColor(Color.WHITE);
+            textView.setBackgroundColor(Color.BLACK);
+            textView.setSingleLine(true);
+            textView.setEllipsize(TruncateAt.END);
+            textView.setWidth(4);
+            textView.setShadowLayer(10f,   //float radius
                                         5f,  //float dx
                                         5f,  //float dy 
                                         Color.BLACK //int color
                                         );
-            mTextView.getBackground().setAlpha(0);
-            mTextView.setGravity(1);
-            mTextView.setMaxEms(1);
+            textView.getBackground().setAlpha(0);
+            textView.setGravity(1);
+            textView.setMaxEms(1);
             
             //圖文重疊
-            mFrameLayout.addView(mAlbumViewButton);
-            mFrameLayout.addView(mTextView);
+            frameLayout.addView(albumViewBG);
+            frameLayout.addView(albumViewButton);
+            frameLayout.addView(textView);
             
             //新增到清單
-            mHouLinearLayout.addView(mFrameLayout);
+            mHouLinearLayout.addView(frameLayout);
             mVerLinearLayout.addView(mHouLinearLayout);
             
         } catch (Exception e) {
@@ -222,26 +231,26 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     }
 
     private void localAddAlbumButton() {
-        FrameLayout mFrameLayout = new FrameLayout(mActivity);  
-        ImageView mAlbumViewButton = new ImageView(mActivity);
-        TextView mTextView = new TextView(mActivity);
+        FrameLayout frameLayout = new FrameLayout(mActivity);  
+        ImageView albumViewButton = new ImageView(mActivity);
+        TextView textView = new TextView(mActivity);
         
         try {
             //分割線
-            mTextView = new TextView(mActivity);
-            mTextView.setBackgroundColor(Color.WHITE);
-            mTextView.getBackground().setAlpha(190);
-            mTextView.setGravity(Gravity.BOTTOM);
-            mVerLinearLayout.addView(mTextView);
+            textView = new TextView(mActivity);
+            textView.setBackgroundColor(Color.WHITE);
+            textView.getBackground().setAlpha(190);
+            textView.setGravity(Gravity.BOTTOM);
+            mVerLinearLayout.addView(textView);
 
             mActivity = (U2bPlayerMainFragmentActivity)getActivity();
             mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
             mHouLinearLayout = new LinearLayout(mActivity);
 
             for (int i = 0; i < mAlbumList.size(); i++) {
-                mFrameLayout = new FrameLayout(mActivity);
-                mAlbumViewButton = new ImageView(mActivity);
-                mTextView = new TextView(mActivity);
+                frameLayout = new FrameLayout(mActivity);
+                albumViewButton = new ImageView(mActivity);
+                textView = new TextView(mActivity);
                 
                 albumMap = new HashMap<String, String>();
 
@@ -254,33 +263,33 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 mStrAlbum = String.valueOf(albumMap.get("ALBUM"));
   
                 //圖案
-                mAlbumViewButton.setBackgroundResource(R.drawable.local);
-                mAlbumViewButton.setTag(mStrAlbum);
-                mAlbumViewButton.getBackground().setAlpha(180);
-                mAlbumViewButton.setOnClickListener(localclickHandler);
-                
+                albumViewButton.setBackgroundResource(R.drawable.local);
+                albumViewButton.setTag(mStrAlbum);
+                albumViewButton.getBackground().setAlpha(180);
+                albumViewButton.setOnClickListener(localclickHandler);
+                albumViewButton.setOnTouchListener(default_touchHandler);
                 
                 //文字
-                mTextView.setText(mStrAlbum);
-                mTextView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
-                mTextView.setTextColor(Color.WHITE);
-                mTextView.setBackgroundColor(Color.BLACK);
-                mTextView.setSingleLine(true);
-                mTextView.setEllipsize(TruncateAt.END);
-                mTextView.setWidth(4);
-                mTextView.setShadowLayer(10f,   //float radius
+                textView.setText(mStrAlbum);
+                textView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
+                textView.setTextColor(Color.WHITE);
+                textView.setBackgroundColor(Color.BLACK);
+                textView.setSingleLine(true);
+                textView.setEllipsize(TruncateAt.END);
+                textView.setWidth(4);
+                textView.setShadowLayer(10f,   //float radius
                                             5f,  //float dx
                                             5f,  //float dy 
                                             Color.BLACK //int color
                                             );
-                mTextView.getBackground().setAlpha(0);
+                textView.getBackground().setAlpha(0);
                 
                 //圖文重疊
-                mFrameLayout.addView(mAlbumViewButton);
-                mFrameLayout.addView(mTextView);
+                frameLayout.addView(albumViewButton);
+                frameLayout.addView(textView);
                 
                 
-                mHouLinearLayout.addView(mFrameLayout);
+                mHouLinearLayout.addView(frameLayout);
                 if (i % 2 == 0) {
                     mVerLinearLayout.addView(mHouLinearLayout);
                 }
@@ -310,12 +319,26 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mActivity = (U2bPlayerMainFragmentActivity)getActivity();
             PlayScanner playScanner = new PlayScanner();
             ImageView AlbumView = (ImageView)v;
-            Log.d(TAG, AlbumView.getTag().toString());
             playScanner.scan(WEB_TYPE_KKBOX, AlbumView.getTag().toString().substring(0, 2), null);
             Toast.makeText(mActivity, "start scan process: " + AlbumView.getTag().toString(),
                     Toast.LENGTH_LONG).show();
-
-            return true;
+            
+            return false;
+        }
+    };
+    
+    private OnTouchListener default_touchHandler = new OnTouchListener() {
+        public boolean onTouch(View v, MotionEvent event) {
+            ImageView AlbumView = (ImageView)v;
+            
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                AlbumView.getBackground().setAlpha(255);
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {  
+                AlbumView.getBackground().setAlpha(150);
+                toPlayList(String.valueOf(AlbumView.getTag()));
+            }
+            return false;
         }
     };
     
