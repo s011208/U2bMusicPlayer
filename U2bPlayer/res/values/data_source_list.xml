@@ -2,8 +2,8 @@
 <resources>
 
     <string-array name="data_source_list">
-        <item>"source 1"</item>
-        <item>"source 2"</item>
+        <item>"流行精選"</item>
+        <item>"我的最愛"</item>
     </string-array>
 
 </resources>

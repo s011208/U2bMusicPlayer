@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils.TruncateAt;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -59,6 +61,10 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     
     public static final String WEB_TYPE_KKBOX = "KKBOX";
     
+    public static final String SOURCE_KKBOX = "0";
+    
+    public static final String SOURCE_MYFAVORITE = "1";
+    
     private U2bPlayerMainFragmentActivity mActivity;
 
     private View mAlbumView;
@@ -88,6 +94,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         SharedPreferences mPref = PlayMusicApplication.getPref(mActivity);
         HashSet<String> mSet = (HashSet<String>)mPref.getStringSet(SHARE_PREF_KEY_SOURCE_LIST, new HashSet<String>());
         SourceListChanged(mSet);
+        getScreenWidthAndSizeInPx(mActivity);
     }
 
     /**
@@ -120,7 +127,6 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 c.close();
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             if (c != null)
                 c.close();
@@ -138,7 +144,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         mHouLinearLayout = new LinearLayout(mActivity);
         mHouLinearLayout.setGravity(Gravity.CENTER);
         try {
-            if("0".equals(source)){
+            if(SOURCE_KKBOX.equals(source)){
                 addAlbum(MUSIC_TYPE_CHINESE + MUSIC_TYPE_CHOISE, R.drawable.kkbox);
                 addAlbum(MUSIC_TYPE_WESTERN + MUSIC_TYPE_CHOISE, R.drawable.kkboxw);
                 addAlbum(MUSIC_TYPE_JAPANESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxj);
@@ -146,8 +152,10 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 addAlbum(MUSIC_TYPE_HOKKIEN + MUSIC_TYPE_CHOISE, R.drawable.kkboxh);
                 addAlbum(MUSIC_TYPE_CANTONESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxc);
             }
+            if(SOURCE_MYFAVORITE.equals(source)){
+                addAlbum("我的最愛", R.drawable.myfavorite);//TODO
+            }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -188,25 +196,24 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         
         try {
             //底圖
-            albumViewBG.setBackgroundColor(Color.WHITE);
-            albumViewBG.getBackground().setAlpha(100);
+            //albumViewBG.setBackgroundColor(Color.BLACK);
             
             //圖案
             albumViewButton.setBackgroundResource(picAlbum);
             albumViewButton.setTag(nameAlbum);
-            albumViewButton.getBackground().setAlpha(150);
             albumViewButton.setOnClickListener(default_clickHandler);
             albumViewButton.setOnLongClickListener(default_longClickHandler);
             albumViewButton.setOnTouchListener(default_touchHandler);
             
             //文字
             textView.setText(nameAlbum);
-            textView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
+            //textView.setTextSize(getResources().getDimension(R.dimen.play_list_view_artist_textsize));
+            textView.setTextSize(getScreenWidthAndSizeInPx(mActivity));
             textView.setTextColor(Color.WHITE);
             textView.setBackgroundColor(Color.BLACK);
             textView.setSingleLine(true);
             textView.setEllipsize(TruncateAt.END);
-            textView.setWidth(4);
+            //textView.setWidth(10);
             textView.setShadowLayer(10f,   //float radius
                                         5f,  //float dx
                                         5f,  //float dy 
@@ -271,7 +278,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 
                 //文字
                 textView.setText(mStrAlbum);
-                textView.setTextSize(getResources().getDimension(R.dimen.action_bar_item_size));
+                textView.setTextSize(getScreenWidthAndSizeInPx(mActivity));
                 textView.setTextColor(Color.WHITE);
                 textView.setBackgroundColor(Color.BLACK);
                 textView.setSingleLine(true);
@@ -283,6 +290,8 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                                             Color.BLACK //int color
                                             );
                 textView.getBackground().setAlpha(0);
+                textView.setGravity(1);
+                textView.setMaxEms(1);
                 
                 //圖文重疊
                 frameLayout.addView(albumViewButton);
@@ -295,7 +304,6 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 }
             }
         } catch (NotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -327,15 +335,18 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         }
     };
     
+    /**
+     * 點擊專輯回饋
+     */
     private OnTouchListener default_touchHandler = new OnTouchListener() {
         public boolean onTouch(View v, MotionEvent event) {
             ImageView AlbumView = (ImageView)v;
             
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                AlbumView.getBackground().setAlpha(255);
+                AlbumView.getBackground().setAlpha(150);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {  
-                AlbumView.getBackground().setAlpha(150);
+                AlbumView.getBackground().setAlpha(255);
                 toPlayList(String.valueOf(AlbumView.getTag()));
             }
             return false;
@@ -365,4 +376,32 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     public void reloadTheme() {
         // TODO Auto-generated method stub
     }
+    
+    public int getScreenWidthAndSizeInPx(Activity activity) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int mTextSize = 0;
+        int heigh = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        int density = (int)displayMetrics.density;
+        int dpi = displayMetrics.densityDpi;
+
+        Log.d(TAG, "heightPixels: "+String.valueOf(heigh));
+        Log.d(TAG, "widthPixels: "+String.valueOf(width));
+        Log.d(TAG, "density: "+String.valueOf(density));
+        Log.d(TAG, "densityDpi: "+String.valueOf(dpi));
+        
+        if (width/density > 700) {
+            mTextSize = 50;
+        } else if (width/density > 500) {
+            mTextSize = 40;
+        } else if (width/density > 300) {
+            mTextSize = 30;
+        } else {
+            mTextSize = 20;
+        }
+        
+        return mTextSize;
+    }
+
 }
