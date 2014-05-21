@@ -57,6 +57,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     public static final String INTENT_SWITCH_FAVORITE = "favorite";
 
     public static final String INTENT_ACTION_PAUSE = "pause";
+    
+    public static final String INTENT_ACTION_EXIT = "exit";
 
     private MultiPlayer mPlayer;
 
@@ -209,6 +211,9 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                         switchFavorite();
                     } else if (INTENT_ACTION_PAUSE.equals(action)) {
                         pauseMusic();
+                    } else if (INTENT_ACTION_EXIT.equals(action)) {
+                        Log.d(TAG, "EXIT");
+                        exitApp();
                     }
                 }
             }
@@ -272,6 +277,12 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
 
     private void resumeMusic() {
         mPlayer.start();
+    }
+    
+    private void exitApp(){
+        Log.d(TAG, "EXIT");
+        int pid = android.os.Process.myPid();
+        android.os.Process.killProcess(pid);
     }
 
     private class PlayMusicRunnable implements Runnable {

@@ -26,6 +26,8 @@ public class SimplePlayWidget extends AppWidgetProvider {
     private static final String PREVIOUS = "previous";
 
     private static final String FAVORITE = "favorite";
+    
+    private static final String EXIT = "exit";
 
     private static boolean sIsPlaying = false;
 
@@ -97,6 +99,8 @@ public class SimplePlayWidget extends AppWidgetProvider {
                     PlayMusicService.PLAY_PREVIOUS_INDEX);
         } else if (PAUSE.equals(action)) {
             sendActions(context, PlayMusicService.INTENT_ACTION_PAUSE);
+        } else if (EXIT.equals(action)) {
+            sendActions(context, PlayMusicService.INTENT_ACTION_EXIT);
         }
         performUpdate(context, sCurrentInfo, sIsPlaying);
     }

@@ -26,6 +26,8 @@ public class NotificationBuilder{
     
     private static final String NEXT = "next";
     
+    private static final String EXIT = "exit";
+    
     private static boolean sIsPlaying = false;
 
     public static final int NOTIFICATION_ID = NotificationBuilder.class.hashCode();
@@ -57,6 +59,8 @@ public class NotificationBuilder{
                 expandedView.setImageViewResource(R.id.paly_pause_music, R.drawable.ic_play);
             }
             expandedView.setOnClickPendingIntent(R.id.next_music, getPendingSelfIntent(context, NEXT));
+            
+            expandedView.setOnClickPendingIntent(R.id.exit_app, getPendingSelfIntent(context, EXIT));
             
             
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
