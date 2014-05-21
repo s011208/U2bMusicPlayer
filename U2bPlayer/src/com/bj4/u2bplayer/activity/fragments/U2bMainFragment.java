@@ -55,7 +55,9 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
 
     public static final String MUSIC_TYPE_CANTONESE = "粵語";
     
-    public static final String MUSIC_TYPE_CHOISE = "精選";    
+    public static final String MUSIC_TYPE_CHOISE = "精選";
+    
+    public static final String MUSIC_TYPE_MYFAVORITE = "我的最愛";
     
     public static final String SHARE_PREF_KEY_SOURCE_LIST = "source_list";
     
@@ -153,7 +155,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 addAlbum(MUSIC_TYPE_CANTONESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxc);
             }
             if(SOURCE_MYFAVORITE.equals(source)){
-                addAlbum("我的最愛", R.drawable.myfavorite);//TODO
+                addAlbum(MUSIC_TYPE_MYFAVORITE, R.drawable.myfavorite);//TODO
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -313,9 +315,15 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
      */
     private OnClickListener default_clickHandler = new OnClickListener() {
         public void onClick(View v) {
+            /* 由OnTouchListener實做即可，過method拿掉會當掉
             ImageView AlbumView = (ImageView)v;
             Log.d(TAG, AlbumView.getTag().toString());
-            toPlayList(String.valueOf(AlbumView.getTag()));
+            if(MUSIC_TYPE_MYFAVORITE.equals(AlbumView.getTag())){
+                Log.d(TAG, "進入我的最愛 click");                
+            }else{
+                toPlayList(String.valueOf(AlbumView.getTag()));
+            }
+            */
         }
     };
     
@@ -327,10 +335,14 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mActivity = (U2bPlayerMainFragmentActivity)getActivity();
             PlayScanner playScanner = new PlayScanner();
             ImageView AlbumView = (ImageView)v;
+
+            if (MUSIC_TYPE_MYFAVORITE.equals(AlbumView.getTag().toString()))
+                return false;
+
             playScanner.scan(WEB_TYPE_KKBOX, AlbumView.getTag().toString().substring(0, 2), null);
             Toast.makeText(mActivity, "start scan process: " + AlbumView.getTag().toString(),
                     Toast.LENGTH_LONG).show();
-            
+
             return false;
         }
     };

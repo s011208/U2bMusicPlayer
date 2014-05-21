@@ -35,6 +35,12 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
     public static final boolean DEBUG = true;
 
+    private static final String MUSIC_TYPE_MYFAVORITE = "我的最愛";
+    
+    private static final String TABLE_FAVORITE = "favorite";
+    
+    private static final String TABLE_ALBUM_INFO = "album_info";
+    
     private View mContentView;
 
     private RelativeLayout mControllPanel;
@@ -71,12 +77,18 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         if (albumName != null && !albumName.isEmpty()) {
             // keep previous status
             sDisplayAlbumName = albumName;
-            sDisplayAlbumId = PlayMusicApplication.getDataBaseHelper()
-                    .getAlbumId(sDisplayAlbumName);
+            if(MUSIC_TYPE_MYFAVORITE.equals(sDisplayAlbumName)){
+                mDisplayList.clear();
+                mDisplayList.addAll(PlayMusicApplication.getDataBaseHelper().getFavoritePlayList());
+            }else{
+                sDisplayAlbumId = PlayMusicApplication.getDataBaseHelper()
+                        .getAlbumId(sDisplayAlbumName);
+                mDisplayList.clear();
+                mDisplayList.addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(sDisplayAlbumName,
+                        true));
+            }
         }
-        mDisplayList.clear();
-        mDisplayList.addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(sDisplayAlbumName,
-                true));
+        
     }
 
     private void initComponents() {
