@@ -26,6 +26,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/ic_play" 
+            android:background="@drawable/widget_simple_item_bg"
             android:layout_toLeftOf ="@+id/next_music"/>
 
         <ImageView
@@ -33,6 +34,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/ic_next" 
+            android:background="@drawable/widget_simple_item_bg"
             android:layout_toLeftOf ="@+id/exit_app"/>
         
         <ImageView
@@ -40,6 +42,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/exit_app" 
+            android:background="@drawable/widget_simple_item_bg"
             android:layout_alignParentRight ="true"/>
         
     </RelativeLayout>

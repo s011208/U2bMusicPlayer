@@ -212,7 +212,6 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     } else if (INTENT_ACTION_PAUSE.equals(action)) {
                         pauseMusic();
                     } else if (INTENT_ACTION_EXIT.equals(action)) {
-                        Log.d(TAG, "EXIT");
                         exitApp();
                     }
                 }
