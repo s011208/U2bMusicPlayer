@@ -35,12 +35,12 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
     public static final boolean DEBUG = true;
 
-    private static final String MUSIC_TYPE_MYFAVORITE = "我的最愛";
-    
     private static final String TABLE_FAVORITE = "favorite";
-    
+
     private static final String TABLE_ALBUM_INFO = "album_info";
-    
+
+    private static final int HOLO_LIGHT_BLUE = 0xff3366ff;
+
     private View mContentView;
 
     private RelativeLayout mControllPanel;
@@ -77,18 +77,15 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         if (albumName != null && !albumName.isEmpty()) {
             // keep previous status
             sDisplayAlbumName = albumName;
-            if(MUSIC_TYPE_MYFAVORITE.equals(sDisplayAlbumName)){
-                mDisplayList.clear();
-                mDisplayList.addAll(PlayMusicApplication.getDataBaseHelper().getFavoritePlayList());
-            }else{
-                sDisplayAlbumId = PlayMusicApplication.getDataBaseHelper()
-                        .getAlbumId(sDisplayAlbumName);
-                mDisplayList.clear();
-                mDisplayList.addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(sDisplayAlbumName,
-                        true));
-            }
+            sDisplayAlbumId = PlayMusicApplication.getDataBaseHelper()
+                    .getAlbumId(sDisplayAlbumName);
+            mDisplayList.clear();
+            mDisplayList.addAll(PlayMusicApplication.getDataBaseHelper().getPlayList(
+                    sDisplayAlbumName, true));
         }
-        
+        if (mPlayListAdapter != null) {
+            mPlayListAdapter.notifyDataSetChanged();
+        }
     }
 
     private void initComponents() {
@@ -150,10 +147,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                             info.mIsFavorite = !info.mIsFavorite;
                             PlayMusicApplication.getDataBaseHelper().addIntoFavorite(info);
                         }
-                        if (mPlayListAdapter != null) {
-                            mPlayListAdapter.notifyDataSetChanged();
-                        }
-                        mActivity.notifyFavoriteChanged();
+                        reloadDisplayList();
                     }
                     return true;
                 }
@@ -275,7 +269,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
 
         private int mSelectedBackground = 0, mLightBackground, mDarkBackground;
 
-        private int mTextColor;
+        private int mTextColor, mSelectTextColor;
 
         @Override
         public int getCount() {
@@ -333,57 +327,70 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                 mLightBackground = R.drawable.theme_blue_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_blue_list_dark_oval_bg;
                 mTextColor = Color.WHITE;
+                mSelectTextColor = HOLO_LIGHT_BLUE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_WHITE) {
                 mSelectedBackground = R.drawable.theme_white_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_white_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_white_list_dark_oval_bg;
                 mTextColor = Color.BLACK;
+                mSelectTextColor = HOLO_LIGHT_BLUE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_BLACK) {
                 mSelectedBackground = R.drawable.theme_black_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_black_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_black_list_dark_oval_bg;
                 mTextColor = Color.WHITE;
+                mSelectTextColor = HOLO_LIGHT_BLUE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_ORANGE) {
                 mSelectedBackground = R.drawable.theme_orange_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_orange_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_orange_list_dark_oval_bg;
                 mTextColor = Color.WHITE;
+                mSelectTextColor = HOLO_LIGHT_BLUE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_YELLOW) {
                 mSelectedBackground = R.drawable.theme_yellow_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_yellow_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_yellow_list_dark_oval_bg;
                 mTextColor = Color.WHITE;
+                mSelectTextColor = HOLO_LIGHT_BLUE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_GRAY) {
                 mSelectedBackground = R.drawable.theme_gray_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_gray_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_gray_list_dark_oval_bg;
                 mTextColor = Color.WHITE;
+                mSelectTextColor = Color.MAGENTA;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_NAVY) {
                 mSelectedBackground = R.drawable.theme_navy_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_navy_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_navy_list_dark_oval_bg;
                 mTextColor = Color.WHITE;
+                mSelectTextColor = Color.MAGENTA;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_PURPLE) {
                 mSelectedBackground = R.drawable.theme_purple_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_purple_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_purple_list_dark_oval_bg;
                 mTextColor = Color.WHITE;
+                mSelectTextColor = Color.BLACK;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_SIMPLE_WHITE) {
                 mSelectedBackground = R.drawable.theme_simple_white_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_simple_white_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_simple_white_list_dark_oval_bg;
                 mTextColor = Color.BLACK;
+                mSelectTextColor = HOLO_LIGHT_BLUE;
             } else if (theme == U2bPlayerMainFragmentActivity.THEME_RED) {
                 mSelectedBackground = R.drawable.theme_red_list_selected_item_oval_bg;
                 mLightBackground = R.drawable.theme_red_list_light_oval_bg;
                 mDarkBackground = R.drawable.theme_red_list_dark_oval_bg;
                 mTextColor = Color.WHITE;
+                mSelectTextColor = HOLO_LIGHT_BLUE;
             }
         }
 
         private void initTheme(final View contentView, final int position) {
+            ViewHolder holder = (ViewHolder)contentView.getTag();
             if (position == mPlayList.getPointer() && isPlayingList()) {
                 contentView.setBackgroundResource(mSelectedBackground);
+                holder.mArtist.setTextColor(mSelectTextColor);
+                holder.mMusic.setTextColor(mSelectTextColor);
             } else {
                 contentView.setBackgroundResource(position % 2 == 0 ? mDarkBackground
                         : mLightBackground);

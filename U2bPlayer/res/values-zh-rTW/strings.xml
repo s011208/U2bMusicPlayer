@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="music_type_my_favorite">我的收藏</string>
+    <string name="app_name">不解釋 聽音樂</string>
     <string name="option_download_data">下載全部資料</string>
     <string name="option_theme">選擇主題</string>
     <string name="option_source">選擇歌曲來源</string>

@@ -57,7 +57,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     
     public static final String MUSIC_TYPE_CHOISE = "精選";
     
-    public static final String MUSIC_TYPE_MYFAVORITE = "我的最愛";
+    public static String MUSIC_TYPE_MYFAVORITE;
     
     public static final String SHARE_PREF_KEY_SOURCE_LIST = "source_list";
     

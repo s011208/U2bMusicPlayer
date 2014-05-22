@@ -4,6 +4,8 @@ package com.bj4.u2bplayer.database;
 import java.util.ArrayList;
 
 import com.bj4.u2bplayer.PlayMusicApplication;
+import com.bj4.u2bplayer.R;
+import com.bj4.u2bplayer.activity.fragments.U2bMainFragment;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 
 import android.content.ContentValues;
@@ -17,7 +19,7 @@ import android.util.Log;
 
 public class U2bDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
+    private static final boolean DEBUG = false && PlayMusicApplication.OVERALL_DEBUG;
 
     private static final String TAG = "U2bDatabaseHelper";
 
@@ -209,6 +211,14 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                         + COLUMN_RANK + " INTEGER," + COLUMN_FAVORITE + " INTEGER default "
                         + COLUMN_NOT_FAVORITE + " ,PRIMARY KEY(" + COLUMN_ARTIST + ", "
                         + COLUMN_ALBUM + ", " + COLUMN_MUSIC + "))");
+        if (U2bMainFragment.MUSIC_TYPE_MYFAVORITE == null) {
+            U2bMainFragment.MUSIC_TYPE_MYFAVORITE = mContext.getResources().getString(
+                    R.string.music_type_my_favorite);
+        }
+        if (getAlbumId(U2bMainFragment.MUSIC_TYPE_MYFAVORITE) == ALBUM_NOT_EXISTED) {
+            addNewAlbum(U2bMainFragment.MUSIC_TYPE_MYFAVORITE);
+        }
+
         if (DEBUG) {
             Log.d(TAG, "table created!");
         }
@@ -250,7 +260,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
     public void addIntoFavorite(PlayListInfo info) {
         ContentValues cv = new ContentValues();
         cv.put(U2bDatabaseHelper.COLUMN_ARTIST, info.mArtist);
-        cv.put(U2bDatabaseHelper.COLUMN_ALBUM, info.mAlbumTitle);
+        cv.put(U2bDatabaseHelper.COLUMN_ALBUM, U2bMainFragment.MUSIC_TYPE_MYFAVORITE);
         cv.put(U2bDatabaseHelper.COLUMN_MUSIC, info.mMusicTitle);
         cv.put(U2bDatabaseHelper.COLUMN_RANK, info.mRank);
         cv.put(U2bDatabaseHelper.COLUMN_RTSP_H, info.mRtspHighQuility);
@@ -260,6 +270,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         cv.put(U2bDatabaseHelper.COLUMN_FAVORITE, info.mIsFavorite ? COLUMN_IS_FAVORITE
                 : COLUMN_NOT_FAVORITE);
         getDb().insert(TABLE_FAVORITE, null, cv);
+        cv.put(U2bDatabaseHelper.COLUMN_ALBUM, info.mAlbumTitle);
         getDb().update(TABLE_MAIN_INFO, cv,
                 U2bDatabaseHelper.COLUMN_VIDEO_ID + "='" + info.mVideoId + "'", null);
     }
@@ -301,15 +312,21 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 null, null, null, COLUMN_RANK);
         ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
         if (rtn != null && rtn.getCount() > 0) {
+            // check download
             convertFromCursorToPlayList(rtn, playList);
         } else {
             if (rtn != null && rtn.isClosed() == false) {
                 rtn.close();
             }
-            if (fromLocalIfNotFound) {
-                rtn = queryDataFromLocalData(null, MediaStore.Audio.Media.ALBUM + "='" + albumName
-                        + "'", null, null);
-                convertFromLocalMusicDataCursorToPlayList(rtn, playList);
+            // check favorite
+            playList.addAll(getFavoritePlayList());
+            if (playList.isEmpty()) {
+                // check local
+                if (fromLocalIfNotFound) {
+                    rtn = queryDataFromLocalData(null, MediaStore.Audio.Media.ALBUM + "='"
+                            + albumName + "'", null, null);
+                    convertFromLocalMusicDataCursorToPlayList(rtn, playList);
+                }
             }
         }
         return playList;
@@ -330,10 +347,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isMusicExisted(String misic, String rank) {
-        Cursor result = query("select * "
-                              + "from " + TABLE_MAIN_INFO 
-                            + " where " + COLUMN_MUSIC + "='" + misic + "' "
-                              + " and " + COLUMN_RANK + "='" + rank + "' ");
+        Cursor result = query("select * " + "from " + TABLE_MAIN_INFO + " where " + COLUMN_MUSIC
+                + "='" + misic + "' " + " and " + COLUMN_RANK + "='" + rank + "' ");
         if (result != null && result.getCount() > 0) {
             result.close();
             return true;
