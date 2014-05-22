@@ -281,8 +281,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     private void exitApp() {
         stopForeground(true);
         try {
-            mPlayer.stop();
-            mPlayer.release();
+            mPlayer.stop(true);
         } catch (Exception e) {
             if (DEBUG)
                 Log.w(TAG, "exit app failed", e);
@@ -554,11 +553,15 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         }
 
         public void stop() {
+            stop(false);
+        }
+
+        public void stop(boolean forceStopService) {
             mCurrentMediaPlayer.reset();
             mIsInitialized = false;
             notifyPlayStateChanged(false);
             notifiWidgetsChanged(false);
-            notifyNotificationChanged(false);
+            notifyNotificationChanged(false, true);
         }
 
         public void release() {
@@ -731,15 +734,23 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void notifyNotificationChanged(boolean isPlaying) {
+        notifyNotificationChanged(isPlaying, false);
+    }
+
+    private void notifyNotificationChanged(boolean isPlaying, boolean forceStopService) {
         final PlayListInfo info = mPlayList.getCurrentPlayingListInfo();
         if (info == null)
             return;
-        startForeground(NotificationBuilder.NOTIFICATION_ID,
-                NotificationBuilder.createSimpleNotification(getApplicationContext(), info,
-                        isPlaying));
-        NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.cancel(NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID);
-        mIsForeground = true;
+        if (forceStopService) {
+            mIsForeground = false;
+        } else {
+            startForeground(NotificationBuilder.NOTIFICATION_ID,
+                    NotificationBuilder.createSimpleNotification(getApplicationContext(), info,
+                            isPlaying));
+            NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+            nm.cancel(NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID);
+            mIsForeground = true;
+        }
     }
 
     private void notifyFavoriteChange() {
