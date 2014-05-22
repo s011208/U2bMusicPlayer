@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
@@ -315,7 +317,6 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
      */
     private OnClickListener default_clickHandler = new OnClickListener() {
         public void onClick(View v) {
-            /* 由OnTouchListener實做即可，過method拿掉會當掉
             ImageView AlbumView = (ImageView)v;
             Log.d(TAG, AlbumView.getTag().toString());
             if(MUSIC_TYPE_MYFAVORITE.equals(AlbumView.getTag())){
@@ -323,7 +324,6 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             }else{
                 toPlayList(String.valueOf(AlbumView.getTag()));
             }
-            */
         }
     };
     
@@ -333,16 +333,41 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     private OnLongClickListener default_longClickHandler = new OnLongClickListener() {
         public boolean onLongClick(View v) {
             mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-            PlayScanner playScanner = new PlayScanner();
-            ImageView AlbumView = (ImageView)v;
-
+            final ImageView AlbumView = (ImageView)v;
+            final PlayScanner playScanner = new PlayScanner();
+            
             if (MUSIC_TYPE_MYFAVORITE.equals(AlbumView.getTag().toString()))
                 return false;
 
-            playScanner.scan(WEB_TYPE_KKBOX, AlbumView.getTag().toString().substring(0, 2), null);
-            Toast.makeText(mActivity, "start scan process: " + AlbumView.getTag().toString(),
-                    Toast.LENGTH_LONG).show();
-
+            AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity);
+            dialog.setTitle("更新");
+            dialog.setMessage("是否要更新"+AlbumView.getTag().toString());
+            dialog.setIcon(android.R.drawable.ic_dialog_alert);
+            dialog.setCancelable(false);
+            dialog.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // 按下PositiveButton要做的事
+                    Toast.makeText(mActivity, "start scan process: " + AlbumView.getTag().toString(),
+                            Toast.LENGTH_LONG).show();
+                    playScanner.scan(WEB_TYPE_KKBOX, AlbumView.getTag().toString().substring(0, 2), null);
+                    
+                }
+            });
+            dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // TODO Auto-generated method stub
+//                    Toast.makeText(mActivity, "丟掉", Toast.LENGTH_SHORT).show();
+                }
+            });
+//            dialog.setNeutralButton("中性", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int which) {
+//                    // TODO Auto-generated method stub
+//                    Toast.makeText(mActivity, "取消", Toast.LENGTH_LONG).show();
+//                }
+//            });
+            
+            dialog.show();
+            
             return false;
         }
     };
@@ -359,7 +384,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {  
                 AlbumView.getBackground().setAlpha(255);
-                toPlayList(String.valueOf(AlbumView.getTag()));
+//                toPlayList(String.valueOf(AlbumView.getTag()));
             }
             return false;
         }
