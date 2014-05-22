@@ -261,6 +261,9 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         if (mPlayListAdapter != null) {
             mPlayListAdapter.notifyDataSetChanged();
         }
+        if (mPlayOrPause != null && mActivity != null) {
+            mPlayOrPause.setDisplayedChild(mActivity.isPlaying() ? 1 : 0);
+        }
     }
 
     public void updateListContent() {
