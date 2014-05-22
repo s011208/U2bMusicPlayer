@@ -57,7 +57,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     public static final String INTENT_SWITCH_FAVORITE = "favorite";
 
     public static final String INTENT_ACTION_PAUSE = "pause";
-    
+
     public static final String INTENT_ACTION_EXIT = "exit";
 
     private MultiPlayer mPlayer;
@@ -277,8 +277,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     private void resumeMusic() {
         mPlayer.start();
     }
-    
-    private void exitApp(){
+
+    private void exitApp() {
         Log.d(TAG, "EXIT");
         int pid = android.os.Process.myPid();
         android.os.Process.killProcess(pid);
@@ -729,7 +729,10 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         if (info == null)
             return;
         startForeground(NotificationBuilder.NOTIFICATION_ID,
-                NotificationBuilder.createSimpleNotification(getApplicationContext(), info, isPlaying));
+                NotificationBuilder.createSimpleNotification(getApplicationContext(), info,
+                        isPlaying));
+        NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancel(NotificationBuilder.RECOMMAND_START_APP_NOTIFICATION_ID);
         mIsForeground = true;
     }
 

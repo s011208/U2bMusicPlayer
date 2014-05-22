@@ -288,7 +288,7 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
         getDb().delete(TABLE_FAVORITE, null, null);
     }
 
-    public ArrayList<PlayListInfo> getFavoritePlayList() {
+    private ArrayList<PlayListInfo> getFavoritePlayList() {
         ArrayList<PlayListInfo> playList = new ArrayList<PlayListInfo>();
         Cursor rtn = getDb().query(TABLE_FAVORITE, null, null, null, null, null, null);
         if (rtn != null) {
@@ -319,7 +319,8 @@ public class U2bDatabaseHelper extends SQLiteOpenHelper {
                 rtn.close();
             }
             // check favorite
-            playList.addAll(getFavoritePlayList());
+            if (albumName != null && albumName.equals(U2bMainFragment.MUSIC_TYPE_MYFAVORITE))
+                playList.addAll(getFavoritePlayList());
             if (playList.isEmpty()) {
                 // check local
                 if (fromLocalIfNotFound) {
