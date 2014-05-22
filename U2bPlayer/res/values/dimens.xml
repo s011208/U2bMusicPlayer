@@ -31,8 +31,6 @@
     <dimen name="play_list_fragment_control_panel_second_btn_size">50dp</dimen>
     <dimen name="play_list_fragment_control_panel_btn_margin">10dp</dimen>
     <dimen name="play_list_view_item_height">65dp</dimen>
-    <dimen name="play_list_view_artist_height">35dp</dimen>
-    <dimen name="play_list_view_music_height">30dp</dimen>
     <dimen name="play_list_view_artist_textsize">26sp</dimen>
     <dimen name="play_list_view_music_textsize">18sp</dimen>
     <!-- playInfo fragment -->

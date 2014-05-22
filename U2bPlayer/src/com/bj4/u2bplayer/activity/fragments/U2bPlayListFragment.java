@@ -19,13 +19,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -97,6 +101,8 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             mControllPanel = (RelativeLayout)mContentView
                     .findViewById(R.id.play_list_controll_panel);
             mPlayListView = (ListView)mContentView.findViewById(R.id.play_list_view);
+            View blankView = mLayoutInflater.inflate(R.layout.play_list_content_blank_view, null);
+            mPlayListView.addFooterView(blankView);
             mPlayListAdapter = new PlayListAdapter();
             mPlayListView.setSelector(R.color.transparent);
             mPlayListView.setAdapter(mPlayListAdapter);
@@ -277,7 +283,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         }
 
         @Override
-        public Object getItem(int position) {
+        public PlayListInfo getItem(int position) {
             return mDisplayList.get(position);
         }
 
@@ -289,6 +295,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
         @Override
         public View getView(int position, View contentView, ViewGroup parent) {
             ViewHolder holder = null;
+            final PlayListInfo info = getItem(position);
             if (contentView == null) {
                 if (mSelectedBackground == 0) {
                     initColor();
@@ -302,9 +309,10 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
             } else {
                 holder = (ViewHolder)contentView.getTag();
             }
-            holder.mArtist.setText(mDisplayList.get(position).mArtist);
+
+            holder.mArtist.setText(info.mArtist);
             holder.mArtist.setTextColor(mTextColor);
-            holder.mMusic.setText(mDisplayList.get(position).mMusicTitle);
+            holder.mMusic.setText(info.mMusicTitle);
             holder.mMusic.setTextColor(mTextColor);
             if (mDisplayList.get(position).mIsFavorite) {
                 holder.mThumbnail.setImageResource(R.drawable.widget_favorite_true);

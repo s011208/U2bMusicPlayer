@@ -1,21 +1,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/play_list_view_item_height" >
+    android:layout_height="wrap_content" >
 
     <ImageView
         android:id="@+id/play_list_thumbnail"
         android:layout_width="30dp"
-        android:layout_centerInParent="true"
         android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
         android:layout_marginLeft="3dp"
-        android:layout_marginRight="5dp"
-        android:layout_alignParentLeft="true" />
+        android:layout_marginRight="5dp" />
 
     <TextView
         android:id="@+id/play_list_artist"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/play_list_view_artist_height"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/play_list_thumbnail"
         android:ellipsize="marquee"
@@ -29,8 +29,9 @@
     <TextView
         android:id="@+id/play_list_music"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/play_list_view_music_height"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_below="@+id/play_list_artist"
         android:layout_toRightOf="@+id/play_list_thumbnail"
         android:ellipsize="marquee"
         android:gravity="center_vertical"
