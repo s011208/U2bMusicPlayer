@@ -2,6 +2,7 @@
 package com.bj4.u2bplayer.dialogs;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
@@ -13,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -86,9 +88,9 @@ public class DataSourceDialog extends SubDialogs {
             mCheckedList = new boolean[mSource.length];
             myInflater = LayoutInflater.from(mContext);
             mPref = PlayMusicApplication.getPref(mContext);
-            mSet = (HashSet<String>) mPref
+            mSet = new HashSet<String>((HashSet<String>) mPref
                     .getStringSet(U2bPlayerMainFragmentActivity.SHARE_PREF_KEY_SOURCE_LIST,
-                            new HashSet<String>());
+                            new HashSet<String>()));
             for (int i = 0; i < mCheckedList.length; i++) {
                 if (mSet.contains(String.valueOf(i))) {
                     mCheckedList[i] = true;

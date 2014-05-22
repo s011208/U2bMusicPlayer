@@ -146,16 +146,16 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         mHouLinearLayout = new LinearLayout(mActivity);
         mHouLinearLayout.setGravity(Gravity.CENTER);
         try {
-            if(SOURCE_KKBOX.equals(source)){
+            if (SOURCE_MYFAVORITE.equals(source)) {
+                addAlbum(MUSIC_TYPE_MYFAVORITE, R.drawable.myfavorite);// TODO
+            }
+            if (SOURCE_KKBOX.equals(source)) {
                 addAlbum(MUSIC_TYPE_CHINESE + MUSIC_TYPE_CHOISE, R.drawable.kkbox);
                 addAlbum(MUSIC_TYPE_WESTERN + MUSIC_TYPE_CHOISE, R.drawable.kkboxw);
                 addAlbum(MUSIC_TYPE_JAPANESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxj);
                 addAlbum(MUSIC_TYPE_KOREAN + MUSIC_TYPE_CHOISE, R.drawable.kkboxk);
                 addAlbum(MUSIC_TYPE_HOKKIEN + MUSIC_TYPE_CHOISE, R.drawable.kkboxh);
                 addAlbum(MUSIC_TYPE_CANTONESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxc);
-            }
-            if(SOURCE_MYFAVORITE.equals(source)){
-                addAlbum(MUSIC_TYPE_MYFAVORITE, R.drawable.myfavorite);//TODO
             }
         } catch (Exception e) {
             e.printStackTrace();

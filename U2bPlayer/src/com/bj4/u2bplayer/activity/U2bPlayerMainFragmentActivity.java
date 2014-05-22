@@ -285,7 +285,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     private void notifySourceListChanged() {
-        HashSet<String> mSet = (HashSet<String>)mPref.getStringSet(SHARE_PREF_KEY_SOURCE_LIST,
+        HashSet<String> mSet = (HashSet<String>) mPref.getStringSet(SHARE_PREF_KEY_SOURCE_LIST,
                 new HashSet<String>());
         getMainFragment().SourceListChanged(mSet);
     }
@@ -525,7 +525,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             Object windowManagerService = m.invoke(null, new Object[] {});
             c = windowManagerService.getClass();
             m = c.getDeclaredMethod("hasNavigationBar", new Class<?>[] {});
-            hasNavigationBar = (Boolean)m.invoke(windowManagerService, new Object[] {});
+            hasNavigationBar = (Boolean) m.invoke(windowManagerService, new Object[] {});
             if (DEBUG)
                 Log.d(TAG, "hasNavigationBar: " + hasNavigationBar);
         } catch (Exception e) {
@@ -535,8 +535,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // TODO do something about transparent navigation bar
-            int statusBarHeight = (int)getResources().getDimension(R.dimen.status_bar_height);
-            int navigationBarHeight = hasNavigationBar ? (int)getResources().getDimension(
+            int statusBarHeight = (int) getResources().getDimension(R.dimen.status_bar_height);
+            int navigationBarHeight = hasNavigationBar ? (int) getResources().getDimension(
                     R.dimen.navigation_bar_height) : 0;
             // mMainLayout.setPadding(mMainLayout.getPaddingLeft(),
             // statusBarHeight,
@@ -545,24 +545,17 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     private void checkSourceListInAdvance() {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    HashSet<String> set = (HashSet<String>)mPref.getStringSet(
-                            SHARE_PREF_KEY_SOURCE_LIST, new HashSet<String>());
-                    if (set.size() == 0) {
-                        // put default
-                        set.add("1");
-                    }
-                    mPref.edit().putStringSet(SHARE_PREF_KEY_SOURCE_LIST, set).commit();
-                } catch (Exception e) {
-                    // ignore
-                }
+        try {
+            HashSet<String> set = (HashSet<String>) mPref.getStringSet(
+                    SHARE_PREF_KEY_SOURCE_LIST, new HashSet<String>());
+            if (set.size() == 0) {
+                // put default
+                set.add("0");
             }
-        }).start();
-
+            mPref.edit().putStringSet(SHARE_PREF_KEY_SOURCE_LIST, set).commit();
+        } catch (Exception e) {
+            // ignore
+        }
     }
 
     private void initComponents() {
@@ -570,26 +563,26 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         checkSourceListInAdvance();
         mPlayList = PlayList.getInstance(this);
         mPlayList.addCallback(mPlayListCallback);
-        mMainLayout = (RelativeLayout)findViewById(R.id.u2b_main_activity_main_layout);
-        mActionBar = (RelativeLayout)findViewById(R.id.action_bar_parent);
-        mOptionBtn = (ImageButton)findViewById(R.id.menu);
-        mActionBarTitle = (TextView)findViewById(R.id.action_bar_music_info);
-        mMainContentFragment = (LinearLayout)findViewById(R.id.main_fragment_container);
-        mStatusBar = (RelativeLayout)findViewById(R.id.main_status_bar);
-        mStatusBarInfo = (TextView)findViewById(R.id.main_status_bar_info);
+        mMainLayout = (RelativeLayout) findViewById(R.id.u2b_main_activity_main_layout);
+        mActionBar = (RelativeLayout) findViewById(R.id.action_bar_parent);
+        mOptionBtn = (ImageButton) findViewById(R.id.menu);
+        mActionBarTitle = (TextView) findViewById(R.id.action_bar_music_info);
+        mMainContentFragment = (LinearLayout) findViewById(R.id.main_fragment_container);
+        mStatusBar = (RelativeLayout) findViewById(R.id.main_status_bar);
+        mStatusBarInfo = (TextView) findViewById(R.id.main_status_bar_info);
 
         notifyStatusBarVisibilityChanged();
         initMainLayout();
         initActionBarComponents();
 
         // main admob
-        mAdViewParent = (FrameLayout)findViewById(R.id.ad_view_parent);
-        mAdView = (AdView)findViewById(R.id.adView);
+        mAdViewParent = (FrameLayout) findViewById(R.id.ad_view_parent);
+        mAdView = (AdView) findViewById(R.id.adView);
         if (PlayMusicApplication.sAdAvailable) {
             mAdView.loadAd(new AdRequest.Builder().build());
         }
         if (PlayMusicApplication.sAdAvailable == true) {
-            mCloseAdViewBtn = (Button)findViewById(R.id.close_adview_btn);
+            mCloseAdViewBtn = (Button) findViewById(R.id.close_adview_btn);
             mCloseAdViewBtn.setOnClickListener(new OnClickListener() {
 
                 @Override
@@ -615,9 +608,9 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
             }
 
             // vpon
-            mVponBanner = (VpadnBanner)findViewById(R.id.vpadnBannerXML);
-            mCloseVponAdViewBtn = (Button)findViewById(R.id.close_vpon_adview_btn);
-            mVponAdViewParent = (FrameLayout)findViewById(R.id.vpon_ad_view_parent);
+            mVponBanner = (VpadnBanner) findViewById(R.id.vpadnBannerXML);
+            mCloseVponAdViewBtn = (Button) findViewById(R.id.close_vpon_adview_btn);
+            mVponAdViewParent = (FrameLayout) findViewById(R.id.vpon_ad_view_parent);
             mCloseVponAdViewBtn.setOnClickListener(new OnClickListener() {
 
                 @Override
@@ -718,21 +711,21 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         if (mU2bMainFragment == null) {
             mU2bMainFragment = new U2bMainFragment();
         }
-        return (U2bMainFragment)mU2bMainFragment;
+        return (U2bMainFragment) mU2bMainFragment;
     }
 
     private synchronized U2bPlayListFragment getPlayListFragment() {
         if (mU2bPlayListFragment == null) {
             mU2bPlayListFragment = new U2bPlayListFragment();
         }
-        return (U2bPlayListFragment)mU2bPlayListFragment;
+        return (U2bPlayListFragment) mU2bPlayListFragment;
     }
 
     private synchronized U2bPlayInfoFragment getPlayInfoFragment() {
         if (mU2bPlayInfoFragment == null) {
             mU2bPlayInfoFragment = new U2bPlayInfoFragment();
         }
-        return (U2bPlayInfoFragment)mU2bPlayInfoFragment;
+        return (U2bPlayInfoFragment) mU2bPlayInfoFragment;
     }
 
     public void initActionBarComponents() {
@@ -800,7 +793,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     };
 
     private void checkWifiStatusAndScan() {
-        ConnectivityManager connManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         final boolean isWifiConnected = mWifi.isConnected();
         final boolean is3GAllowed = PlayMusicApplication.sAllow3GUpdate;
@@ -1232,7 +1225,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private void reloadTheme() {
         Fragment fag = getCurrentFragment();
         if (fag != null && fag instanceof ThemeReloader) {
-            ((ThemeReloader)fag).reloadTheme();
+            ((ThemeReloader) fag).reloadTheme();
         }
     }
 
