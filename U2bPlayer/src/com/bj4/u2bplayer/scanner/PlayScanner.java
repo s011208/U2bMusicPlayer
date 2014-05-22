@@ -186,6 +186,14 @@ public class PlayScanner {
             Log.d(TAG, "!isDataExsit(listSource): " + String.valueOf(isDataExsit(listSource)));
             if (!isDataExsit(listSource)) {
                 databaseHelper.insert(listSource, true);
+                try {
+                    String albumName = listSource.get(0).getAsString(
+                            U2bDatabaseHelper.COLUMN_ALBUM);
+                    databaseHelper.addNewAlbum(albumName);
+                } catch (Exception e) {
+                    if (DEBUG)
+                        Log.w(TAG, "faile to add album info", e);
+                }
             }
         }
     }
