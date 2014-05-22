@@ -279,9 +279,15 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
     }
 
     private void exitApp() {
-        Log.d(TAG, "EXIT");
-        int pid = android.os.Process.myPid();
-        android.os.Process.killProcess(pid);
+        stopForeground(true);
+        try {
+            mPlayer.stop();
+            mPlayer.release();
+        } catch (Exception e) {
+            if (DEBUG)
+                Log.w(TAG, "exit app failed", e);
+        }
+        stopSelf();
     }
 
     private class PlayMusicRunnable implements Runnable {
