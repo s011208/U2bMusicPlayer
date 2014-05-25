@@ -28,7 +28,7 @@
     <string name="settings_headset_notification_title">顯示開始提醒</string>
     <string name="settings_headset_notification_info">插入音效裝置時顯示提醒</string>
     <string name="share_chooser_title">分享音樂給...</string>
-    <string name="share_string_former">"我正在使用 U2B 音樂撥放器聽 "</string>
+    <string name="share_string_former">"我正在使用 不解釋 聽音樂 聽 "</string>
     <string name="share_string_rear">"， 趕快加入我讓我們一起享受吧！"</string>
     <string name="dialog_alarm_3g_update">"允許使用3g下載資料嗎?"</string>
     <string name="simple_play_widget_none_playinfo">"讓我們 Rock 一下吧！"</string>
