@@ -122,6 +122,12 @@ public class SettingsDialog extends SubDialogs {
             cbList.add(cb);
             cb.setText(sources[position]);
             cb.setTextColor(Color.BLACK);
+            cb.setChecked(checkedList[position]);
+            if (dataSet.size() <= 1 && checkedList[position]) {
+                cb.setEnabled(false);
+            } else {
+                cb.setEnabled(true);
+            }
             cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
                 @Override
@@ -148,12 +154,6 @@ public class SettingsDialog extends SubDialogs {
                                     U2bPlayerMainFragmentActivity.DATA_SOURCE_LIST_CHANGED_INTENT));
                 }
             });
-            cb.setChecked(checkedList[position]);
-            if (dataSet.size() <= 1 && checkedList[position]) {
-                cb.setEnabled(false);
-            } else {
-                cb.setEnabled(true);
-            }
             sourceList.addView(cb);
         }
 
