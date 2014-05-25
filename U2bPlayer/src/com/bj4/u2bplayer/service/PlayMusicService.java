@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
+import com.bj4.u2bplayer.dialogs.SleepModeDialog;
 import com.bj4.u2bplayer.utilities.NotificationBuilder;
 import com.bj4.u2bplayer.utilities.PlayListInfo;
 import com.bj4.u2bplayer.widget.SimplePlayWidget;
@@ -212,7 +213,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     } else if (INTENT_ACTION_PAUSE.equals(action)) {
                         pauseMusic();
                     } else if (INTENT_ACTION_EXIT.equals(action)) {
-                        exitApp();
+                        stopPlayService();
                     }
                 }
             }
@@ -279,7 +280,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         mPlayer.start();
     }
 
-    private void exitApp() {
+    private void stopPlayService() {
         stopForeground(true);
         try {
             mPlayer.stop(true);
@@ -722,6 +723,41 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
             notifyFavoriteChange();
         }
 
+        @Override
+        public void sleepMode(int type) throws RemoteException {
+            // TODO Auto-generated method stub
+            mHandler.removeCallbacks(mSleepMode);
+            int postTime = 0;
+            switch (type) {
+                case SleepModeDialog.DISABLE:
+                    return;
+                case SleepModeDialog.MINS_15:
+                    postTime = 900000;
+                    break;
+                case SleepModeDialog.MINS_30:
+                    postTime = 1800000;
+                    break;
+                case SleepModeDialog.HOUR_1:
+                    postTime = 3600000;
+                    break;
+                case SleepModeDialog.HOUR_2:
+                    postTime = 7200000;
+                    break;
+                case SleepModeDialog.HOUR_3:
+                    postTime = 10800000;
+                    break;
+            }
+            mHandler.postDelayed(mSleepMode, postTime);
+        }
+
+    };
+
+    private Runnable mSleepMode = new Runnable() {
+
+        @Override
+        public void run() {
+            stopPlayService();
+        }
     };
 
     final RemoteCallbackList<IPlayMusicServiceCallback> mCallbacks = new RemoteCallbackList<IPlayMusicServiceCallback>();

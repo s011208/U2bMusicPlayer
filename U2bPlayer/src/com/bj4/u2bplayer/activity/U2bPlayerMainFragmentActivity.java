@@ -52,6 +52,7 @@ import com.bj4.u2bplayer.activity.fragments.U2bMainFragment;
 import com.bj4.u2bplayer.activity.fragments.U2bPlayInfoFragment;
 import com.bj4.u2bplayer.activity.fragments.U2bPlayListFragment;
 import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
+import com.bj4.u2bplayer.dialogs.SleepModeDialog;
 import com.bj4.u2bplayer.service.IPlayMusicService;
 import com.bj4.u2bplayer.service.IPlayMusicServiceCallback;
 import com.bj4.u2bplayer.service.ISpiderService;
@@ -796,9 +797,32 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
                     }
                     purchaseNoAds();
                     break;
+                case MainActivityOptionDialog.ITEM_SLEEP_MODE:
+                    if (DEBUG) {
+                        Log.d(TAG, "action bar -- ITEM_NON_ADS");
+                    }
+                    showSleepModeDialog();
+                    break;
             }
         }
     };
+
+    private void showSleepModeDialog() {
+        SleepModeDialog dialog = new SleepModeDialog(new SleepModeDialog.SleepModeDialogCallback() {
+
+            @Override
+            public void onItemSelected(int type) {
+                try {
+                    if (mPlayMusicService != null)
+                        mPlayMusicService.sleepMode(type);
+                } catch (RemoteException e) {
+                    if (DEBUG)
+                        Log.w(TAG, "failed to set sleep mode", e);
+                }
+            }
+        });
+        dialog.show(getFragmentManager(), "");
+    }
 
     private void checkWifiStatusAndScan() {
         ConnectivityManager connManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);

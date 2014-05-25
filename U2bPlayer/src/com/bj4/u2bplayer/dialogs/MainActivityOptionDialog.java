@@ -36,6 +36,8 @@ public class MainActivityOptionDialog extends DialogFragment {
 
     public static final int ITEM_NON_ADS = 1;
 
+    public static final int ITEM_SLEEP_MODE = 2;
+
     public interface MainActivityOptionDialogCallback {
         public void onSelected(int option);
     }
@@ -66,6 +68,8 @@ public class MainActivityOptionDialog extends DialogFragment {
         options.add(settings);
         final String share = mContext.getString(R.string.option_share);
         options.add(share);
+        final String sleepMode = mContext.getString(R.string.option_sleep_mode);
+        options.add(sleepMode);
         final String noAds = mContext.getString(R.string.option_no_ads);
         if (PlayMusicApplication.sAdAvailable == true)
             options.add(noAds);
@@ -102,6 +106,10 @@ public class MainActivityOptionDialog extends DialogFragment {
                 } else if (selectedItem.equals(noAds)) {
                     if (mCallback != null) {
                         mCallback.onSelected(ITEM_NON_ADS);
+                    }
+                } else if (selectedItem.equals(sleepMode)) {
+                    if (mCallback != null) {
+                        mCallback.onSelected(ITEM_SLEEP_MODE);
                     }
                 }
             }
