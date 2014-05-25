@@ -1,6 +1,6 @@
 <resources>
 
     <!-- dialogs -->
-    <integer name="theme_selector_dialog_column">2</integer>
+    <integer name="theme_selector_dialog_column">3</integer>
 
 </resources>

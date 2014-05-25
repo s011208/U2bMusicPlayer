@@ -25,6 +25,7 @@ public class ThemeSample extends LinearLayout {
         super(context, attrs, defStyle);
         mContext = context;
         setOrientation(LinearLayout.VERTICAL);
+        setBackgroundResource(R.drawable.theme_sample_view_background);
     }
 
     public void setTheme(int theme) {

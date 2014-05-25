@@ -40,7 +40,6 @@ public abstract class SubDialogs extends DialogFragment {
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.MATCH_PARENT;
         lp.gravity = Gravity.CENTER;
-        lp.alpha = 0.9f;
         window.setAttributes(lp);
     }
 }

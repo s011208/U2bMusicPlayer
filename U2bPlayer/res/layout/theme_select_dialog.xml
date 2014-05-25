@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@color/dialog_background"
     android:horizontalSpacing="@dimen/theme_selector_grid_layout_margin"
     android:padding="@dimen/theme_selector_grid_padding"
     android:verticalSpacing="@dimen/theme_selector_grid_layout_margin" >

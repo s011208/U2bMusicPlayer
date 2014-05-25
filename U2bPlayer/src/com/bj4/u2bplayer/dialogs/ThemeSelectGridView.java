@@ -72,9 +72,6 @@ public class ThemeSelectGridView extends GridView {
                 mContext.sendBroadcast(new Intent(
                         U2bPlayerMainFragmentActivity.THEME_CHANGED_INTENT).putExtra(
                         U2bPlayerMainFragmentActivity.THEME_CHANGED_INTENT_EXTRA_THEME, position));
-                if (mDismissCallback != null) {
-                    mDismissCallback.dismissThemeDialog();
-                }
             }
         });
     }
