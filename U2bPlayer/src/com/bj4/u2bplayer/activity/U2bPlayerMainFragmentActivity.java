@@ -113,6 +113,8 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
 
     public static final String SHARE_PREF_KEY_SOURCE_LIST = "source_list";
 
+    public static final String SHARE_PREF_KEY_FIRST_TIME_SCAN = "first_time_scan";
+
     private RelativeLayout mMainLayout, mActionBar, mStatusBar;
 
     private LinearLayout mMainContentFragment;
@@ -1021,6 +1023,13 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     private ServiceConnection mSpiderServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mSpiderService = ISpiderService.Stub.asInterface(service);
+            if (mPref != null) {
+                boolean hasStart = mPref.getBoolean(SHARE_PREF_KEY_FIRST_TIME_SCAN, false);
+                if (!hasStart) {
+                    mPref.edit().putBoolean(SHARE_PREF_KEY_FIRST_TIME_SCAN, true).apply();
+                    startToScan();
+                }
+            }
         }
 
         public void onServiceDisconnected(ComponentName className) {

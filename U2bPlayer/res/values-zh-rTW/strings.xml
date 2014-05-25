@@ -36,4 +36,5 @@
     <string name="simple_play_widget_none_playinfo">"讓我們 Rock 一下吧！"</string>
     <string name="toast_add_into_favorite">已經加入我的最愛列表</string>
     <string name="toast_remove_from_favorite">已經從我的最愛列表刪除</string>
+    <string name="spider_service_taost_start_to_scan">開始搜尋資料!</string>
 </resources>

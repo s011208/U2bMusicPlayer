@@ -2,6 +2,7 @@
 package com.bj4.u2bplayer.service;
 
 import com.bj4.u2bplayer.PlayMusicApplication;
+import com.bj4.u2bplayer.R;
 
 import android.app.Service;
 import android.content.Intent;
@@ -39,8 +40,8 @@ public class SpiderService extends Service {
                 @Override
                 public void run() {
                     PlayMusicApplication.getPlayScanner().scan();
-                    Toast.makeText(getApplicationContext(), "start scan process", Toast.LENGTH_LONG)
-                            .show();
+                    Toast.makeText(getApplicationContext(),
+                            R.string.spider_service_taost_start_to_scan, Toast.LENGTH_LONG).show();
                 }
             });
         }
