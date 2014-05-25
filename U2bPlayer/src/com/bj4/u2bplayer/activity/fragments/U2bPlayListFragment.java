@@ -154,6 +154,7 @@ public class U2bPlayListFragment extends Fragment implements MainFragmentCallbac
                             PlayMusicApplication.getDataBaseHelper().addIntoFavorite(info);
                         }
                         reloadDisplayList();
+                        mActivity.notifyFavoriteChanged();
                     }
                     return true;
                 }

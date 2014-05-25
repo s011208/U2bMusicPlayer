@@ -226,7 +226,8 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
         PlayListInfo info = mPlayList.getCurrentPlayingListInfo();
         if (info == null)
             return;
-        if (info.mIsFavorite) {
+        info.mIsFavorite = !info.mIsFavorite;
+        if (!info.mIsFavorite) {
             Toast.makeText(this, info.mMusicTitle + getString(R.string.toast_remove_from_favorite),
                     Toast.LENGTH_SHORT).show();
             PlayMusicApplication.getDataBaseHelper().removeFromFavorite(info);
@@ -235,7 +236,7 @@ public class PlayMusicService extends Service implements PlayList.PlayListLoader
                     Toast.LENGTH_SHORT).show();
             PlayMusicApplication.getDataBaseHelper().addIntoFavorite(info);
         }
-        info.mIsFavorite = !info.mIsFavorite;
+
         notifyFavoriteChange();
     }
 
