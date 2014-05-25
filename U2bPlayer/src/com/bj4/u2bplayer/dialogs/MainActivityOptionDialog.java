@@ -62,8 +62,6 @@ public class MainActivityOptionDialog extends DialogFragment {
         options.add(sync);
         final String theme = mContext.getString(R.string.option_theme);
         options.add(theme);
-        final String dataSourceLists = mContext.getString(R.string.option_source);
-        options.add(dataSourceLists);
         final String settings = mContext.getString(R.string.option_settings);
         options.add(settings);
         final String share = mContext.getString(R.string.option_share);
@@ -85,9 +83,6 @@ public class MainActivityOptionDialog extends DialogFragment {
                 } else if (selectedItem.equals(theme)) {
                     ThemeSelectDialog ts = new ThemeSelectDialog();
                     ts.show(getActivity().getFragmentManager(), "");
-                } else if (selectedItem.equals(dataSourceLists)) {
-                    DataSourceDialog ds = new DataSourceDialog();
-                    ds.show(getActivity().getFragmentManager(), "");
                 } else if (selectedItem.equals(settings)) {
                     SettingsDialog sd = new SettingsDialog();
                     sd.show(getActivity().getFragmentManager(), "");

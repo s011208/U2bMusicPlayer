@@ -255,6 +255,55 @@
                     android:textSize="@dimen/settings_info_text_size" />
             </RelativeLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:background="@drawable/settings_items_bg"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp" >
+
+                <LinearLayout
+                    android:id="@+id/data_soruce_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:orientation="vertical" >
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="3dp"
+                    android:layout_toLeftOf="@+id/data_soruce_list"
+                    android:text="@string/settings_data_source_title"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_title_text_size" />
+
+                <TextView
+                    android:id="@+id/info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/title"
+                    android:layout_toLeftOf="@+id/data_soruce_list"
+                    android:text="@string/settings_data_source_info"
+                    android:textColor="@color/settings_text_color"
+                    android:textSize="@dimen/settings_info_text_size" />
+            </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>

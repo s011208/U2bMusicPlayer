@@ -11,7 +11,6 @@
     <string name="play_or_pause">Play or pause</string>
     <string name="option_download_data">Download all data</string>
     <string name="option_theme">Select theme</string>
-    <string name="option_source">Select source lists</string>
     <string name="option_settings">Settings</string>
     <string name="option_share">Share playing music</string>
     <string name="option_no_ads">No ads version</string>
@@ -32,6 +31,8 @@
     <string name="settings_show_status_bar_info">Get more detail status on the bottom of screen</string>
     <string name="settings_allow_3g_update_title">Updating option</string>
     <string name="settings_allow_3g_update_info">Allowing update data when using 3g</string>
+    <string name="settings_data_source_title">Data source</string>
+    <string name="settings_data_source_info">More data source</string>
     <string name="settings_headset_notification_title">Show start notification</string>
     <string name="settings_headset_notification_info">Show start notification when headset on</string>
     <string name="share_chooser_title">"Share music to ..."</string>

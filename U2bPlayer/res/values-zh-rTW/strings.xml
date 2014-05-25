@@ -5,7 +5,6 @@
     <string name="app_name">不解釋 聽音樂</string>
     <string name="option_download_data">下載全部資料</string>
     <string name="option_theme">選擇主題</string>
-    <string name="option_source">選擇歌曲來源</string>
     <string name="option_settings">設定</string>
     <string name="option_share">分享播放中音樂</string>
     <string name="option_no_ads">去除廣告</string>
@@ -25,6 +24,8 @@
     <string name="settings_show_status_bar_info">更多的顯示資訊</string>
     <string name="settings_allow_3g_update_title">更新選項</string>
     <string name="settings_allow_3g_update_info">3g 環境下允許更新</string>
+    <string name="settings_data_source_title">歌曲資料來源</string>
+    <string name="settings_data_source_info">更多歌曲資料來源</string>
     <string name="settings_headset_notification_title">顯示開始提醒</string>
     <string name="settings_headset_notification_info">插入音效裝置時顯示提醒</string>
     <string name="share_chooser_title">分享音樂給...</string>
