@@ -10,6 +10,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
@@ -39,9 +40,10 @@ import com.bj4.u2bplayer.activity.ThemeReloader;
 import com.bj4.u2bplayer.activity.U2bPlayerMainFragmentActivity;
 import com.bj4.u2bplayer.database.U2bDatabaseHelper;
 import com.bj4.u2bplayer.scanner.PlayScanner;
+import com.bj4.u2bplayer.service.PlayMusicService;
 
 public class U2bMainFragment extends Fragment implements ThemeReloader {
-    private static final boolean DEBUG = true && PlayMusicApplication.OVERALL_DEBUG;
+    private static final boolean DEBUG = false && PlayMusicApplication.OVERALL_DEBUG;
 
     public static final String TAG = "U2bMainFragment";
 
@@ -56,25 +58,27 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     public static final String MUSIC_TYPE_HOKKIEN = "台語";
 
     public static final String MUSIC_TYPE_CANTONESE = "粵語";
-    
+
     public static final String MUSIC_TYPE_CHOISE = "精選";
-    
+
     public static String MUSIC_TYPE_MYFAVORITE;
-    
+
     public static final String SHARE_PREF_KEY_SOURCE_LIST = "source_list";
-    
+
     public static final String WEB_TYPE_KKBOX = "KKBOX";
-    
+
     public static final String SOURCE_KKBOX = "0";
-    
+
     public static final String SOURCE_MYFAVORITE = "1";
-    
+
     private U2bPlayerMainFragmentActivity mActivity;
+
+    public static final String INTENT_ACTION_PAUSE = "pause";
 
     private View mAlbumView;
 
     private LinearLayout mVerLinearLayout, mHouLinearLayout;
-    
+
     private ArrayList<Map<String, String>> mAlbumList = new ArrayList<Map<String, String>>();
 
     private Map<String, String> albumMap = new HashMap<String, String>();
@@ -96,9 +100,61 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     private void initComponents() {
         mActivity = (U2bPlayerMainFragmentActivity)getActivity();
         SharedPreferences mPref = PlayMusicApplication.getPref(mActivity);
-        HashSet<String> mSet = (HashSet<String>)mPref.getStringSet(SHARE_PREF_KEY_SOURCE_LIST, new HashSet<String>());
+        HashSet<String> mSet = (HashSet<String>)mPref.getStringSet(SHARE_PREF_KEY_SOURCE_LIST,
+                new HashSet<String>());
         SourceListChanged(mSet);
         getScreenWidthAndSizeInPx(mActivity);
+    }
+
+    public void SourceListChanged(HashSet<String> source) {
+        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
+        mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
+        mVerLinearLayout.removeAllViews();
+        try {
+            // 來源音樂
+            String data = "";
+            if (source != null) {
+                Iterator<String> iterator = source.iterator();
+                while (iterator.hasNext()) {
+                    data = iterator.next();
+                    addAlbumSource(data);
+                }
+            }
+
+            // 本機音樂
+            localQueryDbData();
+            localAddAlbumButton();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根據來源 加入專輯
+     * 
+     * @param sourceType
+     */
+    public void addAlbumSource(String source) {
+        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
+        mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
+
+        mHouLinearLayout = new LinearLayout(mActivity);
+        mHouLinearLayout.setGravity(Gravity.CENTER);
+        try {
+            if (SOURCE_MYFAVORITE.equals(source)) {
+                addAlbum(MUSIC_TYPE_MYFAVORITE, R.drawable.myfavorite);
+            }
+            if (SOURCE_KKBOX.equals(source)) {
+                addAlbum(MUSIC_TYPE_CHINESE + MUSIC_TYPE_CHOISE, R.drawable.kkbox);
+                addAlbum(MUSIC_TYPE_WESTERN + MUSIC_TYPE_CHOISE, R.drawable.kkboxw);
+                addAlbum(MUSIC_TYPE_JAPANESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxj);
+                addAlbum(MUSIC_TYPE_KOREAN + MUSIC_TYPE_CHOISE, R.drawable.kkboxk);
+                addAlbum(MUSIC_TYPE_HOKKIEN + MUSIC_TYPE_CHOISE, R.drawable.kkboxh);
+                addAlbum(MUSIC_TYPE_CANTONESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxc);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -136,53 +192,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 c.close();
         }
     }
-    
-    /**
-     * 根據來源 加入專輯
-     * @param sourceType
-     */
-    public void addAlbumSource(String source){
-        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-        mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
-        
-        mHouLinearLayout = new LinearLayout(mActivity);
-        mHouLinearLayout.setGravity(Gravity.CENTER);
-        try {
-            if (SOURCE_MYFAVORITE.equals(source)) {
-                addAlbum(MUSIC_TYPE_MYFAVORITE, R.drawable.myfavorite);// TODO
-            }
-            if (SOURCE_KKBOX.equals(source)) {
-                addAlbum(MUSIC_TYPE_CHINESE + MUSIC_TYPE_CHOISE, R.drawable.kkbox);
-                addAlbum(MUSIC_TYPE_WESTERN + MUSIC_TYPE_CHOISE, R.drawable.kkboxw);
-                addAlbum(MUSIC_TYPE_JAPANESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxj);
-                addAlbum(MUSIC_TYPE_KOREAN + MUSIC_TYPE_CHOISE, R.drawable.kkboxk);
-                addAlbum(MUSIC_TYPE_HOKKIEN + MUSIC_TYPE_CHOISE, R.drawable.kkboxh);
-                addAlbum(MUSIC_TYPE_CANTONESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxc);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void SourceListChanged(HashSet<String> source){
-        mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
-        mVerLinearLayout.removeAllViews();
-        
-        //來源音樂
-        String data = "";
-        if(source != null){
-            Iterator<String> iterator = source.iterator();
-            while(iterator.hasNext()){
-                data = iterator.next();
-                addAlbumSource(data);
-            }
-        }
 
-        //本機音樂
-        localQueryDbData();
-        localAddAlbumButton();
-    }
-    
     /**
      * 進入畫面即產生專輯可點選
      */
@@ -192,62 +202,56 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mHouLinearLayout = new LinearLayout(mActivity);
             mHouLinearLayout.setGravity(Gravity.CENTER);
         }
-        
-        FrameLayout frameLayout = new FrameLayout(mActivity);  
-        ImageView albumViewBG = new ImageView(mActivity);
+
+        FrameLayout frameLayout = new FrameLayout(mActivity);
         ImageView albumViewButton = new ImageView(mActivity);
         TextView textView = new TextView(mActivity);
-        
+
         try {
-            //底圖
-            //albumViewBG.setBackgroundColor(Color.BLACK);
-            
-            //圖案
+
+            // 圖案
             albumViewButton.setBackgroundResource(picAlbum);
             albumViewButton.setTag(nameAlbum);
+            albumViewButton.getBackground().setAlpha(255);
             albumViewButton.setOnClickListener(default_clickHandler);
             albumViewButton.setOnLongClickListener(default_longClickHandler);
-            albumViewButton.setOnTouchListener(default_touchHandler);
-            
-            //文字
+
+            // 文字
             textView.setText(nameAlbum);
-            //textView.setTextSize(getResources().getDimension(R.dimen.play_list_view_artist_textsize));
             textView.setTextSize(getScreenWidthAndSizeInPx(mActivity));
             textView.setTextColor(Color.WHITE);
             textView.setBackgroundColor(Color.BLACK);
             textView.setSingleLine(true);
             textView.setEllipsize(TruncateAt.END);
-            //textView.setWidth(10);
-            textView.setShadowLayer(10f,   //float radius
-                                        5f,  //float dx
-                                        5f,  //float dy 
-                                        Color.BLACK //int color
-                                        );
+            textView.setShadowLayer(10f, // float radius
+                    5f, // float dx
+                    5f, // float dy
+                    Color.BLACK // int color
+            );
             textView.getBackground().setAlpha(0);
             textView.setGravity(1);
             textView.setMaxEms(1);
-            
-            //圖文重疊
-            frameLayout.addView(albumViewBG);
+
+            // 圖文重疊
             frameLayout.addView(albumViewButton);
             frameLayout.addView(textView);
-            
-            //新增到清單
+
+            // 新增到清單
             mHouLinearLayout.addView(frameLayout);
             mVerLinearLayout.addView(mHouLinearLayout);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void localAddAlbumButton() {
-        FrameLayout frameLayout = new FrameLayout(mActivity);  
+        FrameLayout frameLayout = new FrameLayout(mActivity);
         ImageView albumViewButton = new ImageView(mActivity);
         TextView textView = new TextView(mActivity);
-        
+
         try {
-            //分割線
+            // 分割線
             textView = new TextView(mActivity);
             textView.setBackgroundColor(Color.WHITE);
             textView.getBackground().setAlpha(190);
@@ -262,7 +266,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 frameLayout = new FrameLayout(mActivity);
                 albumViewButton = new ImageView(mActivity);
                 textView = new TextView(mActivity);
-                
+
                 albumMap = new HashMap<String, String>();
 
                 if (i % 2 == 0) {
@@ -272,15 +276,14 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
 
                 albumMap = mAlbumList.get(i);
                 mStrAlbum = String.valueOf(albumMap.get("ALBUM"));
-  
-                //圖案
+
+                // 圖案
                 albumViewButton.setBackgroundResource(R.drawable.local);
                 albumViewButton.setTag(mStrAlbum);
-                albumViewButton.getBackground().setAlpha(180);
+                albumViewButton.getBackground().setAlpha(255);
                 albumViewButton.setOnClickListener(localclickHandler);
-                albumViewButton.setOnTouchListener(default_touchHandler);
-                
-                //文字
+
+                // 文字
                 textView.setText(mStrAlbum);
                 textView.setTextSize(getScreenWidthAndSizeInPx(mActivity));
                 textView.setTextColor(Color.WHITE);
@@ -288,20 +291,19 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
                 textView.setSingleLine(true);
                 textView.setEllipsize(TruncateAt.END);
                 textView.setWidth(4);
-                textView.setShadowLayer(10f,   //float radius
-                                            5f,  //float dx
-                                            5f,  //float dy 
-                                            Color.BLACK //int color
-                                            );
+                textView.setShadowLayer(10f, // float radius
+                        5f, // float dx
+                        5f, // float dy
+                        Color.BLACK // int color
+                );
                 textView.getBackground().setAlpha(0);
                 textView.setGravity(1);
                 textView.setMaxEms(1);
-                
-                //圖文重疊
+
+                // 圖文重疊
                 frameLayout.addView(albumViewButton);
                 frameLayout.addView(textView);
-                
-                
+
                 mHouLinearLayout.addView(frameLayout);
                 if (i % 2 == 0) {
                     mVerLinearLayout.addView(mHouLinearLayout);
@@ -311,7 +313,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 點下專輯進入清單
      */
@@ -319,14 +321,11 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         public void onClick(View v) {
             ImageView AlbumView = (ImageView)v;
             Log.d(TAG, AlbumView.getTag().toString());
-            if(MUSIC_TYPE_MYFAVORITE.equals(AlbumView.getTag())){
-                Log.d(TAG, "進入我的最愛 click");                
-            }else{
-                toPlayList(String.valueOf(AlbumView.getTag()));
-            }
+            AlbumView.getBackground().setAlpha(180);
+            toPlayList(String.valueOf(AlbumView.getTag()));
         }
     };
-    
+
     /**
      * 長按即更新專輯
      */
@@ -335,62 +334,54 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
             mActivity = (U2bPlayerMainFragmentActivity)getActivity();
             final ImageView AlbumView = (ImageView)v;
             final PlayScanner playScanner = new PlayScanner();
-            
+
             if (MUSIC_TYPE_MYFAVORITE.equals(AlbumView.getTag().toString()))
                 return false;
 
             AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity);
             dialog.setTitle("更新");
-            dialog.setMessage("是否要更新"+AlbumView.getTag().toString());
+            dialog.setMessage("是否要更新" + AlbumView.getTag().toString());
             dialog.setIcon(android.R.drawable.ic_dialog_alert);
             dialog.setCancelable(false);
             dialog.setPositiveButton("是", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     // 按下PositiveButton要做的事
-                    Toast.makeText(mActivity, "start scan process: " + AlbumView.getTag().toString(),
+                    Toast.makeText(mActivity,
+                            "start scan process: " + AlbumView.getTag().toString(),
                             Toast.LENGTH_LONG).show();
-                    playScanner.scan(WEB_TYPE_KKBOX, AlbumView.getTag().toString().substring(0, 2), null);
-                    
+                    playScanner.scan(WEB_TYPE_KKBOX, AlbumView.getTag().toString().substring(0, 2),
+                            null);
+
                 }
             });
             dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    // TODO Auto-generated method stub
-//                    Toast.makeText(mActivity, "丟掉", Toast.LENGTH_SHORT).show();
+
                 }
             });
-//            dialog.setNeutralButton("中性", new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int which) {
-//                    // TODO Auto-generated method stub
-//                    Toast.makeText(mActivity, "取消", Toast.LENGTH_LONG).show();
-//                }
-//            });
-            
+
             dialog.show();
-            
+
             return false;
         }
     };
-    
+
     /**
      * 點擊專輯回饋
      */
     private OnTouchListener default_touchHandler = new OnTouchListener() {
         public boolean onTouch(View v, MotionEvent event) {
             ImageView AlbumView = (ImageView)v;
-            
+
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 AlbumView.getBackground().setAlpha(150);
             }
-            if (event.getAction() == MotionEvent.ACTION_UP) {  
+            if (event.getAction() == MotionEvent.ACTION_UP) {
                 AlbumView.getBackground().setAlpha(255);
-//                toPlayList(String.valueOf(AlbumView.getTag()));
             }
             return false;
         }
     };
-    
-    
 
     /**
      * 本機-點下專輯進入清單
@@ -399,6 +390,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         public void onClick(View v) {
             ImageView AlbumView = (ImageView)v;
             Log.d(TAG, AlbumView.getTag().toString());
+            AlbumView.getBackground().setAlpha(180);
             toPlayList(String.valueOf(AlbumView.getTag()));
         }
     };
@@ -413,7 +405,7 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
     public void reloadTheme() {
         // TODO Auto-generated method stub
     }
-    
+
     public int getScreenWidthAndSizeInPx(Activity activity) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -423,22 +415,21 @@ public class U2bMainFragment extends Fragment implements ThemeReloader {
         int density = (int)displayMetrics.density;
         int dpi = displayMetrics.densityDpi;
 
-        Log.d(TAG, "heightPixels: "+String.valueOf(heigh));
-        Log.d(TAG, "widthPixels: "+String.valueOf(width));
-        Log.d(TAG, "density: "+String.valueOf(density));
-        Log.d(TAG, "densityDpi: "+String.valueOf(dpi));
-        
-        if (width/density > 700) {
+        Log.d(TAG, "heightPixels: " + String.valueOf(heigh));
+        Log.d(TAG, "widthPixels: " + String.valueOf(width));
+        Log.d(TAG, "density: " + String.valueOf(density));
+        Log.d(TAG, "densityDpi: " + String.valueOf(dpi));
+
+        if (width / density > 700) {
             mTextSize = 50;
-        } else if (width/density > 500) {
+        } else if (width / density > 500) {
             mTextSize = 40;
-        } else if (width/density > 300) {
+        } else if (width / density > 300) {
             mTextSize = 30;
         } else {
             mTextSize = 20;
         }
-        
+
         return mTextSize;
     }
-
 }
