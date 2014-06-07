@@ -15,16 +15,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Audio.Albums;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -90,19 +96,9 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
 
     private View mAlbumView;
 
-    private LinearLayout mVerLinearLayout, mHouLinearLayout;
-
-    private ArrayList<Map<String, String>> mAlbumList = new ArrayList<Map<String, String>>();
-
-    private ArrayList<HashMap<String, String>> mLocalAlbumList = new ArrayList<HashMap<String, String>>();
-
     private static final String LOCAL_ALBUM_LIST_ALBUM_NAME = "ALBUM";
 
     private static final String LOCAL_ALBUM_LIST_SERIALNUMBER = "SERIALNUMBER";
-
-    private Map<String, String> albumMap = new HashMap<String, String>();
-
-    private String mStrAlbum = "";
 
     private ViewPager mMainPager;
 
@@ -129,6 +125,13 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
             initLocalMusicList();
             initWebMusicList();
             initComponents();
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            mLocalListAdapter.notifyDataSetChanged();
+            mWebMusicListAdapter.notifyDataSetChanged();
+            super.notifyDataSetChanged();
         }
 
         private void initComponents() {
@@ -211,6 +214,7 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
             }
 
             private void refreshGridContent() {
+                mData.clear();
                 SharedPreferences pref = PlayMusicApplication.getPref(mActivity);
                 HashSet<String> sourceSet = (HashSet<String>)pref.getStringSet(
                         SHARE_PREF_KEY_SOURCE_LIST, new HashSet<String>());
@@ -309,8 +313,60 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
 
         class LocalMusicListAdapter extends BaseAdapter {
 
+            private final ArrayList<HashMap<String, String>> mLocalAlbumList = new ArrayList<HashMap<String, String>>();
+
+            class ThumbnailAndSongCount {
+                Bitmap mAlbumThumbnail;
+
+                String mSongCount;
+
+                public ThumbnailAndSongCount(Bitmap b, String s) {
+                    mAlbumThumbnail = b;
+                    mSongCount = s;
+                }
+            }
+
+            private final LruCache<String, ThumbnailAndSongCount> mAlbumThumbnail;
+
             public LocalMusicListAdapter() {
+                mAlbumThumbnail = new LruCache<String, ThumbnailAndSongCount>(40);
                 localQueryDbData();
+            }
+
+            private void localQueryDbData() {
+                U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
+                Cursor c;
+                mLocalAlbumList.clear();
+                c = databaseHelper.queryDataFromLocalData();
+
+                String album = "";
+                int intAlbumCount = 0;
+
+                // print
+                try {
+                    if (c != null) {
+                        HashMap<String, String> albumMap;
+                        String strAlbum = null;
+                        while (c.moveToNext()) {
+                            album = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
+
+                            if (!album.equals(strAlbum)) {
+                                intAlbumCount++;
+                                strAlbum = album;
+                                albumMap = new HashMap<String, String>();
+                                albumMap.put(LOCAL_ALBUM_LIST_SERIALNUMBER,
+                                        String.valueOf(intAlbumCount));
+                                albumMap.put(LOCAL_ALBUM_LIST_ALBUM_NAME, strAlbum);
+                                mLocalAlbumList.add(albumMap);
+                            }
+                        }
+                        c.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (c != null)
+                        c.close();
+                }
             }
 
             @Override
@@ -344,6 +400,10 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
                             R.layout.play_main_yhh_fragment_local_music_list_row, null);
                     holder = new ViewHolder();
                     holder.mAlbumName = (TextView)container.findViewById(R.id.album_title);
+                    holder.mAlbumThumbnail = (ImageView)container
+                            .findViewById(R.id.album_thumbnail);
+                    holder.mAlbumSongCount = (TextView)container
+                            .findViewById(R.id.album_song_count);
                     container.setTag(holder);
                 } else {
                     holder = (ViewHolder)container.getTag();
@@ -351,11 +411,77 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
                 HashMap<String, String> viewData = getItem(position);
                 String albumName = viewData.get(LOCAL_ALBUM_LIST_ALBUM_NAME);
                 holder.mAlbumName.setText(albumName);
+                ThumbnailAndSongCount thumbnail = mAlbumThumbnail.get(albumName);
+                if (thumbnail != null) {
+                    if (thumbnail.mAlbumThumbnail != null) {
+                        holder.mAlbumThumbnail.setImageBitmap(thumbnail.mAlbumThumbnail);
+                    } else {
+                        holder.mAlbumThumbnail.setImageResource(R.drawable.ic_launcher);
+                    }
+                    holder.mAlbumSongCount.setText(thumbnail.mSongCount);
+                } else {
+                    new AlbumThumbnailLoader(holder.mAlbumThumbnail, holder.mAlbumSongCount)
+                            .execute(albumName);
+                }
                 return container;
             }
 
+            private class AlbumThumbnailLoader extends AsyncTask<String, Void, Bitmap> {
+                private ImageView mThumbnail;
+
+                private TextView mAlbumSongCount;
+
+                private String mSongCount;
+
+                public AlbumThumbnailLoader(ImageView thumbnail, TextView albumSongCount) {
+                    mThumbnail = thumbnail;
+                    mAlbumSongCount = albumSongCount;
+                    mThumbnail.setImageResource(R.drawable.ic_launcher);
+                }
+
+                @Override
+                protected void onPostExecute(Bitmap result) {
+                    super.onPostExecute(result);
+                    if (result != null)
+                        mThumbnail.setImageBitmap(result);
+                    mAlbumSongCount.setText(mSongCount);
+                }
+
+                @Override
+                protected Bitmap doInBackground(String... albumName) {
+                    Cursor c = mContext.getApplicationContext().getContentResolver()
+                            .query(Albums.EXTERNAL_CONTENT_URI, new String[] {
+                                    Albums.ALBUM_ART, Albums.NUMBER_OF_SONGS
+                            }, Albums.ALBUM + "='" + albumName[0] + "'", null, null);
+                    if (c != null) {
+                        Bitmap bitmap = null;
+                        if (c.getCount() > 0) {
+                            c.moveToNext();
+                            String path = c.getString(c.getColumnIndex(Albums.ALBUM_ART));
+                            mSongCount = c.getString(c.getColumnIndex(Albums.NUMBER_OF_SONGS))
+                                    + " "
+                                    + mContext.getApplicationContext().getString(R.string.songs);
+                            if (path != null) {
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                bitmap = BitmapFactory.decodeFile(path, options);
+                            }
+                            mAlbumThumbnail.put(albumName[0], new ThumbnailAndSongCount(bitmap,
+                                    mSongCount));
+                        }
+                        c.close();
+                        return bitmap;
+                    }
+                    return null;
+                }
+            }
+
             private class ViewHolder {
+                ImageView mAlbumThumbnail;
+
                 TextView mAlbumName;
+
+                TextView mAlbumSongCount;
             }
         }
 
@@ -411,306 +537,13 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
 
     private void initComponents() {
         initPager();
-
-        // mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-        // SharedPreferences mPref = PlayMusicApplication.getPref(mActivity);
-        // HashSet<String> mSet =
-        // (HashSet<String>)mPref.getStringSet(SHARE_PREF_KEY_SOURCE_LIST,
-        // new HashSet<String>());
-        // SourceListChanged(mSet);
-        // getScreenWidthAndSizeInPx(mActivity);
     }
 
-    public void SourceListChanged(HashSet<String> source) {
-        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-        mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
-        mVerLinearLayout.removeAllViews();
-        try {
-            // 來源音樂
-            String data = "";
-            if (source != null) {
-                Iterator<String> iterator = source.iterator();
-                while (iterator.hasNext()) {
-                    data = iterator.next();
-                    addAlbumSource(data);
-                }
-            }
-
-            // 本機音樂
-            localQueryDbData();
-            localAddAlbumButton();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void notifyDataSetChanged() {
+        if (mMainPagerAdapter != null) {
+            mMainPagerAdapter.notifyDataSetChanged();
         }
     }
-
-    /**
-     * 根據來源 加入專輯
-     * 
-     * @param sourceType
-     */
-    public void addAlbumSource(String source) {
-        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-        mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
-
-        mHouLinearLayout = new LinearLayout(mActivity);
-        mHouLinearLayout.setGravity(Gravity.CENTER);
-        try {
-            if (SOURCE_MYFAVORITE.equals(source)) {
-                addAlbum(MUSIC_TYPE_MYFAVORITE, R.drawable.myfavorite);
-            }
-            if (SOURCE_KKBOX.equals(source)) {
-                addAlbum(MUSIC_TYPE_CHINESE + MUSIC_TYPE_CHOISE, R.drawable.kkbox);
-                addAlbum(MUSIC_TYPE_WESTERN + MUSIC_TYPE_CHOISE, R.drawable.kkboxw);
-                addAlbum(MUSIC_TYPE_JAPANESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxj);
-                addAlbum(MUSIC_TYPE_KOREAN + MUSIC_TYPE_CHOISE, R.drawable.kkboxk);
-                addAlbum(MUSIC_TYPE_HOKKIEN + MUSIC_TYPE_CHOISE, R.drawable.kkboxh);
-                addAlbum(MUSIC_TYPE_CANTONESE + MUSIC_TYPE_CHOISE, R.drawable.kkboxc);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 搜尋本機音樂
-     */
-    private void localQueryDbData() {
-        U2bDatabaseHelper databaseHelper = PlayMusicApplication.getDataBaseHelper();
-        Cursor c;
-        mLocalAlbumList.clear();
-        c = databaseHelper.queryDataFromLocalData();
-
-        String album = "";
-        int intAlbumCount = 0;
-
-        // print
-        try {
-            if (c != null) {
-                HashMap<String, String> albumMap;
-                String strAlbum = null;
-                while (c.moveToNext()) {
-                    album = c.getString(c.getColumnIndex(U2bDatabaseHelper.COLUMN_ALBUM));
-
-                    if (!album.equals(strAlbum)) {
-                        intAlbumCount++;
-                        strAlbum = album;
-                        albumMap = new HashMap<String, String>();
-                        albumMap.put(LOCAL_ALBUM_LIST_SERIALNUMBER, String.valueOf(intAlbumCount));
-                        albumMap.put(LOCAL_ALBUM_LIST_ALBUM_NAME, strAlbum);
-                        mLocalAlbumList.add(albumMap);
-                    }
-                }
-                c.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (c != null)
-                c.close();
-        }
-    }
-
-    /**
-     * 進入畫面即產生專輯可點選
-     */
-    private void addAlbum(String nameAlbum, int picAlbum) {
-        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-        if (mHouLinearLayout.getChildCount() % 2 == 0) {
-            mHouLinearLayout = new LinearLayout(mActivity);
-            mHouLinearLayout.setGravity(Gravity.CENTER);
-        }
-
-        FrameLayout frameLayout = new FrameLayout(mActivity);
-        ImageView albumViewButton = new ImageView(mActivity);
-        TextView textView = new TextView(mActivity);
-
-        try {
-
-            // 圖案
-            albumViewButton.setBackgroundResource(picAlbum);
-            albumViewButton.setTag(nameAlbum);
-            albumViewButton.getBackground().setAlpha(255);
-            albumViewButton.setOnClickListener(default_clickHandler);
-            albumViewButton.setOnLongClickListener(default_longClickHandler);
-
-            // 文字
-            textView.setText(nameAlbum);
-            textView.setTextSize(getScreenWidthAndSizeInPx(mActivity));
-            textView.setTextColor(Color.WHITE);
-            textView.setBackgroundColor(Color.BLACK);
-            textView.setSingleLine(true);
-            textView.setEllipsize(TruncateAt.END);
-            textView.setShadowLayer(10f, // float radius
-                    5f, // float dx
-                    5f, // float dy
-                    Color.BLACK // int color
-            );
-            textView.getBackground().setAlpha(0);
-            textView.setGravity(1);
-            textView.setMaxEms(1);
-
-            // 圖文重疊
-            frameLayout.addView(albumViewButton);
-            frameLayout.addView(textView);
-
-            // 新增到清單
-            mHouLinearLayout.addView(frameLayout);
-            mVerLinearLayout.addView(mHouLinearLayout);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void localAddAlbumButton() {
-        FrameLayout frameLayout = new FrameLayout(mActivity);
-        ImageView albumViewButton = new ImageView(mActivity);
-        TextView textView = new TextView(mActivity);
-
-        try {
-            // 分割線
-            textView = new TextView(mActivity);
-            textView.setBackgroundColor(Color.WHITE);
-            textView.getBackground().setAlpha(190);
-            textView.setGravity(Gravity.BOTTOM);
-            mVerLinearLayout.addView(textView);
-
-            mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-            mVerLinearLayout = (LinearLayout)mAlbumView.findViewById(R.id.player_main_container);
-            mHouLinearLayout = new LinearLayout(mActivity);
-
-            for (int i = 0; i < mAlbumList.size(); i++) {
-                frameLayout = new FrameLayout(mActivity);
-                albumViewButton = new ImageView(mActivity);
-                textView = new TextView(mActivity);
-
-                albumMap = new HashMap<String, String>();
-
-                if (i % 2 == 0) {
-                    mHouLinearLayout = new LinearLayout(mActivity);
-                    mHouLinearLayout.setGravity(Gravity.CENTER);
-                }
-
-                albumMap = mAlbumList.get(i);
-                mStrAlbum = String.valueOf(albumMap.get(LOCAL_ALBUM_LIST_ALBUM_NAME));
-
-                // 圖案
-                albumViewButton.setBackgroundResource(R.drawable.local);
-                albumViewButton.setTag(mStrAlbum);
-                albumViewButton.getBackground().setAlpha(255);
-                albumViewButton.setOnClickListener(localclickHandler);
-
-                // 文字
-                textView.setText(mStrAlbum);
-                textView.setTextSize(getScreenWidthAndSizeInPx(mActivity));
-                textView.setTextColor(Color.WHITE);
-                textView.setBackgroundColor(Color.BLACK);
-                textView.setSingleLine(true);
-                textView.setEllipsize(TruncateAt.END);
-                textView.setWidth(4);
-                textView.setShadowLayer(10f, // float radius
-                        5f, // float dx
-                        5f, // float dy
-                        Color.BLACK // int color
-                );
-                textView.getBackground().setAlpha(0);
-                textView.setGravity(1);
-                textView.setMaxEms(1);
-
-                // 圖文重疊
-                frameLayout.addView(albumViewButton);
-                frameLayout.addView(textView);
-
-                mHouLinearLayout.addView(frameLayout);
-                if (i % 2 == 0) {
-                    mVerLinearLayout.addView(mHouLinearLayout);
-                }
-            }
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 點下專輯進入清單
-     */
-    private OnClickListener default_clickHandler = new OnClickListener() {
-        public void onClick(View v) {
-            ImageView AlbumView = (ImageView)v;
-            Log.d(TAG, AlbumView.getTag().toString());
-            AlbumView.getBackground().setAlpha(180);
-            toPlayList(String.valueOf(AlbumView.getTag()));
-        }
-    };
-
-    /**
-     * 長按即更新專輯
-     */
-    private OnLongClickListener default_longClickHandler = new OnLongClickListener() {
-        public boolean onLongClick(View v) {
-            mActivity = (U2bPlayerMainFragmentActivity)getActivity();
-            final ImageView AlbumView = (ImageView)v;
-            final PlayScanner playScanner = new PlayScanner();
-
-            if (MUSIC_TYPE_MYFAVORITE.equals(AlbumView.getTag().toString()))
-                return false;
-
-            AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity);
-            dialog.setTitle("更新");
-            dialog.setMessage("是否要更新" + AlbumView.getTag().toString());
-            dialog.setIcon(android.R.drawable.ic_dialog_alert);
-            dialog.setCancelable(false);
-            dialog.setPositiveButton("是", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // 按下PositiveButton要做的事
-                    Toast.makeText(mActivity,
-                            "start scan process: " + AlbumView.getTag().toString(),
-                            Toast.LENGTH_LONG).show();
-                    playScanner.scan(WEB_TYPE_KKBOX, AlbumView.getTag().toString().substring(0, 2),
-                            null);
-
-                }
-            });
-            dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            });
-
-            dialog.show();
-
-            return false;
-        }
-    };
-
-    /**
-     * 點擊專輯回饋
-     */
-    private OnTouchListener default_touchHandler = new OnTouchListener() {
-        public boolean onTouch(View v, MotionEvent event) {
-            ImageView AlbumView = (ImageView)v;
-
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                AlbumView.getBackground().setAlpha(150);
-            }
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                AlbumView.getBackground().setAlpha(255);
-            }
-            return false;
-        }
-    };
-
-    /**
-     * 本機-點下專輯進入清單
-     */
-    private OnClickListener localclickHandler = new OnClickListener() {
-        public void onClick(View v) {
-            ImageView AlbumView = (ImageView)v;
-            Log.d(TAG, AlbumView.getTag().toString());
-            AlbumView.getBackground().setAlpha(180);
-            toPlayList(String.valueOf(AlbumView.getTag()));
-        }
-    };
 
     private void toPlayList(String album) {
         mActivity = (U2bPlayerMainFragmentActivity)getActivity();
@@ -721,32 +554,5 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
     @Override
     public void reloadTheme() {
         // TODO Auto-generated method stub
-    }
-
-    public int getScreenWidthAndSizeInPx(Activity activity) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int mTextSize = 0;
-        int heigh = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
-        int density = (int)displayMetrics.density;
-        int dpi = displayMetrics.densityDpi;
-
-        Log.d(TAG, "heightPixels: " + String.valueOf(heigh));
-        Log.d(TAG, "widthPixels: " + String.valueOf(width));
-        Log.d(TAG, "density: " + String.valueOf(density));
-        Log.d(TAG, "densityDpi: " + String.valueOf(dpi));
-
-        if (width / density > 700) {
-            mTextSize = 50;
-        } else if (width / density > 500) {
-            mTextSize = 40;
-        } else if (width / density > 300) {
-            mTextSize = 30;
-        } else {
-            mTextSize = 20;
-        }
-
-        return mTextSize;
     }
 }

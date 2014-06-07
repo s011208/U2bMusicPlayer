@@ -47,8 +47,11 @@
     <!-- widget -->
     <dimen name="simple_music_widget_items_margin">10dp</dimen>
     <!-- yhh main fragment -->
-    <dimen name="play_main_yhh_local_music_list_item_height">45dp</dimen>
-    <dimen name="play_main_yhh_local_music_list_item_textsize">24sp</dimen>
+    <dimen name="play_main_yhh_local_music_list_item_album_thumbnail_height">60dp</dimen>
+    <dimen name="play_main_yhh_local_music_list_item_album_height">35dp</dimen>
+    <dimen name="play_main_yhh_local_music_list_item_song_number_height">25dp</dimen>
+    <dimen name="play_main_yhh_local_music_list_item_album_textsize">18sp</dimen>
+    <dimen name="play_main_yhh_local_music_list_item_song_number_textsize">14sp</dimen>
     <dimen name="play_main_yhh_web_music_grid_album_title_height">40dp</dimen>
     <dimen name="play_main_yhh_web_music_grid_album_title_size">20sp</dimen>
 

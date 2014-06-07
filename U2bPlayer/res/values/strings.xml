@@ -48,5 +48,6 @@
     <string name="cancel">@android:string/cancel</string>
     <string name="play_main_update_dialog_update">Update</string>
     <string name="play_main_update_dialog_update_text">"Do you want to update "</string>
+    <string name="songs">Songs</string>
 
 </resources>

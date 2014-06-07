@@ -38,6 +38,7 @@
     <string name="toast_remove_from_favorite">已經從我的最愛列表刪除</string>
     <string name="spider_service_taost_start_to_scan">開始搜尋資料!</string>
     <string name="play_main_update_dialog_update">更新</string>
-    <string name="play_main_update_dialog_update_text">"使否要更新 "</string>
+    <string name="play_main_update_dialog_update_text">"是否要更新 "</string>
+    <string name="songs">首</string>
 
 </resources>

@@ -289,9 +289,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     }
 
     private void notifySourceListChanged() {
-        HashSet<String> mSet = (HashSet<String>)mPref.getStringSet(SHARE_PREF_KEY_SOURCE_LIST,
-                new HashSet<String>());
-        getMainFragment().SourceListChanged(mSet);
+        getMainFragment().notifyDataSetChanged();
     }
 
     private void unRegisterBroadcastReceiver() {
