@@ -104,6 +104,8 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
 
     private MainPagerAdapter mMainPagerAdapter;
 
+    private int mLastClickItem = 0;
+
     class MainPagerAdapter extends PagerAdapter {
 
         private final ArrayList<View> mContent = new ArrayList<View>();
@@ -307,8 +309,15 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
                     String albumName = mLocalListAdapter.getItem(position).get(
                             LOCAL_ALBUM_LIST_ALBUM_NAME);
                     toPlayList(albumName);
+                    mLastClickItem = mLocalListView.getFirstVisiblePosition();
                 }
             });
+        }
+
+        public void setMusicListPosition(int position) {
+            if (mLocalListView != null) {
+                mLocalListView.setSelection(position);
+            }
         }
 
         class LocalMusicListAdapter extends BaseAdapter {
@@ -524,8 +533,13 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mAlbumView = inflater.inflate(R.layout.play_main_yhh_fragment, container, false);
-        initComponents();
+        if (mAlbumView == null) {
+            mAlbumView = inflater.inflate(R.layout.play_main_yhh_fragment, container, false);
+            initComponents();
+        } else {
+            ((ViewGroup)mAlbumView.getParent()).removeView(mAlbumView);
+            notifyDataSetChanged();
+        }
         return mAlbumView;
     }
 
@@ -533,6 +547,7 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
         mMainPager = (ViewPager)mAlbumView.findViewById(R.id.play_main_fragment_viewpager);
         mMainPagerAdapter = new MainPagerAdapter();
         mMainPager.setAdapter(mMainPagerAdapter);
+        mMainPagerAdapter.setMusicListPosition(mLastClickItem);
     }
 
     private void initComponents() {
