@@ -43,5 +43,10 @@
     <string name="simple_play_widget_none_playinfo">"Let's rock now!"</string>
     <string name="toast_add_into_favorite"> has been added into favorite list</string>
     <string name="toast_remove_from_favorite"> has been removed from favorite list</string>
-	<string name="spider_service_taost_start_to_scan">Start to scan music!</string>
+    <string name="spider_service_taost_start_to_scan">Start to scan music!</string>
+    <string name="ok">@android:string/ok</string>
+    <string name="cancel">@android:string/cancel</string>
+    <string name="play_main_update_dialog_update">Update</string>
+    <string name="play_main_update_dialog_update_text">"Do you want to update "</string>
+
 </resources>

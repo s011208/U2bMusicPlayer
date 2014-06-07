@@ -49,6 +49,7 @@ import com.bj4.u2bplayer.PlayList;
 import com.bj4.u2bplayer.PlayMusicApplication;
 import com.bj4.u2bplayer.R;
 import com.bj4.u2bplayer.activity.fragments.U2bMainFragment;
+import com.bj4.u2bplayer.activity.fragments.U2bMainYhhFragment;
 import com.bj4.u2bplayer.activity.fragments.U2bPlayInfoFragment;
 import com.bj4.u2bplayer.activity.fragments.U2bPlayListFragment;
 import com.bj4.u2bplayer.dialogs.MainActivityOptionDialog;
@@ -426,7 +427,7 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         runStrictModeIfNeeded();
         super.onCreate(savedInstanceState);
-        U2bMainFragment.MUSIC_TYPE_MYFAVORITE = getResources().getString(
+        U2bMainYhhFragment.MUSIC_TYPE_MYFAVORITE = getResources().getString(
                 R.string.music_type_my_favorite);
         setContentView(R.layout.u2b_main_activity);
         createBillingComponents();
@@ -718,11 +719,11 @@ public class U2bPlayerMainFragmentActivity extends FragmentActivity {
         }
     };
 
-    private synchronized U2bMainFragment getMainFragment() {
+    private synchronized U2bMainYhhFragment getMainFragment() {
         if (mU2bMainFragment == null) {
-            mU2bMainFragment = new U2bMainFragment();
+            mU2bMainFragment = new U2bMainYhhFragment();
         }
-        return (U2bMainFragment)mU2bMainFragment;
+        return (U2bMainYhhFragment)mU2bMainFragment;
     }
 
     private synchronized U2bPlayListFragment getPlayListFragment() {

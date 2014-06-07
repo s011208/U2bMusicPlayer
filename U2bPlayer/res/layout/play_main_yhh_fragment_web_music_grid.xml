@@ -1,0 +1,11 @@
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:horizontalSpacing="5dp"
+    android:numColumns="@integer/play_main_yhh_web_music_grid_num_column"
+    android:stretchMode="columnWidth"
+    android:verticalSpacing="5dp" >
+
+</GridView>

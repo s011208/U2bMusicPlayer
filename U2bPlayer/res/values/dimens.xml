@@ -46,5 +46,12 @@
     <dimen name="play_info_fragment_control_panel_seekbar_margin_left">10dp</dimen>
     <!-- widget -->
     <dimen name="simple_music_widget_items_margin">10dp</dimen>
+    <!-- yhh main fragment -->
+    <dimen name="play_main_yhh_local_music_list_item_height">45dp</dimen>
+    <dimen name="play_main_yhh_local_music_list_item_textsize">24sp</dimen>
+    <dimen name="play_main_yhh_web_music_grid_album_title_height">40dp</dimen>
+    <dimen name="play_main_yhh_web_music_grid_album_title_size">20sp</dimen>
+
+    <integer name="play_main_yhh_web_music_grid_num_column">2</integer>
 
 </resources>

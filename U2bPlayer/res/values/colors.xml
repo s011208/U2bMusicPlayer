@@ -6,6 +6,10 @@
     <color name="dialog_background">#55000000</color>
     <color name="settings_text_color">#000000</color>
 
+    <drawable name="play_main_web_music_fg_unselected">#00000000</drawable>
+    <drawable name="play_main_web_music_fg_selected">#33ffe7cd</drawable>
     <drawable name="play_list_selected">#000000</drawable>
+
+    <color name="play_main_list_view_divider_color">#91feff</color>
 
 </resources>

@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:foreground="@drawable/play_main_web_music_fg"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/play_main_yhh_grid_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerInside" />
+
+    <TextView
+        android:id="@+id/play_main_yhh_grid_album_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/play_main_yhh_web_music_grid_album_title_height"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:textSize="@dimen/play_main_yhh_web_music_grid_album_title_size"
+        android:background="#66000000"
+        android:textColor="#fff" />
+
+</FrameLayout>
