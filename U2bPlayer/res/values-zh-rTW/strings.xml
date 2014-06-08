@@ -40,5 +40,7 @@
     <string name="play_main_update_dialog_update">更新</string>
     <string name="play_main_update_dialog_update_text">"是否要更新 "</string>
     <string name="songs">首</string>
+    <string name="tab_local_music">本機音樂</string>
+    <string name="tab_web_music">網路音樂</string>
 
 </resources>
