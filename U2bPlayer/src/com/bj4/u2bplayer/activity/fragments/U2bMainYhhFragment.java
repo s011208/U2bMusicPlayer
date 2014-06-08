@@ -27,6 +27,7 @@ import android.provider.MediaStore.Audio.Albums;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -105,6 +106,8 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
     private MainPagerAdapter mMainPagerAdapter;
 
     private int mLastClickItem = 0;
+
+    private TextView mTabLocal, mTabWeb;
 
     class MainPagerAdapter extends PagerAdapter {
 
@@ -432,7 +435,43 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
                     new AlbumThumbnailLoader(holder.mAlbumThumbnail, holder.mAlbumSongCount)
                             .execute(albumName);
                 }
+                initTheme(holder);
                 return container;
+            }
+
+            private void initTheme(ViewHolder holder) {
+                int theme = mActivity.getApplicationTheme();
+                if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
+                    holder.mAlbumName.setTextColor(Color.WHITE);
+                    holder.mAlbumSongCount.setTextColor(0xccffffff);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_WHITE) {
+                    holder.mAlbumName.setTextColor(Color.BLACK);
+                    holder.mAlbumSongCount.setTextColor(0xcc000000);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_BLACK) {
+                    holder.mAlbumName.setTextColor(Color.WHITE);
+                    holder.mAlbumSongCount.setTextColor(0xccffffff);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_ORANGE) {
+                    holder.mAlbumName.setTextColor(Color.WHITE);
+                    holder.mAlbumSongCount.setTextColor(0xccffffff);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_YELLOW) {
+                    holder.mAlbumName.setTextColor(Color.WHITE);
+                    holder.mAlbumSongCount.setTextColor(0xccffffff);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_GRAY) {
+                    holder.mAlbumName.setTextColor(Color.WHITE);
+                    holder.mAlbumSongCount.setTextColor(0xccffffff);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_NAVY) {
+                    holder.mAlbumName.setTextColor(Color.WHITE);
+                    holder.mAlbumSongCount.setTextColor(0xccffffff);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_PURPLE) {
+                    holder.mAlbumName.setTextColor(Color.WHITE);
+                    holder.mAlbumSongCount.setTextColor(0xccffffff);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_SIMPLE_WHITE) {
+                    holder.mAlbumName.setTextColor(Color.BLACK);
+                    holder.mAlbumSongCount.setTextColor(0xcc000000);
+                } else if (theme == U2bPlayerMainFragmentActivity.THEME_RED) {
+                    holder.mAlbumName.setTextColor(Color.WHITE);
+                    holder.mAlbumSongCount.setTextColor(0xccffffff);
+                }
             }
 
             private class AlbumThumbnailLoader extends AsyncTask<String, Void, Bitmap> {
@@ -529,6 +568,7 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
+        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
     }
 
     @Override
@@ -548,10 +588,58 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
         mMainPagerAdapter = new MainPagerAdapter();
         mMainPager.setAdapter(mMainPagerAdapter);
         mMainPagerAdapter.setMusicListPosition(mLastClickItem);
+        mMainPager.setPageTransformer(true, new AlphaPageTransformer());
+        mMainPager.setOnPageChangeListener(new OnPageChangeListener() {
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onPageSelected(int page) {
+                if (page == 0) {
+                    mTabLocal.setSelected(true);
+                    mTabWeb.setSelected(false);
+                } else if (page == 1) {
+                    mTabLocal.setSelected(false);
+                    mTabWeb.setSelected(true);
+                }
+            }
+        });
     }
 
     private void initComponents() {
         initPager();
+        mTabLocal = (TextView)mAlbumView.findViewById(R.id.tab_local_music);
+        mTabLocal.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                mTabLocal.setSelected(true);
+                mTabWeb.setSelected(false);
+                mMainPager.setCurrentItem(0, true);
+            }
+        });
+        mTabLocal.setSelected(true);
+        mTabWeb = (TextView)mAlbumView.findViewById(R.id.tab_web_music);
+        mTabWeb.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                mTabLocal.setSelected(false);
+                mTabWeb.setSelected(true);
+                mMainPager.setCurrentItem(1, true);
+            }
+        });
+        initTabTheme();
     }
 
     public void notifyDataSetChanged() {
@@ -561,13 +649,76 @@ public class U2bMainYhhFragment extends Fragment implements ThemeReloader {
     }
 
     private void toPlayList(String album) {
-        mActivity = (U2bPlayerMainFragmentActivity)getActivity();
         mActivity.setDisplayingAlbumName(album);
         mActivity.switchFragment(U2bPlayerMainFragmentActivity.FRAGMENT_TYPE_PLAYLIST);
     }
 
+    private void initTabTheme() {
+        int theme = mActivity.getApplicationTheme();
+        if (theme == U2bPlayerMainFragmentActivity.THEME_BLUE) {
+            mTabLocal.setTextColor(Color.WHITE);
+            mTabWeb.setTextColor(Color.WHITE);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_WHITE) {
+            mTabLocal.setTextColor(Color.BLACK);
+            mTabWeb.setTextColor(Color.BLACK);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_BLACK) {
+            mTabLocal.setTextColor(Color.WHITE);
+            mTabWeb.setTextColor(Color.WHITE);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_ORANGE) {
+            mTabLocal.setTextColor(Color.WHITE);
+            mTabWeb.setTextColor(Color.WHITE);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_YELLOW) {
+            mTabLocal.setTextColor(Color.WHITE);
+            mTabWeb.setTextColor(Color.WHITE);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_GRAY) {
+            mTabLocal.setTextColor(Color.WHITE);
+            mTabWeb.setTextColor(Color.WHITE);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_NAVY) {
+            mTabLocal.setTextColor(Color.WHITE);
+            mTabWeb.setTextColor(Color.WHITE);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_PURPLE) {
+            mTabLocal.setTextColor(Color.WHITE);
+            mTabWeb.setTextColor(Color.WHITE);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_SIMPLE_WHITE) {
+            mTabLocal.setTextColor(Color.BLACK);
+            mTabWeb.setTextColor(Color.BLACK);
+        } else if (theme == U2bPlayerMainFragmentActivity.THEME_RED) {
+            mTabLocal.setTextColor(Color.WHITE);
+            mTabWeb.setTextColor(Color.WHITE);
+        }
+    }
+
     @Override
     public void reloadTheme() {
-        // TODO Auto-generated method stub
+        initTabTheme();
+        notifyDataSetChanged();
+    }
+
+    public class AlphaPageTransformer implements ViewPager.PageTransformer {
+        private static final float MIN_SCALE = 0.85f;
+
+        private static final float MIN_ALPHA = 0.3f;
+
+        public void transformPage(View view, float position) {
+            int pageWidth = view.getWidth();
+            int pageHeight = view.getHeight();
+
+            if (position < -1) {
+                view.setAlpha(0);
+            } else if (position <= 1) { // [-1,1]
+                float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
+                float vertMargin = pageHeight * (1 - scaleFactor) / 2;
+                float horzMargin = pageWidth * (1 - scaleFactor) / 2;
+                if (position < 0) {
+                    view.setTranslationX(horzMargin - vertMargin / 2);
+                } else {
+                    view.setTranslationX(-horzMargin + vertMargin / 2);
+                }
+                view.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE)
+                        * (1 - MIN_ALPHA));
+            } else {
+                view.setAlpha(0);
+            }
+        }
     }
 }

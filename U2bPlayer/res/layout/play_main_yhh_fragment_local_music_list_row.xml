@@ -24,7 +24,6 @@
         android:gravity="bottom"
         android:maxLines="1"
         android:paddingLeft="5dp"
-        android:textColor="#fff"
         android:textSize="@dimen/play_main_yhh_local_music_list_item_album_textsize" />
 
     <TextView
@@ -38,7 +37,6 @@
         android:gravity="top"
         android:maxLines="1"
         android:paddingLeft="5dp"
-        android:textColor="#ccffffff"
         android:textSize="@dimen/play_main_yhh_local_music_list_item_song_number_textsize" />
 
 </RelativeLayout>
